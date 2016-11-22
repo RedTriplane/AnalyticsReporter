@@ -6,4 +6,4 @@
  *
  */
 
-package com.jfixby.redreporter.api;
+package com.jfixby.redreporter.api.client;

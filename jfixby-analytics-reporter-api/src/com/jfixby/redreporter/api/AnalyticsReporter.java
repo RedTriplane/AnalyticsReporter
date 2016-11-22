@@ -5,30 +5,19 @@ import com.jfixby.cmns.api.ComponentInstaller;
 
 public class AnalyticsReporter {
 
-	static private ComponentInstaller<AnalyticsReporterComponent> componentInstaller = new ComponentInstaller<AnalyticsReporterComponent>(
+	static private ComponentInstaller<AnalyticsReporterAPI> componentInstaller = new ComponentInstaller<AnalyticsReporterAPI>(
 		"AnalyticsReporter");
 
-	public static final void installComponent (final AnalyticsReporterComponent component_to_install) {
+	public static final void installComponent (final AnalyticsReporterAPI component_to_install) {
 		componentInstaller.installComponent(component_to_install);
 	}
 
-	public static final AnalyticsReporterComponent invoke () {
+	public static final AnalyticsReporterAPI invoke () {
 		return componentInstaller.invokeComponent();
 	}
 
-	public static final AnalyticsReporterComponent component () {
+	public static final AnalyticsReporterAPI component () {
 		return componentInstaller.getComponent();
 	}
 
-	public static void pingServers () {
-		invoke().pingServers();
-	}
-
-	public static AnalyticsReporterLoggerComponent getLogger () {
-		return invoke().getLogger();
-	}
-
-	public static AnalyticsReporterErrorComponent getErr () {
-		return invoke().getErr();
-	}
 }

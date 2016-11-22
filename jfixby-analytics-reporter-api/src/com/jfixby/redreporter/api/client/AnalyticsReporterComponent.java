@@ -1,5 +1,7 @@
 
-package com.jfixby.redreporter.api;
+package com.jfixby.redreporter.api.client;
+
+import com.jfixby.redreporter.api.AnalyticsReporterAPI;
 
 public interface AnalyticsReporterComponent {
 
@@ -8,5 +10,7 @@ public interface AnalyticsReporterComponent {
 	AnalyticsReporterLoggerComponent getLogger ();
 
 	AnalyticsReporterErrorComponent getErr ();
+
+	AnalyticsReporterAPI getAPI ();
 
 }
