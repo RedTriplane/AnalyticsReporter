@@ -17,7 +17,7 @@ import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.http.METHOD;
 import com.jfixby.cmns.api.net.message.Message;
-import com.jfixby.redreporter.api.PROTOCOL;
+import com.jfixby.redreporter.api.AnalyticsReporter_PROTOCOL;
 
 public class ServerHandler {
 
@@ -81,7 +81,7 @@ public class ServerHandler {
 			final ByteArray srlsdMsg = IO.serialize(msg);
 			final ByteArray gzipped = IO.compress(srlsdMsg);
 
-			call.addRequestHeader(PROTOCOL.MESSAGE, gzipped);
+			call.addRequestHeader(AnalyticsReporter_PROTOCOL.MESSAGE, gzipped);
 			call.addRequestHeaders(httpParams);
 
 			final HttpCallProgress progress = exe.execute(call);
