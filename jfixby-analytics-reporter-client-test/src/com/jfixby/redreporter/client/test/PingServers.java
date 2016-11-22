@@ -21,17 +21,23 @@ public class PingServers {
 // config.setReportingCache(cache);
 
 		{
-			final String url_string = "https://ar.r3.jfixby.com/";
+			final String url_string = "http://localhost:8080";
 			final HttpURL url = Http.newURL(url_string);
 
 			config.addAnalyticsServerUrl(url);
+		}
+		{
+			final String url_string = "https://ar.r3.jfixby.com/";
+			final HttpURL url = Http.newURL(url_string);
+
+// config.addAnalyticsServerUrl(url);
 		}
 
 		{
 			final String url_string = "https://ar.red-triplane.com/";
 			final HttpURL url = Http.newURL(url_string);
 
-			config.addAnalyticsServerUrl(url);
+// config.addAnalyticsServerUrl(url);
 		}
 // config.setWrapCurrentLogger(true);
 // config.setWrapCurrentErr(true);

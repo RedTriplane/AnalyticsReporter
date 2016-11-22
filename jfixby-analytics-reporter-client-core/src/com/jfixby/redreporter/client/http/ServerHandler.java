@@ -3,15 +3,21 @@ package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.api.io.GZipInputStream;
-import com.jfixby.cmns.api.io.GZipOutputStream;
+import com.jfixby.cmns.api.collections.Mapping;
+import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.io.IO;
+import com.jfixby.cmns.api.java.ByteArray;
+import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.Http;
+import com.jfixby.cmns.api.net.http.HttpCall;
+import com.jfixby.cmns.api.net.http.HttpCallExecutor;
+import com.jfixby.cmns.api.net.http.HttpCallParams;
+import com.jfixby.cmns.api.net.http.HttpCallProgress;
 import com.jfixby.cmns.api.net.http.HttpConnection;
-import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
-import com.jfixby.cmns.api.net.http.HttpConnectionOutputStream;
 import com.jfixby.cmns.api.net.http.HttpURL;
+import com.jfixby.cmns.api.net.http.METHOD;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.redreporter.api.PROTOCOL;
 
 public class ServerHandler {
 
@@ -58,18 +64,35 @@ public class ServerHandler {
 		return this.ping;
 	}
 
-	public Message exchange (final Message msg) {
+	public Message exchange (final Message msg, final Mapping<String, String> httpParams) {
+		Debug.checkNull("message", msg);
 		try {
-			final HttpConnection connection = Http.newConnection(this.url);
-			connection.open();
-			final HttpConnectionOutputStream os = connection.getOutputStream();
-			final GZipOutputStream gzipos = IO.newGZipStream(os);
-			IO.serialize(msg, gzipos);
 
-			final HttpConnectionInputStream is = connection.getInputStream();
-			final GZipInputStream gzipis = IO.newGZipStream(is);
-			final Message result = IO.deserialize(Message.class, gzipis);
-			connection.close();
+			final HttpCallExecutor exe = Http.newCallExecutor();
+			final HttpCallParams params = Http.newCallParams();
+
+			params.setURL(this.url);
+			params.setUseAgent(true);
+			params.setMethod(METHOD.POST);
+			params.setUseSSL(!true);
+
+			final HttpCall call = Http.newCall(params);
+
+			final ByteArray srlsdMsg = IO.serialize(msg);
+			final ByteArray gzipped = IO.compress(srlsdMsg);
+
+			call.addRequestHeader(PROTOCOL.MESSAGE, gzipped);
+			call.addRequestHeaders(httpParams);
+
+			final HttpCallProgress progress = exe.execute(call);
+
+			final String response = progress.readResultAsString("utf-8");
+			L.d("response", response);
+
+// final ByteArray resultObjgzipped = (ByteArray)progress.readObject();
+// final ByteArray srlsdResultMsg = IO.decompress(resultObjgzipped);
+// final Message result = IO.deserialize(Message.class, srlsdResultMsg);
+			final Message result = new Message();
 			return result;
 		} catch (final Exception e) {
 			e.printStackTrace();
