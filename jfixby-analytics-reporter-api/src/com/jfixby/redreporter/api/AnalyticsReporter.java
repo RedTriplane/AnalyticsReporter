@@ -23,4 +23,12 @@ public class AnalyticsReporter {
 	public static boolean pingServer () {
 		return invoke().pingServer();
 	}
+
+	public static AnalyticsReporterLoggerComponent getLogger () {
+		return invoke().getLogger();
+	}
+
+	public static AnalyticsReporterErrorComponent getErr () {
+		return invoke().getErr();
+	}
 }

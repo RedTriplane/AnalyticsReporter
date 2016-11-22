@@ -28,7 +28,11 @@ public class PingServer {
 
 		config.setAnalyticsServerUrl(url);
 
+		config.setWrapCurrentLogger(true);
+		config.setWrapCurrentErr(true);
+
 		AnalyticsReporter.installComponent(new DesktopReporter(config));
+
 		final boolean ping = AnalyticsReporter.pingServer();
 		L.d("ping " + url, ping);
 
