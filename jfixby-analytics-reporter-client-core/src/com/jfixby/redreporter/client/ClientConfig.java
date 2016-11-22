@@ -1,13 +1,16 @@
 
 package com.jfixby.redreporter.client;
 
+import com.jfixby.cmns.api.collections.Collection;
+import com.jfixby.cmns.api.collections.Collections;
+import com.jfixby.cmns.api.collections.Set;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.net.http.HttpURL;
 
 public class ClientConfig {
 
 	File reportingCache;
-	private HttpURL server_url;
+	final Set<HttpURL> servers = Collections.newSet();
 	private boolean log;
 	private boolean err;
 
@@ -15,12 +18,12 @@ public class ClientConfig {
 		return this.reportingCache;
 	}
 
-	public void setAnalyticsServerUrl (final HttpURL url) {
-		this.server_url = url;
+	public void addAnalyticsServerUrl (final HttpURL url) {
+		this.servers.add(url);
 	}
 
-	public HttpURL getAnalyticsServerUrl () {
-		return this.server_url;
+	public Collection<HttpURL> listServers () {
+		return this.servers;
 	}
 
 	public void setReportingCache (final File cache) {

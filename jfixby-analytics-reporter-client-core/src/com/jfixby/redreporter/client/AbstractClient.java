@@ -3,6 +3,9 @@ package com.jfixby.redreporter.client;
 
 import java.io.IOException;
 
+import com.jfixby.cmns.api.collections.CollectionScanner;
+import com.jfixby.cmns.api.collections.Collections;
+import com.jfixby.cmns.api.collections.Set;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.err.ErrorComponent;
@@ -12,7 +15,6 @@ import com.jfixby.cmns.api.log.LoggerComponent;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpURL;
-import com.jfixby.redreporter.api.AnalyticsReporter;
 import com.jfixby.redreporter.api.AnalyticsReporterComponent;
 import com.jfixby.redreporter.api.AnalyticsReporterErrorComponent;
 import com.jfixby.redreporter.api.AnalyticsReporterLoggerComponent;
@@ -20,7 +22,7 @@ import com.jfixby.redreporter.api.AnalyticsReporterLoggerComponent;
 public class AbstractClient implements AnalyticsReporterComponent {
 
 	private final File reportingCache;
-	private final HttpURL url;
+	private final Set<HttpURL> servers = Collections.newSet();
 	private final RedAnalyticsReporterLoggerComponent logger = new RedAnalyticsReporterLoggerComponent(this);
 	private final RedAnalyticsReporterErrorComponent err = new RedAnalyticsReporterErrorComponent(this);
 
@@ -31,8 +33,8 @@ public class AbstractClient implements AnalyticsReporterComponent {
 		Debug.checkNull("reportingCache", reportingCache);
 		Debug.checkTrue("reportingCache is file", !reportingCache.isFile());
 
-		this.url = config.getAnalyticsServerUrl();
-		Debug.checkNull("url", this.url);
+		this.servers.addAll(config.listServers());
+		this.servers.print("servers");
 
 		reportingCache.makeFolder();
 		this.reportingCache = reportingCache;
@@ -48,23 +50,32 @@ public class AbstractClient implements AnalyticsReporterComponent {
 	}
 
 	public void wrapCurrentLogger () {
-		final AnalyticsReporterLoggerComponent arLog = AnalyticsReporter.getLogger();
+		final AnalyticsReporterLoggerComponent arLog = this.getLogger();
 		final LoggerComponent log = L.deInstallCurrentComponent();
 		arLog.wrap(log);
 		L.installComponent(arLog);
 	}
 
 	public void wrapCurrentErr () {
-		final AnalyticsReporterErrorComponent arErr = AnalyticsReporter.getErr();
+		final AnalyticsReporterErrorComponent arErr = this.getErr();
 		final ErrorComponent err = Err.deInstallCurrentComponent();
 		arErr.wrap(err);
 		Err.installComponent(arErr);
 	}
 
 	@Override
-	public boolean pingServer () {
+	public void pingServers () {
+		Collections.scanCollection(this.servers, new CollectionScanner<HttpURL>() {
+			@Override
+			public void scanElement (final HttpURL url, final int b) {
+				L.d("ping " + url, AbstractClient.this.pingServer(url));
+			}
+		});
+	}
+
+	public boolean pingServer (final HttpURL url) {
 		try {
-			final HttpConnection connect = Http.newConnection(this.url);
+			final HttpConnection connect = Http.newConnection(url);
 			connect.open();
 			final int code = connect.getResponseCode();
 			connect.close();

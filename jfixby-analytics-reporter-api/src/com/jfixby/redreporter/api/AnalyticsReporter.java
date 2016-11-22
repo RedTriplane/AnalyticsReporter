@@ -5,7 +5,7 @@ import com.jfixby.cmns.api.ComponentInstaller;
 
 public class AnalyticsReporter {
 
-	static private ComponentInstaller<AnalyticsReporterComponent> componentInstaller = new ComponentInstaller<>(
+	static private ComponentInstaller<AnalyticsReporterComponent> componentInstaller = new ComponentInstaller<AnalyticsReporterComponent>(
 		"AnalyticsReporter");
 
 	public static final void installComponent (final AnalyticsReporterComponent component_to_install) {
@@ -20,8 +20,8 @@ public class AnalyticsReporter {
 		return componentInstaller.getComponent();
 	}
 
-	public static boolean pingServer () {
-		return invoke().pingServer();
+	public static void pingServers () {
+		invoke().pingServers();
 	}
 
 	public static AnalyticsReporterLoggerComponent getLogger () {
