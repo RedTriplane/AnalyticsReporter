@@ -5,13 +5,15 @@ import java.io.IOException;
 
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.file.File;
-import com.jfixby.redreporter.api.RedReporterComponent;
+import com.jfixby.redreporter.api.AnalyticsReporterComponent;
 
-public class AbstractClient implements RedReporterComponent {
+public class AbstractClient implements AnalyticsReporterComponent {
 
 	private final File reportingCache;
 
-	public AbstractClient (final File reportingCache) throws IOException {
+	public AbstractClient (final ClientConfig config) throws IOException {
+
+		final File reportingCache = config.getReportingCache();
 		Debug.checkNull("reportingCache", reportingCache);
 		Debug.checkTrue("reportingCache is file", !reportingCache.isFile());
 		reportingCache.makeFolder();
