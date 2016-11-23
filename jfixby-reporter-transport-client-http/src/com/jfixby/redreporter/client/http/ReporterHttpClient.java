@@ -6,10 +6,10 @@ import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.redreporter.api.DeviceInfo;
 import com.jfixby.redreporter.api.transport.DeviceRegistration;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransportComponent;
-import com.jfixby.redreporter.api.transport.client.DeviceInfo;
 
 public class ReporterHttpClient implements ReporterTransportComponent {
 	final ServerHandlers servers = new ServerHandlers();

@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter.api.transport.client;
+package com.jfixby.redreporter.api;
 
 public interface ReporterComponent {
 

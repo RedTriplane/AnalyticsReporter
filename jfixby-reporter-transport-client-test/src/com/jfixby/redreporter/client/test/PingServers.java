@@ -8,13 +8,13 @@ import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.red.desktop.DesktopSetup;
+import com.jfixby.redreporter.api.DeviceInfo;
+import com.jfixby.redreporter.api.Reporter;
 import com.jfixby.redreporter.api.transport.DeviceRegistration;
-import com.jfixby.redreporter.api.transport.client.DeviceInfo;
-import com.jfixby.redreporter.api.transport.client.Reporter;
-import com.jfixby.redreporter.client.desktop.DesktopReporter;
-import com.jfixby.redreporter.client.desktop.DesktopReporterConfig;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
+import com.jfixby.redreporter.desktop.DesktopReporter;
+import com.jfixby.redreporter.desktop.DesktopReporterConfig;
 
 public class PingServers {
 
