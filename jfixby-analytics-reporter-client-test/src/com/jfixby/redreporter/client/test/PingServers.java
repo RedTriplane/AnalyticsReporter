@@ -3,6 +3,8 @@ package com.jfixby.redreporter.client.test;
 
 import java.io.IOException;
 
+import com.jfixby.cmns.adopted.gdx.json.RedJson;
+import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.red.desktop.DesktopSetup;
@@ -14,6 +16,7 @@ public class PingServers {
 
 	public static void main (final String[] args) throws IOException {
 		DesktopSetup.deploy();
+		Json.installComponent(new RedJson());
 
 // final File cache = LocalFileSystem.ApplicationHome().child("report-cache");
 		final AnalytiscReporterHttpClientConfig config = new AnalytiscReporterHttpClientConfig();

@@ -20,8 +20,11 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.jfixby.cmns.adopted.gdx.json.RedJson;
 import com.jfixby.cmns.api.debug.Debug;
+import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.log.L;
+import com.jfixby.red.desktop.DesktopSetup;
 
 public abstract class AbstractEntryPoint extends HttpServlet {
 
@@ -30,6 +33,12 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -1649148797847741708L;
 	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
+
+	static {
+		DesktopSetup.deploy();
+		Json.installComponent(new RedJson());
+
+	}
 
 	/** Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
 	 *
@@ -84,7 +93,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 			if (values != null && values.length > 0) {
 				value = values[0];
 			}
-			client_to_server_headers.put(key, value);
+			client_to_server_headers.put(key.toLowerCase(), value);
 		}
 		final HashMap<String, String> server_to_client_headers = new HashMap<>();
 		this.processRequest(session_id, client_to_server_stream, client_to_server_headers, server_to_client_stream,

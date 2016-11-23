@@ -2,22 +2,22 @@
 package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.net.URLConnection;
 
 import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.io.IO;
+import com.jfixby.cmns.api.io.InputStream;
+import com.jfixby.cmns.api.io.InputStreamOpener;
 import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.Http;
-import com.jfixby.cmns.api.net.http.HttpCall;
-import com.jfixby.cmns.api.net.http.HttpCallExecutor;
-import com.jfixby.cmns.api.net.http.HttpCallParams;
-import com.jfixby.cmns.api.net.http.HttpCallProgress;
 import com.jfixby.cmns.api.net.http.HttpConnection;
+import com.jfixby.cmns.api.net.http.HttpConnectionSpecs;
 import com.jfixby.cmns.api.net.http.HttpURL;
-import com.jfixby.cmns.api.net.http.METHOD;
 import com.jfixby.cmns.api.net.message.Message;
-import com.jfixby.redreporter.api.AnalyticsReporter_PROTOCOL;
 
 public class ServerHandler {
 
@@ -31,8 +31,13 @@ public class ServerHandler {
 	public long updatePing () {
 		final long timestamp = System.currentTimeMillis();
 		try {
-			final HttpConnection connect = Http.newConnection(this.url);
+			final HttpConnectionSpecs spec = Http.newConnectionSpecs();
+			spec.setURL(this.url);
+			spec.setDoInput(true);
+
+			final HttpConnection connect = Http.newConnection(spec);
 			connect.open();
+
 			final int code = connect.getResponseCode();
 			connect.close();
 			this.ping = System.currentTimeMillis() - timestamp;
@@ -64,41 +69,66 @@ public class ServerHandler {
 		return this.ping;
 	}
 
-	public Message exchange (final Message msg, final Mapping<String, String> httpParams) {
-		Debug.checkNull("message", msg);
+	public Message exchange (final Message message, final Mapping<String, String> p) {
+		Debug.checkNull("message", message);
 		try {
+			final URLConnection urlConnection;
+			L.d("connecting", this.url);
+			final String urlStirng = this.url.getURLString();
+			final URL url = new URL(urlStirng);
+			urlConnection = url.openConnection();
+			if (urlConnection instanceof HttpURLConnection) {
+				((HttpURLConnection)urlConnection).setRequestMethod("POST");
+			} else {
+				new Error("this connection is NOT an HttpUrlConnection connection").printStackTrace();
+				return null;
+			}
 
-			final HttpCallExecutor exe = Http.newCallExecutor();
-			final HttpCallParams params = Http.newCallParams();
+			urlConnection.setUseCaches(false);
+			urlConnection.setDefaultUseCaches(false);
+			urlConnection.setDoInput(true);
+			urlConnection.setDoOutput(true);
+			urlConnection.setRequestProperty("Content-Type", "application/octet-stream");
 
-			params.setURL(this.url);
-			params.setUseAgent(true);
-			params.setMethod(METHOD.POST);
-			params.setUseSSL(!true);
+			for (final String key : p.keys()) {
+				urlConnection.setRequestProperty(key, p.get(key));
+			}
 
-			final HttpCall call = Http.newCall(params);
+			urlConnection.setConnectTimeout(SERVER_TIMEOUT); // TODO set to 10
+			// secs
+			urlConnection.setReadTimeout(SERVER_TIMEOUT);
 
-			final ByteArray srlsdMsg = IO.serialize(msg);
-			final ByteArray gzipped = IO.compress(srlsdMsg);
+			urlConnection.connect();
 
-			call.addRequestHeader(AnalyticsReporter_PROTOCOL.MESSAGE, gzipped);
-			call.addRequestHeaders(httpParams);
+			final java.io.OutputStream os = urlConnection.getOutputStream();
 
-			final HttpCallProgress progress = exe.execute(call);
+			final ByteArray data = IO.serialize(message);
+			final ByteArray compressed = IO.compress(data);
+			os.write(compressed.toArray());
+			os.flush();
+			os.close();
 
-			final String response = progress.readResultAsString("utf-8");
+			final InputStream is = IO.newInputStream(new InputStreamOpener() {
+				@Override
+				public java.io.InputStream open () throws IOException {
+					return urlConnection.getInputStream();
+				}
+			});
+			is.open();
+			final ByteArray rdata = is.readAll();
+			is.close();
+			final ByteArray responceBytes = IO.decompress(rdata);
+			final Message response = IO.deserialize(Message.class, responceBytes);
 			L.d("response", response);
 
-// final ByteArray resultObjgzipped = (ByteArray)progress.readObject();
-// final ByteArray srlsdResultMsg = IO.decompress(resultObjgzipped);
-// final Message result = IO.deserialize(Message.class, srlsdResultMsg);
-			final Message result = new Message();
-			return result;
+			return response;
 		} catch (final Exception e) {
 			e.printStackTrace();
 			return null;
 		}
 
 	}
+
+	public static final int SERVER_TIMEOUT = 14000;
 
 }
