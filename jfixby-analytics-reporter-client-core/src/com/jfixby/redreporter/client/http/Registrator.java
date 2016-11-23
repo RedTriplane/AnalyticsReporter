@@ -12,12 +12,10 @@ public class Registrator {
 
 		for (final ServerHandler server : servers) {
 			final Message msg = new Message(ANALYTICS_REPORTER_PROTOCOL.REGISTER_DEVICE);
-			msg.values.put(ANALYTICS_REPORTER_PROTOCOL.REQUEST_FORMAT, ANALYTICS_REPORTER_PROTOCOL.JSON);
-			msg.values.put(ANALYTICS_REPORTER_PROTOCOL.RESPONSE_FORMAT, ANALYTICS_REPORTER_PROTOCOL.JSON);
 
-			final Map<String, String> httpParams = Collections.newMap(msg.values);
-// httpParams.clear();
-			httpParams.print("httpParams");
+			final Map<String, String> httpParams = Collections.newMap();
+			httpParams.clear();
+// httpParams.print("httpParams");
 
 			final Message result = server.exchange(msg, httpParams);
 			if (result != null) {
