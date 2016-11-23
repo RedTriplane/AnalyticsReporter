@@ -96,6 +96,8 @@ public class ServerHandler {
 
 			final HttpConnectionOutputStream os = connection.getOutputStream();
 			os.open();
+			message.print();
+
 			final ByteArray data = IO.serialize(message);
 			final ByteArray compressed = IO.compress(data);
 			os.write(compressed.toArray());

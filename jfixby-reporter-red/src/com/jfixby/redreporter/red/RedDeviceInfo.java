@@ -14,4 +14,9 @@ public class RedDeviceInfo implements DeviceInfo {
 		return this.settings;
 	}
 
+	@Override
+	public void putValue (final String key, final Object value) {
+		this.settings.put(key, "" + value);
+	}
+
 }
