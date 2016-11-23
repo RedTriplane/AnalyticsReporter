@@ -7,6 +7,4 @@ public interface ReporterComponent {
 
 	ReporterErrorComponent getErr ();
 
-	DeviceInfo getDeviceInfo ();
-
 }

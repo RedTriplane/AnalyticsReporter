@@ -1,10 +1,10 @@
 
 package com.jfixby.redreporter.api.transport;
 
-import com.jfixby.redreporter.api.DeviceInfo;
+import com.jfixby.cmns.api.sys.SystemInfo;
 
 public interface ReporterTransportComponent {
 
-	DeviceRegistration registerDevice (final DeviceInfo deviceInfo);
+	DeviceRegistration registerDevice (final SystemInfo deviceInfo);
 
 }

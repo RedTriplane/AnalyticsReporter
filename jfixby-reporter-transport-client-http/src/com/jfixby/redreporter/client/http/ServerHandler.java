@@ -99,6 +99,7 @@ public class ServerHandler {
 			message.print();
 
 			final ByteArray data = IO.serialize(message);
+
 			final ByteArray compressed = IO.compress(data);
 			os.write(compressed.toArray());
 			os.flush();

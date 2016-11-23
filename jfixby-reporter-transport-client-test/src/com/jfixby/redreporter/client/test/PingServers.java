@@ -7,8 +7,9 @@ import com.jfixby.cmns.adopted.gdx.json.RedJson;
 import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpURL;
+import com.jfixby.cmns.api.sys.Sys;
+import com.jfixby.cmns.api.sys.SystemInfo;
 import com.jfixby.red.desktop.DesktopSetup;
-import com.jfixby.redreporter.api.DeviceInfo;
 import com.jfixby.redreporter.api.Reporter;
 import com.jfixby.redreporter.api.transport.DeviceRegistration;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
@@ -51,6 +52,7 @@ public class PingServers {
 
 		final DesktopReporterConfig deskCfg = new DesktopReporterConfig();
 		Reporter.installComponent(new DesktopReporter(deskCfg));
+		final SystemInfo deviceinfo = Sys.getSystemInfo();
 //
 // AnalyticsReporter.pingServers();
 //
@@ -61,8 +63,6 @@ public class PingServers {
 		final ReporterHttpClient client = new ReporterHttpClient(config);
 		client.updatePings();
 		client.printPings();
-
-		final DeviceInfo deviceinfo = Reporter.getDeviceInfo();
 
 		final DeviceRegistration deviceRegistration = client.registerDevice(deviceinfo);
 		deviceRegistration.print();

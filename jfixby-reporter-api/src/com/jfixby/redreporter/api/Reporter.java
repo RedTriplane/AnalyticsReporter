@@ -28,8 +28,4 @@ public class Reporter {
 		return invoke().getErr();
 	}
 
-	public static DeviceInfo getDeviceInfo () {
-		return invoke().getDeviceInfo();
-	}
-
 }
