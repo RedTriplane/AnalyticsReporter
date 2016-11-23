@@ -9,7 +9,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red-desktop"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red-gdx"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-analytics-reporter-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-analytics-reporter-server"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-transport-api"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

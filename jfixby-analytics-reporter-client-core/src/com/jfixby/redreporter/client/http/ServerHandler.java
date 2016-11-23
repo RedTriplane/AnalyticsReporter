@@ -66,13 +66,16 @@ public class ServerHandler {
 		return this.ping;
 	}
 
-	public Message exchange (final Message message, final Mapping<String, String> p) {
+	public Message exchange (final Message message) {
+		return this.exchange(message, null);
+	}
+
+	public Message exchange (final Message message, final Mapping<String, String> headers) {
 		Debug.checkNull("message", message);
 		try {
 
 			final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
 			conSpec.setURL(this.url);
-// L.d("connecting", this.url);
 
 			conSpec.setMethod(METHOD.POST);
 			conSpec.setUseCaches(false);
@@ -80,33 +83,16 @@ public class ServerHandler {
 			conSpec.setDoInput(true);
 			conSpec.setDoOutput(true);
 			conSpec.setOctetStream(true);
+			if (headers != null) {
+				conSpec.addRequesrProperties(headers);
+			}
 
-// final HttpURLConnection connection;
-// final String urlStirng = this.url.getURLString();
-// final URL url = new URL(urlStirng);
-// connection = (HttpURLConnection)url.openConnection();
-// connection.setRequestMethod("POST");
-
-// connection.setRequestProperty("Content-Type", "application/octet-stream");
-
-			conSpec.addRequesrProperties(p);
-
-// for (final String key : p.keys()) {
-// connection.setRequestProperty(key, p.get(key));
-// }
 			conSpec.setConnectTimeout(SERVER_TIMEOUT);
 			conSpec.setReadTimeout(SERVER_TIMEOUT);
-// connection.setConnectTimeout(SERVER_TIMEOUT); // TODO set to 10
-// secs
-// connection.setReadTimeout(SERVER_TIMEOUT);
 
 			final HttpConnection connection = Http.newConnection(conSpec);
 
-// connection.connect();
 			connection.open();
-
-// final java.io.OutputStream os = connection.getOutputStream();
-//
 
 			final HttpConnectionOutputStream os = connection.getOutputStream();
 			os.open();
@@ -116,20 +102,12 @@ public class ServerHandler {
 			os.flush();
 			os.close();
 
-// final InputStream is = IO.newInputStream(new InputStreamOpener() {
-// @Override
-// public java.io.InputStream open () throws IOException {
-// return connection.getInputStream();
-// }
-// });
-
 			final HttpConnectionInputStream is = connection.getInputStream();
 			is.open();
 			final ByteArray rdata = is.readAll();
 			is.close();
 			final ByteArray responceBytes = IO.decompress(rdata);
 			final Message response = IO.deserialize(Message.class, responceBytes);
-// L.d("response", response);
 
 			return response;
 		} catch (final Exception e) {
