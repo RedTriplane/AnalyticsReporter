@@ -7,7 +7,6 @@ import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.io.IO;
 import com.jfixby.cmns.api.java.ByteArray;
-import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
@@ -73,7 +72,7 @@ public class ServerHandler {
 
 			final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
 			conSpec.setURL(this.url);
-			L.d("connecting", this.url);
+// L.d("connecting", this.url);
 
 			conSpec.setMethod(METHOD.POST);
 			conSpec.setUseCaches(false);
@@ -130,7 +129,7 @@ public class ServerHandler {
 			is.close();
 			final ByteArray responceBytes = IO.decompress(rdata);
 			final Message response = IO.deserialize(Message.class, responceBytes);
-			L.d("response", response);
+// L.d("response", response);
 
 			return response;
 		} catch (final Exception e) {
