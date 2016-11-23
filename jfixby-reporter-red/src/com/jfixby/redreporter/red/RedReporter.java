@@ -6,7 +6,7 @@ import com.jfixby.redreporter.api.ReporterComponent;
 import com.jfixby.redreporter.api.ReporterErrorComponent;
 import com.jfixby.redreporter.api.ReporterLogger;
 
-public class RedReporter implements ReporterComponent {
+public abstract class RedReporter implements ReporterComponent {
 
 	@Override
 	public ReporterLogger getLogger () {
@@ -20,7 +20,7 @@ public class RedReporter implements ReporterComponent {
 
 	@Override
 	public DeviceInfo getDeviceInfo () {
-		return null;
+		return new RedDeviceInfo();
 	}
 
 }
