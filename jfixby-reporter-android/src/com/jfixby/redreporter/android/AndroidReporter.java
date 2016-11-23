@@ -4,6 +4,7 @@ package com.jfixby.redreporter.android;
 import com.jfixby.android.api.Android;
 import com.jfixby.android.api.DisplayMetrics;
 import com.jfixby.redreporter.api.DeviceInfo;
+import com.jfixby.redreporter.api.TAGS;
 import com.jfixby.redreporter.red.RedDeviceInfo;
 import com.jfixby.redreporter.red.RedReporter;
 
@@ -22,33 +23,33 @@ public class AndroidReporter extends RedReporter {
 			final DisplayMetrics displayMetrics = Android.getDisplayMetrics();
 			final int height = displayMetrics.getHeight();
 			final int width = displayMetrics.getWidth();
-			deviceInfo.putValue("Android.DisplayMetrics.width", width);
-			deviceInfo.putValue("Android.DisplayMetrics.height", height);
+			deviceInfo.putValue(TAGS.Android.Display.WIDTH, width);
+			deviceInfo.putValue(TAGS.Android.Display.HEIGHT, height);
 		}
 		{
 			final String brand = Android.getBrand();
-			deviceInfo.putValue("Android.brand", brand);
+			deviceInfo.putValue(TAGS.Android.Brand, brand);
 		}
 		{
 			final String model = Android.getModel();
-			deviceInfo.putValue("Android.model", model);
+			deviceInfo.putValue(TAGS.Android.Model, model);
 		}
 		{
 			final String release = Android.getVersionRelease();
-			deviceInfo.putValue("Android.release", release);
+			deviceInfo.putValue(TAGS.Android.Release, release);
 		}
 		{
 			final String host = Android.getHost();
-			deviceInfo.putValue("Android.host", host);
+			deviceInfo.putValue(TAGS.Android.Host, host);
 		}
 
 		{
 			final String osName = System.getProperty("os.name");
-			deviceInfo.putValue("os.name", osName);
+			deviceInfo.putValue(TAGS.System.OS_NAME, osName);
 		}
 		{
 			final String java = System.getProperty("java.version");
-			deviceInfo.putValue("java.version", java);
+			deviceInfo.putValue(TAGS.Java.Version, java);
 		}
 
 		return deviceInfo;
