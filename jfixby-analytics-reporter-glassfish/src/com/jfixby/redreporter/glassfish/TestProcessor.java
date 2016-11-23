@@ -39,6 +39,13 @@ public class TestProcessor extends AbstractEntryPoint {
 		outputHeaders.print("outputHeaders");
 
 		try {
+			final String len = inputHeaders.get("content-length");
+			if (len == null) {
+				return;
+			}
+			if ("0".equals(len)) {
+				return;
+			}
 			final InputStream is = IO.newInputStream( () -> client_to_server_stream);
 			is.open();
 			final ByteArray bytes = is.readAll();
