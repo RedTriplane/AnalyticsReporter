@@ -7,6 +7,7 @@ import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.io.IO;
 import com.jfixby.cmns.api.java.ByteArray;
+import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
@@ -39,7 +40,7 @@ public class ServerHandler {
 			connect.close();
 			this.ping = System.currentTimeMillis() - timestamp;
 		} catch (final IOException e) {
-			e.printStackTrace();
+			L.e("ping " + this.url, e);
 			this.ping = Long.MAX_VALUE;
 		}
 		return this.ping;
