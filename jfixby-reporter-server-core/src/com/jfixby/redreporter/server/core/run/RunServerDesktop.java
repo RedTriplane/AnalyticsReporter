@@ -21,7 +21,7 @@ public class RunServerDesktop {
 
 		final MySQLConfig config = new MySQLConfig();
 
-		config.setDBUrlString(CONFIG.DEV.DB_URL_STRING);
+		config.setDBUrlString(CONFIG.PROD.DB_URL_STRING);
 		config.setLogin(CONFIG.PROD.DB_LOGIN);
 		config.setPassword(CONFIG.PROD.DB_PASSWORD);
 
@@ -33,6 +33,8 @@ public class RunServerDesktop {
 		serveConfig.setRedReporterDataBank(bank);
 		final RedReporterServer server = new RedReporterServer(serveConfig);
 		server.start();
+
+		server.testReg();
 
 		server.stop();
 

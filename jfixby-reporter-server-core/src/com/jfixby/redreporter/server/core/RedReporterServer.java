@@ -25,4 +25,9 @@ public class RedReporterServer {
 
 	}
 
+	public void testReg () {
+		this.bank.testReg();
+
+	}
+
 }

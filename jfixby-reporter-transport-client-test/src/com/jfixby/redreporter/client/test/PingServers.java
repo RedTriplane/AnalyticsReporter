@@ -36,7 +36,7 @@ public class PingServers {
 		}
 
 		{
-			final String url_string = "http://ar-1.red-triplane.com/";
+			final String url_string = "https://rr.red-triplane.com/";
 			final HttpURL url = Http.newURL(url_string);
 
 			config.addAnalyticsServerUrl(url);

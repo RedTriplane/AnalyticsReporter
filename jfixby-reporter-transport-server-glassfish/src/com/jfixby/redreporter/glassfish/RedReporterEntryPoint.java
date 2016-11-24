@@ -1,6 +1,8 @@
 
 package com.jfixby.redreporter.glassfish;
 
+import java.io.IOException;
+import java.util.Date;
 import java.util.HashMap;
 
 import javax.servlet.ServletInputStream;
@@ -18,7 +20,7 @@ import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.message.Message;
 
-public class TestProcessor extends AbstractEntryPoint {
+public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 	/**
 	 *
@@ -45,9 +47,11 @@ public class TestProcessor extends AbstractEntryPoint {
 		try {
 			final String len = inputHeaders.get("content-length");
 			if (len == null) {
+				this.sayHello(server_to_client_stream);
 				return;
 			}
 			if ("0".equals(len)) {
+				this.sayHello(server_to_client_stream);
 				return;
 			}
 			final InputStream is = IO.newInputStream( () -> client_to_server_stream);
@@ -83,6 +87,10 @@ public class TestProcessor extends AbstractEntryPoint {
 			L.e(e);
 		}
 
+	}
+
+	private void sayHello (final ServletOutputStream server_to_client_stream) throws IOException {
+		server_to_client_stream.write(("Service is operating normally " + new Date()).getBytes());
 	}
 
 	public static final void main (final String[] arg) {

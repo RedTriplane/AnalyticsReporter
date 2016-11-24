@@ -4,7 +4,11 @@ package com.jfixby.redreporter.server.core;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.db.mysql.MySQL;
+import com.jfixby.cmns.db.mysql.MySQLEntry;
+import com.jfixby.cmns.db.mysql.MySQLTable;
+import com.jfixby.cmns.db.mysql.MySQLTableSchema;
 
 public class RedReporterDataBank {
 
@@ -17,22 +21,6 @@ public class RedReporterDataBank {
 	{
 
 // DB.installComponent(this.mySQL);
-
-// final MySQLTable table = this.mySQL.getTable("installs");
-//
-// table.clear();
-//
-// final MySQLEntry entry = table.newMySQLEntry();
-//
-// final MySQLTableSchema schema = table.getSchema();
-//
-// entry.set(schema, 1, System.currentTimeMillis() + "");
-// entry.set(schema, 2, "installID" + System.currentTimeMillis());
-//
-// table.addEntry(entry);
-//
-// final List<MySQLEntry> list = table.listAll();
-// list.print("list");
 
 	}
 
@@ -47,6 +35,28 @@ public class RedReporterDataBank {
 
 	public void disconnect () {
 		this.mySQL.disconnect();
+	}
+
+	public void testReg () {
+		try {
+			final MySQLTable table = this.mySQL.getTable("installs");
+
+			table.clear();
+
+			final MySQLEntry entry = table.newMySQLEntry();
+
+			final MySQLTableSchema schema = table.getSchema();
+
+			entry.set(schema, 1, System.currentTimeMillis() + "");
+			entry.set(schema, 2, "installID" + System.currentTimeMillis());
+
+			table.addEntry(entry);
+
+			final List<MySQLEntry> list = table.listAll();
+			list.print("list");
+		} catch (final Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 }

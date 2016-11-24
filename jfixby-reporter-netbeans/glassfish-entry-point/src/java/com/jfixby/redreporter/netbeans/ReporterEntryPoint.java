@@ -5,7 +5,7 @@
  */
 package com.jfixby.redreporter.netbeans;
 
-import com.jfixby.redreporter.glassfish.TestProcessor;
+import com.jfixby.redreporter.glassfish.RedReporterEntryPoint;
 import java.io.IOException;
 import java.io.PrintWriter;
 import javax.servlet.ServletException;
@@ -17,4 +17,4 @@ import javax.servlet.http.HttpServletResponse;
  *
  * @author JCode
  */
-public class ReporterEntryPoint extends TestProcessor {}
+public class ReporterEntryPoint extends RedReporterEntryPoint {}
