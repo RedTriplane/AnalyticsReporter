@@ -13,7 +13,7 @@ import com.jfixby.redreporter.server.core.RedReporterServer;
 import com.jfixby.redreporter.server.core.RedReporterServerConfig;
 import com.jfixby.redreporter.server.credentials.CONFIG;
 
-public class RunServerDesktop {
+public class RunRedReporterServerDesktop {
 
 	public static void main (final String[] args) throws IOException {
 		DesktopSetup.deploy();
@@ -21,9 +21,11 @@ public class RunServerDesktop {
 
 		final MySQLConfig config = new MySQLConfig();
 
-		config.setDBUrlString(CONFIG.PROD.DB_URL_STRING);
-		config.setLogin(CONFIG.PROD.DB_LOGIN);
-		config.setPassword(CONFIG.PROD.DB_PASSWORD);
+		config.setServerName(CONFIG.LOCALHOST);
+		config.setLogin(CONFIG.DB_LOGIN);
+		config.setPassword(CONFIG.DB_PASSWORD);
+		config.setDBName(CONFIG.DB_NAME);
+		config.setUseSSL(!true);
 
 		final MySQL mySQL = new MySQL(config);
 

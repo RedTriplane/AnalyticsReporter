@@ -46,9 +46,10 @@ public class RedReporterDataBank {
 			final MySQLEntry entry = table.newMySQLEntry();
 
 			final MySQLTableSchema schema = table.getSchema();
+			schema.print();
 
-			entry.set(schema, 1, System.currentTimeMillis() + "");
-			entry.set(schema, 2, "installID" + System.currentTimeMillis());
+			entry.set(schema, 2, System.currentTimeMillis() + "");
+			entry.set(schema, 0, "installID" + System.currentTimeMillis());
 
 			table.addEntry(entry);
 
