@@ -33,6 +33,7 @@ public class RunRedReporterServerDesktop {
 
 		final RedReporterServerConfig serveConfig = new RedReporterServerConfig();
 		serveConfig.setRedReporterDataBank(bank);
+
 		final RedReporterServer server = new RedReporterServer(serveConfig);
 		server.start();
 

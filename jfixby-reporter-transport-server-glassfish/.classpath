@@ -10,5 +10,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red-desktop"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red-gdx"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-transport-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-api"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

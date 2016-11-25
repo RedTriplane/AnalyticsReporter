@@ -25,6 +25,9 @@ import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.red.desktop.DesktopSetup;
+import com.jfixby.redreporter.server.api.ReporterServer;
+import com.jfixby.redreporter.server.core.RedReporterServer;
+import com.jfixby.redreporter.server.core.RedReporterServerConfig;
 
 public abstract class AbstractEntryPoint extends HttpServlet {
 
@@ -37,7 +40,8 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 	static {
 		DesktopSetup.deploy();
 		Json.installComponent(new RedJson());
-
+		final RedReporterServerConfig config = new RedReporterServerConfig();
+		ReporterServer.installComponent(new RedReporterServer(config));
 	}
 
 	/** Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.

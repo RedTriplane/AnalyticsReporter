@@ -10,8 +10,8 @@ import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.sys.SystemInfo;
 import com.jfixby.red.desktop.DesktopSetup;
+import com.jfixby.redreporter.api.DeviceRegistration;
 import com.jfixby.redreporter.api.Reporter;
-import com.jfixby.redreporter.api.transport.DeviceRegistration;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
 import com.jfixby.redreporter.desktop.DesktopReporter;
@@ -59,7 +59,7 @@ public class PingServers {
 		client.printPings();
 
 		final DeviceRegistration deviceRegistration = client.registerDevice(deviceinfo);
-		deviceRegistration.print();
+		deviceRegistration.print("test");
 
 	}
 

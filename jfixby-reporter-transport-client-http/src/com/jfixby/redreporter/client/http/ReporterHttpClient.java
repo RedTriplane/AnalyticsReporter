@@ -7,7 +7,7 @@ import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfo;
-import com.jfixby.redreporter.api.transport.DeviceRegistration;
+import com.jfixby.redreporter.api.DeviceRegistration;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransportComponent;
 

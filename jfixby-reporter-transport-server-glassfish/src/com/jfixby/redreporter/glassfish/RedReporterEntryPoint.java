@@ -8,6 +8,7 @@ import java.util.HashMap;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 
+import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.io.Buffer;
@@ -18,7 +19,14 @@ import com.jfixby.cmns.api.io.InputStream;
 import com.jfixby.cmns.api.io.OutputStream;
 import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
+import com.jfixby.cmns.api.net.http.Http;
+import com.jfixby.cmns.api.net.http.HttpConnection;
+import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
+import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.cmns.api.util.JUtils;
+import com.jfixby.redreporter.api.DeviceRegistration;
+import com.jfixby.redreporter.server.api.ReporterServer;
 
 public class RedReporterEntryPoint extends AbstractEntryPoint {
 
@@ -28,6 +36,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 	private static final long serialVersionUID = 8584178804364883918L;
 	private static final long MAX_BYTES_TO_READ = 1024 * 1024;
 	static long request = 0;
+	private String session_id;
 
 	@Override
 	void processRequest (final String session_id, final ServletInputStream client_to_server_stream,
@@ -35,9 +44,11 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		final HashMap<String, String> client_to_server_headers, final ServletOutputStream server_to_client_stream,
 		final HashMap<String, String> server_to_client_headers) {
 
-		L.d("---[" + (++request) + "]-----------------------------------");
+		L.d("---[" + (request++) + "]-----------------------------------");
 
 		L.d("session_id", session_id);
+		this.session_id = session_id;
+		L.d("instance_id", this.instance_id());
 		final Map<String, String> inputHeaders = Collections.newMap(client_to_server_headers);
 		inputHeaders.print("inputHeaders");
 
@@ -74,7 +85,8 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 			final Message message = IO.deserialize(Message.class, data);
 			is.close();
-			message.print();
+
+			this.processMessage(message);
 
 			final OutputStream os = IO.newOutputStream( () -> server_to_client_stream);
 			os.open();
@@ -87,6 +99,49 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 			L.e(e);
 		}
 
+	}
+
+	private void processMessage (final Message message) {
+		message.print();
+		message.values.put("instance_id", this.instance_id());
+		message.values.put("session_id", this.session_id);
+
+		final ID deviceID = ReporterServer.invoke().newDeviceID(this.instance_id(), this.session_id, "" + request);
+		final DeviceRegistration devReg = ReporterServer.registerDevice(deviceID);
+		devReg.print("register device");
+
+	}
+
+	final String start;
+	{
+		this.start = System.currentTimeMillis() + "";
+	}
+
+	private String timestamp () {
+		return this.start;
+	}
+
+	String instance_id;
+
+	private String instance_id () {
+		if (this.instance_id == null) {
+			try {
+				final String url_string = "http://169.254.169.254/latest/meta-data/instance-id";
+				final HttpURL url = Http.newURL(url_string);
+				final HttpConnection connect = Http.newConnection(url);
+				connect.open();
+				final HttpConnectionInputStream is = connect.getInputStream();
+				is.open();
+				final ByteArray data = is.readAll();
+				is.close();
+				connect.close();
+				this.instance_id = JUtils.newString(data);
+			} catch (final Exception e) {
+				L.d(e);
+				this.instance_id = "no_id";
+			}
+		}
+		return this.instance_id;
 	}
 
 	private void sayHello (final ServletOutputStream server_to_client_stream) throws IOException {
