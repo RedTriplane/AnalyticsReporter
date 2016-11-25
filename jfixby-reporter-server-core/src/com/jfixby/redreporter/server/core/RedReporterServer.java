@@ -36,6 +36,7 @@ public class RedReporterServer implements ReporterServerComponent {
 
 	private void loadSettings () throws IOException {
 		this.serverSettings = this.bank.getServerSettings();
+		this.serverSettings.print();
 	}
 
 	public void stop () {

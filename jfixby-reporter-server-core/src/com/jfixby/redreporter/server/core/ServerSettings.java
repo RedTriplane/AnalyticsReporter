@@ -1,20 +1,28 @@
 
 package com.jfixby.redreporter.server.core;
 
+import com.jfixby.cmns.api.collections.Collections;
+import com.jfixby.cmns.api.collections.Map;
+
 public class ServerSettings {
 
 	public static final String SALT_0 = "SALT_0";
 	public static final String PARAMETER_NAME = "parameter_name";
 	public static final String PARAMETER_VALUE = "parameter_value";
 	public static final String TABLE_NAME = "server_settings";
-	private String salt0;
+
+	final Map<String, String> settings = Collections.newMap();
 
 	public String getSalat0 () {
-		return this.salt0;
+		return this.settings.get(SALT_0);
 	}
 
 	public void setSalt0 (final String salt) {
-		this.salt0 = salt;
+		this.settings.put(SALT_0, salt);
+	}
+
+	public void print () {
+		this.settings.print("ServerSettings");
 	}
 
 }
