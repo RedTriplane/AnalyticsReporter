@@ -59,7 +59,7 @@ public class RegisterInstallationTest {
 		client.printPings();
 
 		final InstallationID installReg = client.registerInstallation(systemInfo);
-		L.d("register install", installReg.token);
+		L.d("register install", installReg.token + " (" + installReg.token.length() + ")");
 	}
 
 }

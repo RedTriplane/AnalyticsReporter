@@ -2,6 +2,7 @@
 package com.jfixby.redreporter.server.api;
 
 import java.io.IOException;
+import java.util.Map;
 
 import com.jfixby.cmns.api.ComponentInstaller;
 import com.jfixby.cmns.api.assets.ID;
@@ -23,15 +24,20 @@ public class ReporterServer {
 		return componentInstaller.getComponent();
 	}
 
-	public static InstallationID registerInstallation (final ID installID) throws IOException {
-		return invoke().registerInstallation(installID);
+//
+	public static InstallationID registerInstallation (final ID token) throws IOException {
+		return invoke().registerInstallation(token);
 	}
 
-	public static void startServer () {
+	public static void startServer () throws IOException {
 		invoke().startServer();
 	}
 
 	public static String getInstanceID () {
 		return invoke().getInstanceID();
+	}
+
+	public static void updateSystemInfo (final ID token, final Map<String, String> values) throws IOException {
+		invoke().updateSystemInfo(token, values);
 	}
 }

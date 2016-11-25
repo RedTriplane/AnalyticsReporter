@@ -2,19 +2,18 @@
 package com.jfixby.redreporter.server.core;
 
 import java.io.IOException;
+import java.util.Map;
 
 import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.redreporter.api.InstallationID;
-import com.jfixby.redreporter.server.api.InstallationIDGenerator;
 import com.jfixby.redreporter.server.api.ReporterServerComponent;
 
 public class RedReporterServer implements ReporterServerComponent {
 
 	private final RedReporterDataBank bank;
-	private InstallationIDGenerator idgen;
+	private InstallationIDGenerator0 idgen;
 	private ServerSettings serverSettings;
 	private final String instance_id;
 
@@ -31,15 +30,13 @@ public class RedReporterServer implements ReporterServerComponent {
 	}
 
 	@Override
-	public void startServer () {
-		try {
-			this.bank.connect();
-			this.loadSettings();
-			final String salt0 = this.serverSettings().getSalat0();
-			this.idgen = new InstallationIDGenerator0(salt0);
-		} catch (final Throwable e) {
-			Err.reportError(e);
-		}
+	public void startServer () throws IOException {
+
+		this.bank.connect();
+		this.loadSettings();
+		final String salt0 = this.serverSettings().getSalat0();
+		this.idgen = new InstallationIDGenerator0(salt0, this.getInstanceID());
+
 	}
 
 	private ServerSettings serverSettings () throws IOException {
@@ -63,15 +60,21 @@ public class RedReporterServer implements ReporterServerComponent {
 	}
 
 	@Override
-	public ID newInstallationID (final String... arg) {
+	public ID newToken (final String... arg) {
 		return this.idgen.newInstallationID(arg);
 	}
 
 	@Override
-	public InstallationID registerInstallation (final ID installID) throws IOException {
-		L.d("register installation", installID);
-		final InstallationID reg = this.bank.registerInstallation(installID);
+	public InstallationID registerInstallation (final ID token) throws IOException {
+		L.d("register installation", token);
+		final InstallationID reg = this.bank.registerInstallation(token);
+
 		return reg;
+	}
+
+	@Override
+	public void updateSystemInfo (final ID token, final Map<String, String> values) throws IOException {
+		this.bank.updateSystemInfo(token, values);
 	}
 
 }

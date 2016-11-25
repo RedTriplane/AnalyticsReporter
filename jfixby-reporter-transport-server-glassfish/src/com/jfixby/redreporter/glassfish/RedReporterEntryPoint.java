@@ -31,7 +31,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 	 */
 	private static final long serialVersionUID = 8584178804364883918L;
 	private static final long MAX_BYTES_TO_READ = 1024 * 100;
-	static long request = 0;
+	static long request_number = 0;
 	private String session_id;
 
 	@Override
@@ -40,7 +40,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		final HashMap<String, String> client_to_server_headers, final ServletOutputStream server_to_client_stream,
 		final HashMap<String, String> server_to_client_headers) {
 
-		L.d("---[" + (request++) + "]-----------------------------------");
+		L.d("---[" + (request_number++) + "]-----------------------------------");
 
 		L.d("session_id", session_id);
 		this.session_id = session_id;
@@ -95,6 +95,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 			os.close();
 		} catch (final Throwable e) {
 			L.e(e);
+			e.printStackTrace();
 		}
 
 	}
@@ -105,10 +106,12 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 			return this.registerInstallation(message);
 		}
 
-		return this.unknownHeader();
+		return this.unknownHeader(message);
 	}
 
-	private Message unknownHeader () {
+	private Message unknownHeader (final Message message) {
+		L.d("unknown header");
+		message.print();
 // final Message result = new Message(REPORTER_PROTOCOL.UNKNOWN_HEADER);
 		return null;
 	}
@@ -119,8 +122,11 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 // request.values.put("instance_id", ReporterServer.getInstanceID());
 // request.values.put("session_id", this.session_id);
 
-		final ID installID = ReporterServer.invoke().newInstallationID(this.session_id, "" + request);
-		final InstallationID id = ReporterServer.registerInstallation(installID);
+		final ID token = ReporterServer.invoke().newToken(this.session_id, "" + request_number);
+
+		final InstallationID id = ReporterServer.registerInstallation(token);
+		ReporterServer.updateSystemInfo(token, request.values);
+
 		L.d("register install", id.token);
 		result.values.put(REPORTER_PROTOCOL.INSTALLATION_TOKEN, id.token);
 

@@ -29,6 +29,7 @@ import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
 import com.jfixby.cmns.api.net.http.HttpURL;
+import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
@@ -53,7 +54,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 
 		final MySQLConfig config = new MySQLConfig();
 
-		config.setServerName(CONFIG.LOCALHOST);
+		config.setServerName(CONFIG.DB_SERVER);
 		config.setLogin(CONFIG.DB_LOGIN);
 		config.setPassword(CONFIG.DB_PASSWORD);
 		config.setDBName(CONFIG.DB_NAME);
@@ -68,7 +69,12 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		server_config.setInstanceID(instance_id());
 
 		ReporterServer.installComponent(new RedReporterServer(server_config));
-		ReporterServer.startServer();
+		try {
+			ReporterServer.startServer();
+		} catch (final IOException e) {
+			e.printStackTrace();
+			Sys.exit();
+		}
 	}
 
 	static private String instance_id () {
