@@ -7,7 +7,7 @@ import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfo;
-import com.jfixby.redreporter.api.DeviceRegistration;
+import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransportComponent;
 
@@ -26,20 +26,18 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 	}
 
 	@Override
-	public DeviceRegistration registerDevice (final SystemInfo deviceInfo) {
+	public InstallationID registerInstallation (final SystemInfo systemInfo) {
 
-		final Mapping<String, String> params = deviceInfo.listParameters();
+		final Mapping<String, String> params = systemInfo.listParameters();
 
-		final Message request = new Message(REPORTER_PROTOCOL.REGISTER_DEVICE);
+		final Message request = new Message(REPORTER_PROTOCOL.REGISTER_INSTALLATION);
 		request.values.putAll(params.toJavaMap());
 
 		final Message response = exchange(this.servers, request);
 
-		final HttpDeviceRegistration reg = new HttpDeviceRegistration();
-
 		response.print();
 
-		return reg;
+		return null;
 	}
 
 	public static Message exchange (final ServerHandlers servers, final Message request) {

@@ -22,8 +22,14 @@ import javax.servlet.http.HttpSession;
 
 import com.jfixby.cmns.adopted.gdx.json.RedJson;
 import com.jfixby.cmns.api.debug.Debug;
+import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.log.L;
+import com.jfixby.cmns.api.net.http.Http;
+import com.jfixby.cmns.api.net.http.HttpConnection;
+import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
+import com.jfixby.cmns.api.net.http.HttpURL;
+import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
 import com.jfixby.red.desktop.DesktopSetup;
@@ -59,8 +65,30 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 
 		final RedReporterServerConfig server_config = new RedReporterServerConfig();
 		server_config.setRedReporterDataBank(bank);
+		server_config.setInstanceID(instance_id());
 
 		ReporterServer.installComponent(new RedReporterServer(server_config));
+		ReporterServer.startServer();
+	}
+
+	static private String instance_id () {
+		String instance_id;
+		try {
+			final String url_string = "http://169.254.169.254/latest/meta-data/instance-id";
+			final HttpURL url = Http.newURL(url_string);
+			final HttpConnection connect = Http.newConnection(url);
+			connect.open();
+			final HttpConnectionInputStream is = connect.getInputStream();
+			is.open();
+			final ByteArray data = is.readAll();
+			is.close();
+			connect.close();
+			instance_id = JUtils.newString(data);
+		} catch (final Exception e) {
+			L.d(e);
+			instance_id = "no_instance_id-" + System.currentTimeMillis();
+		}
+		return instance_id;
 	}
 
 	/** Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.

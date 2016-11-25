@@ -4,6 +4,7 @@ package com.jfixby.redreporter.server.core;
 import java.io.IOException;
 import java.sql.SQLException;
 
+import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
@@ -11,6 +12,7 @@ import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLEntry;
 import com.jfixby.cmns.db.mysql.MySQLTable;
 import com.jfixby.cmns.db.mysql.MySQLTableSchema;
+import com.jfixby.redreporter.api.InstallationID;
 
 public class RedReporterDataBank {
 
@@ -39,9 +41,9 @@ public class RedReporterDataBank {
 		this.mySQL.disconnect();
 	}
 
-	public void testReg () {
+	private void testReg () {
 		try {
-			final MySQLTable table = this.mySQL.getTable("installs");
+			final MySQLTable table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
 
 			table.clear();
 
@@ -83,6 +85,27 @@ public class RedReporterDataBank {
 				throw new IOException("ServerSettings.salt0 is not found");
 			}
 			return result;
+		} catch (final SQLException e) {
+			e.printStackTrace();
+			throw new IOException(e);
+		}
+	}
+
+	public InstallationID registerInstallation (final ID installID) throws IOException {
+		try {
+			final MySQLTable table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
+
+			final MySQLEntry entry = table.newMySQLEntry();
+
+			final MySQLTableSchema schema = table.getSchema();
+
+			entry.set(schema, schema.indexOf(BankSchema.INSTALLS.timestamp), System.currentTimeMillis() + "");
+			entry.set(schema, schema.indexOf(BankSchema.INSTALLS.installID), installID + "");
+
+			table.addEntry(entry);
+			final InstallationID reg = new InstallationID();
+			reg.token = installID.toString();
+			return reg;
 		} catch (final SQLException e) {
 			e.printStackTrace();
 			throw new IOException(e);

@@ -6,18 +6,18 @@ import com.jfixby.cmns.api.assets.Names;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.md5.MD5;
-import com.jfixby.redreporter.server.api.DeviceIDGenerator;
+import com.jfixby.redreporter.server.api.InstallationIDGenerator;
 
-public class DeviceIDGenerator0 implements DeviceIDGenerator {
+public class InstallationIDGenerator0 implements InstallationIDGenerator {
 
 	private final String salt0;
 
-	public DeviceIDGenerator0 (final String salt0) {
+	public InstallationIDGenerator0 (final String salt0) {
 		this.salt0 = salt0;
 	}
 
 	@Override
-	public ID newDeviceID (final String... args) {
+	public ID newInstallationID (final String... args) {
 		final List<String> list = Collections.newList(args);
 		final ID prefix = Names.newAssetID(list);
 		final String salt = this.applySalt(prefix.toString());

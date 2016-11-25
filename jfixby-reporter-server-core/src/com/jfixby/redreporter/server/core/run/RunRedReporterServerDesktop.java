@@ -35,7 +35,7 @@ public class RunRedReporterServerDesktop {
 		serveConfig.setRedReporterDataBank(bank);
 
 		final RedReporterServer server = new RedReporterServer(serveConfig);
-		server.start();
+		server.startServer();
 
 		server.testReg();
 

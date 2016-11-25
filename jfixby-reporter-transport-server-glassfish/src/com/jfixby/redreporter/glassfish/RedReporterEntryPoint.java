@@ -19,13 +19,8 @@ import com.jfixby.cmns.api.io.InputStream;
 import com.jfixby.cmns.api.io.OutputStream;
 import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.net.http.Http;
-import com.jfixby.cmns.api.net.http.HttpConnection;
-import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
-import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
-import com.jfixby.cmns.api.util.JUtils;
-import com.jfixby.redreporter.api.DeviceRegistration;
+import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.server.api.ReporterServer;
 
 public class RedReporterEntryPoint extends AbstractEntryPoint {
@@ -34,7 +29,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 	 *
 	 */
 	private static final long serialVersionUID = 8584178804364883918L;
-	private static final long MAX_BYTES_TO_READ = 1024 * 1024;
+	private static final long MAX_BYTES_TO_READ = 1024 * 100;
 	static long request = 0;
 	private String session_id;
 
@@ -48,7 +43,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 		L.d("session_id", session_id);
 		this.session_id = session_id;
-		L.d("instance_id", this.instance_id());
+		L.d("instance_id", ReporterServer.getInstanceID());
 		final Map<String, String> inputHeaders = Collections.newMap(client_to_server_headers);
 		inputHeaders.print("inputHeaders");
 
@@ -101,47 +96,15 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 	}
 
-	private void processMessage (final Message message) {
+	private void processMessage (final Message message) throws IOException {
 		message.print();
-		message.values.put("instance_id", this.instance_id());
+		message.values.put("instance_id", ReporterServer.getInstanceID());
 		message.values.put("session_id", this.session_id);
 
-		final ID deviceID = ReporterServer.invoke().newDeviceID(this.instance_id(), this.session_id, "" + request);
-		final DeviceRegistration devReg = ReporterServer.registerDevice(deviceID);
-		devReg.print("register device");
+		final ID installID = ReporterServer.invoke().newInstallationID(this.session_id, "" + request);
+		final InstallationID result = ReporterServer.registerInstallation(installID);
+		result.print("register installation");
 
-	}
-
-	final String start;
-	{
-		this.start = System.currentTimeMillis() + "";
-	}
-
-	private String timestamp () {
-		return this.start;
-	}
-
-	String instance_id;
-
-	private String instance_id () {
-		if (this.instance_id == null) {
-			try {
-				final String url_string = "http://169.254.169.254/latest/meta-data/instance-id";
-				final HttpURL url = Http.newURL(url_string);
-				final HttpConnection connect = Http.newConnection(url);
-				connect.open();
-				final HttpConnectionInputStream is = connect.getInputStream();
-				is.open();
-				final ByteArray data = is.readAll();
-				is.close();
-				connect.close();
-				this.instance_id = JUtils.newString(data);
-			} catch (final Exception e) {
-				L.d(e);
-				this.instance_id = "no_id";
-			}
-		}
-		return this.instance_id;
 	}
 
 	private void sayHello (final ServletOutputStream server_to_client_stream) throws IOException {

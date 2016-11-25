@@ -10,7 +10,7 @@ import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.sys.SystemInfo;
 import com.jfixby.red.desktop.DesktopSetup;
-import com.jfixby.redreporter.api.DeviceRegistration;
+import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.Reporter;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
@@ -46,20 +46,19 @@ public class PingServers {
 
 		final DesktopReporterConfig deskCfg = new DesktopReporterConfig();
 		Reporter.installComponent(new DesktopReporter(deskCfg));
-		final SystemInfo deviceinfo = Sys.getSystemInfo();
+		final SystemInfo systemInfo = Sys.getSystemInfo();
 //
 // AnalyticsReporter.pingServers();
 //
 // final AnalyticsReporterAPI api = AnalyticsReporter.getAPI();
 //
-// final DeviceRegistration reg = api.registerDevice();
 
 		final ReporterHttpClient client = new ReporterHttpClient(config);
 		client.updatePings();
 		client.printPings();
 
-		final DeviceRegistration deviceRegistration = client.registerDevice(deviceinfo);
-		deviceRegistration.print("test");
+		final InstallationID installReg = client.registerInstallation(systemInfo);
+		installReg.print("test");
 
 	}
 

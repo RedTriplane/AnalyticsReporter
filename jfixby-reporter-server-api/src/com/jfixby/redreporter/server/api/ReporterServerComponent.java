@@ -1,12 +1,18 @@
 
 package com.jfixby.redreporter.server.api;
 
+import java.io.IOException;
+
 import com.jfixby.cmns.api.assets.ID;
-import com.jfixby.redreporter.api.DeviceRegistration;
+import com.jfixby.redreporter.api.InstallationID;
 
 public interface ReporterServerComponent {
 
-	ID newDeviceID (String... arg);
+	ID newInstallationID (String... arg);
 
-	DeviceRegistration registerDevice (ID deviceID);
+	InstallationID registerInstallation (ID installID) throws IOException;
+
+	void startServer ();
+
+	String getInstanceID ();
 }

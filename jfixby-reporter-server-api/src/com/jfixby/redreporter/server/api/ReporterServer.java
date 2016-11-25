@@ -1,9 +1,11 @@
 
 package com.jfixby.redreporter.server.api;
 
+import java.io.IOException;
+
 import com.jfixby.cmns.api.ComponentInstaller;
 import com.jfixby.cmns.api.assets.ID;
-import com.jfixby.redreporter.api.DeviceRegistration;
+import com.jfixby.redreporter.api.InstallationID;
 
 public class ReporterServer {
 
@@ -21,7 +23,15 @@ public class ReporterServer {
 		return componentInstaller.getComponent();
 	}
 
-	public static DeviceRegistration registerDevice (final ID deviceID) {
-		return invoke().registerDevice(deviceID);
+	public static InstallationID registerInstallation (final ID installID) throws IOException {
+		return invoke().registerInstallation(installID);
+	}
+
+	public static void startServer () {
+		invoke().startServer();
+	}
+
+	public static String getInstanceID () {
+		return invoke().getInstanceID();
 	}
 }
