@@ -20,12 +20,20 @@ public class Reporter {
 		return componentInstaller.getComponent();
 	}
 
-	public static ReporterLogger getLogger () {
-		return invoke().getLogger();
+	public static void startService () {
+		invoke().startService();
 	}
 
-	public static ReporterErrorComponent getErr () {
-		return invoke().getErr();
+	public static void deployUncaughtExceptionHandler () {
+		invoke().deployUncaughtExceptionHandler();
+	}
+
+	public static void deployErrorsListener () {
+		invoke().deployErrorsListener();
+	}
+
+	public static void deployLogsListener () {
+		invoke().deployLogsListener();
 	}
 
 }

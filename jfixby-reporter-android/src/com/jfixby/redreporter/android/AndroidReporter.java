@@ -8,4 +8,8 @@ public class AndroidReporter extends RedReporter {
 	public AndroidReporter (final AndroidReporterConfig config) {
 	}
 
+	@Override
+	public void startService () {
+	}
+
 }

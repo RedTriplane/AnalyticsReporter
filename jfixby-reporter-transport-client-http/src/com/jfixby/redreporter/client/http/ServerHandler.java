@@ -68,56 +68,56 @@ public class ServerHandler {
 	}
 
 	public Message exchange (final Message message) {
-		return this.exchange(message, null);
+		try {
+			return this.exchange(message, null);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
-	public Message exchange (final Message message, final Mapping<String, String> headers) {
+	public Message exchange (final Message message, final Mapping<String, String> headers) throws IOException {
 		Debug.checkNull("message", message);
-		try {
 
-			final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
-			conSpec.setURL(this.url);
+		final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
+		conSpec.setURL(this.url);
 
-			conSpec.setMethod(METHOD.POST);
-			conSpec.setUseCaches(false);
-			conSpec.setDefaultUseCaches(false);
-			conSpec.setDoInput(true);
-			conSpec.setDoOutput(true);
-			conSpec.setOctetStream(true);
-			if (headers != null) {
-				conSpec.addRequesrProperties(headers);
-			}
-
-			conSpec.setConnectTimeout(SERVER_TIMEOUT);
-			conSpec.setReadTimeout(SERVER_TIMEOUT);
-
-			final HttpConnection connection = Http.newConnection(conSpec);
-
-			connection.open();
-
-			final HttpConnectionOutputStream os = connection.getOutputStream();
-			os.open();
-			message.print();
-
-			final ByteArray data = IO.serialize(message);
-
-			final ByteArray compressed = IO.compress(data);
-			os.write(compressed.toArray());
-			os.flush();
-			os.close();
-
-			final HttpConnectionInputStream is = connection.getInputStream();
-			is.open();
-			final ByteArray rdata = is.readAll();
-			is.close();
-			final ByteArray responceBytes = IO.decompress(rdata);
-			final Message response = IO.deserialize(Message.class, responceBytes);
-
-			return response;
-		} catch (final Exception e) {
-			e.printStackTrace();
-			return null;
+		conSpec.setMethod(METHOD.POST);
+		conSpec.setUseCaches(false);
+		conSpec.setDefaultUseCaches(false);
+		conSpec.setDoInput(true);
+		conSpec.setDoOutput(true);
+		conSpec.setOctetStream(true);
+		if (headers != null) {
+			conSpec.addRequesrProperties(headers);
 		}
+
+		conSpec.setConnectTimeout(SERVER_TIMEOUT);
+		conSpec.setReadTimeout(SERVER_TIMEOUT);
+
+		final HttpConnection connection = Http.newConnection(conSpec);
+
+		connection.open();
+
+		final HttpConnectionOutputStream os = connection.getOutputStream();
+		os.open();
+		message.print();
+
+		final ByteArray data = IO.serialize(message);
+
+		final ByteArray compressed = IO.compress(data);
+		os.write(compressed.toArray());
+		os.flush();
+		os.close();
+
+		final HttpConnectionInputStream is = connection.getInputStream();
+		is.open();
+		final ByteArray rdata = is.readAll();
+		is.close();
+		final ByteArray responceBytes = IO.decompress(rdata);
+		final Message response = IO.deserialize(Message.class, responceBytes);
+
+		return response;
 
 	}
 

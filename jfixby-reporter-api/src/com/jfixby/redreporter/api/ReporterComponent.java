@@ -3,8 +3,14 @@ package com.jfixby.redreporter.api;
 
 public interface ReporterComponent {
 
-	ReporterLogger getLogger ();
+	void startService ();
 
-	ReporterErrorComponent getErr ();
+	void deployUncaughtExceptionHandler ();
+
+	void deployErrorsListener ();
+
+	void deployLogsListener ();
+
+	Report newReport ();
 
 }

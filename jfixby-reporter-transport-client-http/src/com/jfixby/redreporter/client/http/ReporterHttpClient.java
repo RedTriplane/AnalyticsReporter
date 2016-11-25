@@ -4,10 +4,12 @@ package com.jfixby.redreporter.client.http;
 import com.jfixby.cmns.api.collections.Collection;
 import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
+import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfo;
 import com.jfixby.redreporter.api.InstallationID;
+import com.jfixby.redreporter.api.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransportComponent;
 
@@ -34,6 +36,9 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 		request.values.putAll(params.toJavaMap());
 
 		final Message response = exchange(this.servers, request);
+		if (response == null) {
+			return null;
+		}
 
 		response.print();
 
@@ -59,6 +64,23 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 
 	public void printPings () {
 		this.servers.printPings();
+	}
+
+	@Override
+	public boolean sendReport (final Report report) {
+		final Message message = new Message(REPORTER_PROTOCOL.REPORT);
+		this.packToMessage(report, message);
+		final Message response = exchange(this.servers, message);
+		if (response == null) {
+			return false;
+		}
+		response.print();
+
+		return true;
+	}
+
+	private void packToMessage (final Report report, final Message message) {
+		Err.reportNotImplementedYet();
 	}
 
 }

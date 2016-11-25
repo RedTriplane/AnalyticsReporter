@@ -39,8 +39,8 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 		final HashMap<String, String> client_to_server_headers, final ServletOutputStream server_to_client_stream,
 		final HashMap<String, String> server_to_client_headers) {
-
-		L.d("---[" + (request_number++) + "]-----------------------------------");
+		final long request_number = RedReporterEntryPoint.request_number++;
+		L.d("---[" + (request_number) + "]-----------------------------------");
 
 		L.d("session_id", session_id);
 		this.session_id = session_id;
@@ -82,7 +82,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 			final Message message = IO.deserialize(Message.class, data);
 			is.close();
 
-			final Message answer = this.processMessage(message);
+			final Message answer = this.processMessage(message, request_number);
 			if (answer == null) {
 				return;
 			}
@@ -100,10 +100,10 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 	}
 
-	private Message processMessage (final Message message) throws IOException {
+	private Message processMessage (final Message message, final long request_number) throws IOException {
 
 		if (REPORTER_PROTOCOL.REGISTER_INSTALLATION.equals(message.header)) {
-			return this.registerInstallation(message);
+			return this.registerInstallation(message, request_number);
 		}
 
 		return this.unknownHeader(message);
@@ -116,7 +116,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		return null;
 	}
 
-	private Message registerInstallation (final Message request) throws IOException {
+	private Message registerInstallation (final Message request, final long request_number) throws IOException {
 		final Message result = new Message(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
 // request.print();
 // request.values.put("instance_id", ReporterServer.getInstanceID());
