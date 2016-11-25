@@ -21,6 +21,7 @@ import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.redreporter.api.InstallationID;
+import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.server.api.ReporterServer;
 
 public class RedReporterEntryPoint extends AbstractEntryPoint {
@@ -81,12 +82,14 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 			final Message message = IO.deserialize(Message.class, data);
 			is.close();
 
-			this.processMessage(message);
-
+			final Message answer = this.processMessage(message);
+			if (answer == null) {
+				return;
+			}
 			final OutputStream os = IO.newOutputStream( () -> server_to_client_stream);
 			os.open();
 
-			final ByteArray responceBytes = IO.serialize(message);
+			final ByteArray responceBytes = IO.serialize(answer);
 			final ByteArray compressedResponse = IO.compress(responceBytes);
 			os.write(compressedResponse);
 			os.close();
@@ -96,15 +99,32 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 	}
 
-	private void processMessage (final Message message) throws IOException {
-		message.print();
-		message.values.put("instance_id", ReporterServer.getInstanceID());
-		message.values.put("session_id", this.session_id);
+	private Message processMessage (final Message message) throws IOException {
+
+		if (REPORTER_PROTOCOL.REGISTER_INSTALLATION.equals(message.header)) {
+			return this.registerInstallation(message);
+		}
+
+		return this.unknownHeader();
+	}
+
+	private Message unknownHeader () {
+// final Message result = new Message(REPORTER_PROTOCOL.UNKNOWN_HEADER);
+		return null;
+	}
+
+	private Message registerInstallation (final Message request) throws IOException {
+		final Message result = new Message(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
+// request.print();
+// request.values.put("instance_id", ReporterServer.getInstanceID());
+// request.values.put("session_id", this.session_id);
 
 		final ID installID = ReporterServer.invoke().newInstallationID(this.session_id, "" + request);
-		final InstallationID result = ReporterServer.registerInstallation(installID);
-		result.print("register installation");
+		final InstallationID id = ReporterServer.registerInstallation(installID);
+		L.d("register install", id.token);
+		result.values.put(REPORTER_PROTOCOL.INSTALLATION_TOKEN, id.token);
 
+		return result;
 	}
 
 	private void sayHello (final ServletOutputStream server_to_client_stream) throws IOException {

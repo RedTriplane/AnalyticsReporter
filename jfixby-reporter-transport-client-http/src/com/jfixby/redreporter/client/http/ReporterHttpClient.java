@@ -37,7 +37,10 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 
 		response.print();
 
-		return null;
+		final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
+		final InstallationID reg = new InstallationID();
+		reg.token = token;
+		return reg;
 	}
 
 	public static Message exchange (final ServerHandlers servers, final Message request) {

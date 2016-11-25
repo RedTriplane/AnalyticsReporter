@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.jfixby.cmns.adopted.gdx.json.RedJson;
 import com.jfixby.cmns.api.json.Json;
+import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.sys.Sys;
@@ -17,7 +18,7 @@ import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
 import com.jfixby.redreporter.desktop.DesktopReporter;
 import com.jfixby.redreporter.desktop.DesktopReporterConfig;
 
-public class PingServers {
+public class RegisterInstallationTest {
 
 	public static void main (final String[] args) throws IOException {
 		DesktopSetup.deploy();
@@ -32,14 +33,14 @@ public class PingServers {
 			final String url_string = "http://localhost:8080";
 			final HttpURL url = Http.newURL(url_string);
 
-// config.addAnalyticsServerUrl(url);
+			config.addAnalyticsServerUrl(url);
 		}
 
 		{
 			final String url_string = "https://rr.red-triplane.com/";
 			final HttpURL url = Http.newURL(url_string);
 
-			config.addAnalyticsServerUrl(url);
+// config.addAnalyticsServerUrl(url);
 		}
 // config.setWrapCurrentLogger(true);
 // config.setWrapCurrentErr(true);
@@ -58,8 +59,7 @@ public class PingServers {
 		client.printPings();
 
 		final InstallationID installReg = client.registerInstallation(systemInfo);
-		installReg.print("test");
-
+		L.d("register install", installReg.token);
 	}
 
 }
