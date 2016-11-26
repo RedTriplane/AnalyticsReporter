@@ -26,20 +26,22 @@ public class RegisterInstallationTest {
 		final ReporterHttpClientConfig config = new ReporterHttpClientConfig();
 
 		{
-			final String url_string = "http://localhost:8080";
+			final String url_string = "http://localhost:8080/api";
 			final HttpURL url = Http.newURL(url_string);
-			config.addAnalyticsServerUrl(url);
+// config.addAnalyticsServerUrl(url);
 		}
 
 		{
-			final String url_string = "https://rr.red-triplane.com/";
+			final String url_string = "https://rr.red-triplane.com";
 			final HttpURL url = Http.newURL(url_string);
+			config.addAnalyticsServerUrl(url);
 		}
 
 		final SystemInfo systemInfo = Sys.getSystemInfo();
 
 		final ReporterHttpClient client = new ReporterHttpClient(config);
 		ReporterTransport.installComponent(client);
+		ReporterTransport.pingServers();
 		final InstallationID installReg = ReporterTransport.registerInstallation(systemInfo);
 
 		L.d("register install", installReg.token + " (" + installReg.token.length() + ")");

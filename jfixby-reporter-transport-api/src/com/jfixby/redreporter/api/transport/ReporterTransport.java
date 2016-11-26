@@ -31,4 +31,8 @@ public class ReporterTransport {
 		return invoke().sendReport(message);
 	}
 
+	public static void pingServers () {
+		invoke().pingServers();
+	}
+
 }

@@ -83,4 +83,10 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 		Err.reportNotImplementedYet();
 	}
 
+	@Override
+	public void pingServers () {
+		this.servers.updatePings();
+		this.servers.updatePings();
+	}
+
 }

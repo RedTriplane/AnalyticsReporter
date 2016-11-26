@@ -9,14 +9,11 @@ import com.jfixby.redreporter.api.InstallationID;
 
 public interface ReporterServerComponent {
 
-	ID newToken (String... arg);
+	ID newToken (ID prefix);
 
-// final Map<String, String> values
 	InstallationID registerInstallation (ID token) throws IOException;
 
 	void startServer () throws IOException;
-
-	String getInstanceID ();
 
 	void updateSystemInfo (final ID token, Map<String, String> values) throws IOException;
 }

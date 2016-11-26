@@ -11,4 +11,6 @@ public interface ReporterTransportComponent {
 
 	boolean sendReport (Report message);
 
+	void pingServers ();
+
 }

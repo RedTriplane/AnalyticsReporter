@@ -8,9 +8,7 @@ package com.jfixby.redreporter.glassfish;
 
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -21,6 +19,9 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.jfixby.cmns.adopted.gdx.json.RedJson;
+import com.jfixby.cmns.api.collections.Collections;
+import com.jfixby.cmns.api.collections.List;
+import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.json.Json;
@@ -47,6 +48,8 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -1649148797847741708L;
 	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
+	public static final String instance_id;
+	public static final String CLIENT_IP = "CLIENT_IP";
 
 	static {
 		DesktopSetup.deploy();
@@ -66,8 +69,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 
 		final RedReporterServerConfig server_config = new RedReporterServerConfig();
 		server_config.setRedReporterDataBank(bank);
-		server_config.setInstanceID(instance_id());
-
+		instance_id = red_instance_id();
 		ReporterServer.installComponent(new RedReporterServer(server_config));
 		try {
 			ReporterServer.startServer();
@@ -77,7 +79,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		}
 	}
 
-	static private String instance_id () {
+	static private String red_instance_id () {
 		String instance_id;
 		try {
 			final String url_string = "http://169.254.169.254/latest/meta-data/instance-id";
@@ -124,39 +126,41 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		}
 
 		final String reqUrl = request.getRequestURL() + "";
+		if (reqUrl.endsWith("favicon.ico")) {
+			return;
+		}
 
 		final HttpSession session = request.getSession();
 		final String session_id = session.getId();
 
 		final ServletInputStream client_to_server_stream = request.getInputStream();
 		final ServletOutputStream server_to_client_stream = response.getOutputStream();
-		final HashMap<String, String> client_to_server_headers = new HashMap<>();
+		final Map<String, List<String>> client_to_server_headers = Collections.newMap();
 		final Enumeration<String> header_names = request.getHeaderNames();
 
 		while (header_names.hasMoreElements()) {
 			final String key = header_names.nextElement();
 			final String value = request.getHeader(key);
-			client_to_server_headers.put(key, value);
+			client_to_server_headers.put(key, Collections.newList(value));
 		}
-		client_to_server_headers.put("reqUrl", reqUrl);
-		client_to_server_headers.put("path_info", path_info);
+		client_to_server_headers.put("reqUrl", Collections.newList(reqUrl));
+		client_to_server_headers.put("path_info", Collections.newList(path_info));
+		final String client_ip = getClientIpAddr(request);
+		client_to_server_headers.put(CLIENT_IP, Collections.newList(client_ip));
 
-		final Map<String, String[]> param_map = request.getParameterMap();
+		final java.util.Map<String, String[]> param_map = request.getParameterMap();
 		final Iterator<String> iterator = param_map.keySet().iterator();
 		while (iterator.hasNext()) {
 			final String key = iterator.next();
 			final String[] values = param_map.get(key);
-			String value = null;
-			if (values != null && values.length > 0) {
-				value = values[0];
-			}
-			client_to_server_headers.put(key.toLowerCase(), value);
+			final List<String> list = Collections.newList(values);
+			client_to_server_headers.put(key.toLowerCase(), list);
 		}
-		final HashMap<String, String> server_to_client_headers = new HashMap<>();
+		final Map<String, String> server_to_client_headers = Collections.newMap();
 		this.processRequest(session_id, client_to_server_stream, client_to_server_headers, server_to_client_stream,
 			server_to_client_headers);
 
-		final Iterator<String> i = server_to_client_headers.keySet().iterator();
+		final Iterator<String> i = server_to_client_headers.keys().iterator();
 		final String new_location = server_to_client_headers.get("WEB_SERVER.REDIRECT");
 		if (new_location != null) {
 			response.sendRedirect(new_location);
@@ -173,11 +177,49 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 	}
 
 	abstract void processRequest (final String session_id, final ServletInputStream client_to_server_stream,
-		final HashMap<String, String> client_to_server_headers, final ServletOutputStream server_to_client_stream,
-		final HashMap<String, String> server_to_client_headers);
+		final Map<String, List<String>> client_to_server_headers, final ServletOutputStream server_to_client_stream,
+		final Map<String, String> server_to_client_headers);
 
 	public static PROTOCOL_POLICY PROTOCOL_POLICY () {
 		return Debug.checkNull("PROTOCOL_POLICY", http_mode);
+	}
+
+	public static String getClientIpAddr (final HttpServletRequest request) {
+		String ip = request.getHeader("X-Forwarded-For");
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("WL-Proxy-Client-IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_X_FORWARDED_FOR");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_X_FORWARDED");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_X_CLUSTER_CLIENT_IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_CLIENT_IP");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_FORWARDED_FOR");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_FORWARDED");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("HTTP_VIA");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getHeader("REMOTE_ADDR");
+		}
+		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
+			ip = request.getRemoteAddr();
+		}
+		return ip;
 	}
 
 	// <editor-fold defaultstate="collapsed"

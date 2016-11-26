@@ -42,11 +42,10 @@ public class RunRedReporterServerDesktop {
 
 		final RedReporterServerConfig serveConfig = new RedReporterServerConfig();
 		serveConfig.setRedReporterDataBank(bank);
-		serveConfig.setInstanceID("test-instance");
 		final RedReporterServer server = new RedReporterServer(serveConfig);
 		server.startServer();
 
-		final ID id = Names.newAssetID("test-token");
+		final ID id = Names.newID("test-token");
 		L.d("id", id);
 		server.registerInstallation(id);
 

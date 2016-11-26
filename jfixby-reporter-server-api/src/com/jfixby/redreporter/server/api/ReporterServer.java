@@ -33,10 +33,6 @@ public class ReporterServer {
 		invoke().startServer();
 	}
 
-	public static String getInstanceID () {
-		return invoke().getInstanceID();
-	}
-
 	public static void updateSystemInfo (final ID token, final Map<String, String> values) throws IOException {
 		invoke().updateSystemInfo(token, values);
 	}

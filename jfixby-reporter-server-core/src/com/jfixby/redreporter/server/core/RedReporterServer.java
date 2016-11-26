@@ -15,18 +15,10 @@ public class RedReporterServer implements ReporterServerComponent {
 	private final RedReporterDataBank bank;
 	private InstallationIDGenerator0 idgen;
 	private ServerSettings serverSettings;
-	private final String instance_id;
 
 	public RedReporterServer (final RedReporterServerConfig cfg) {
 		this.bank = cfg.getRedReporterDataBank();
-		this.instance_id = cfg.getInstanceID();
-		Debug.checkNull("instance_id", this.instance_id);
 		Debug.checkNull("bank", this.bank);
-	}
-
-	@Override
-	public String getInstanceID () {
-		return this.instance_id;
 	}
 
 	@Override
@@ -35,7 +27,7 @@ public class RedReporterServer implements ReporterServerComponent {
 		this.bank.connect();
 		this.loadSettings();
 		final String salt0 = this.serverSettings().getSalat0();
-		this.idgen = new InstallationIDGenerator0(salt0, this.getInstanceID());
+		this.idgen = new InstallationIDGenerator0(salt0);
 
 	}
 
@@ -60,8 +52,8 @@ public class RedReporterServer implements ReporterServerComponent {
 	}
 
 	@Override
-	public ID newToken (final String... arg) {
-		return this.idgen.newInstallationID(arg);
+	public ID newToken (final ID prefix) {
+		return this.idgen.newInstallationID(prefix);
 	}
 
 	@Override
