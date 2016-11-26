@@ -135,7 +135,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		final ID token = ReporterServer.invoke().newToken(arg.requestID);
 
 		final InstallationID id = ReporterServer.registerInstallation(token);
-		arg.message.values.put(CLIENT_IP, this.getHeader(CLIENT_IP, arg.inputHeaders));
+		arg.message.values.put(client_ip, this.getHeader(client_ip, arg.inputHeaders));
 		ReporterServer.updateSystemInfo(token, arg.message.values);
 
 		L.d("register install", id.token);
@@ -154,7 +154,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		final double sec = FloatMath.roundToDigit(this.average.getLast(), 3);
 		msg.append("         server time: " + new Date()).append(SEPARATOR);
 		msg.append(SEPARATOR);
-		msg.append("           client ip: " + arg.inputHeaders.get(CLIENT_IP)).append(SEPARATOR);
+		msg.append("           client ip: " + arg.inputHeaders.get(client_ip)).append(SEPARATOR);
 		msg.append("          request id: " + arg.requestID).append(SEPARATOR);
 		msg.append(SEPARATOR);
 		msg.append("request processed in: " + sec + " sec").append(SEPARATOR);

@@ -31,6 +31,7 @@ import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.sys.Sys;
+import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
@@ -49,7 +50,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 	private static final long serialVersionUID = -1649148797847741708L;
 	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
 	public static final String instance_id;
-	public static final String CLIENT_IP = "CLIENT_IP";
+	public static final String client_ip = SystemInfoTags.Net.client_ip;
 
 	static {
 		DesktopSetup.deploy();
@@ -146,7 +147,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		client_to_server_headers.put("reqUrl", Collections.newList(reqUrl));
 		client_to_server_headers.put("path_info", Collections.newList(path_info));
 		final String client_ip = getClientIpAddr(request);
-		client_to_server_headers.put(CLIENT_IP, Collections.newList(client_ip));
+		client_to_server_headers.put(client_ip, Collections.newList(client_ip));
 
 		final java.util.Map<String, String[]> param_map = request.getParameterMap();
 		final Iterator<String> iterator = param_map.keySet().iterator();
