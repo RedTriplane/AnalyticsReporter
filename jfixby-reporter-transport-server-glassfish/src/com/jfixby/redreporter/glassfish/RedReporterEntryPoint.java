@@ -9,6 +9,7 @@ import javax.servlet.ServletOutputStream;
 
 import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.assets.Names;
+import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.io.Buffer;
@@ -21,6 +22,7 @@ import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.math.Average;
 import com.jfixby.cmns.api.math.FloatMath;
+import com.jfixby.cmns.api.math.IntegerMath;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
@@ -129,6 +131,8 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		return null;
 	}
 
+	public static final int MAX_PARAMETERS = 50;
+
 	private Message registerInstallation (final RedReporterEntryPointArguments arg) throws IOException {
 		final Message result = new Message(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
 
@@ -136,7 +140,14 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 		final InstallationID id = ReporterServer.registerInstallation(token);
 		arg.message.values.put(client_ip, this.getHeader(client_ip, arg.inputHeaders));
-		ReporterServer.updateSystemInfo(token, arg.message.values);
+
+		final Map<String, String> params = Collections.newMap();
+		Collections.scanCollection(Collections.newList(arg.message.values.keySet()), 0,
+			IntegerMath.min(MAX_PARAMETERS, arg.message.values.size()), (k, i) -> {
+				params.put(k, arg.message.values.get(k));
+			});
+
+		ReporterServer.updateSystemInfo(token, params);
 
 		L.d("register install", id.token);
 		result.values.put(REPORTER_PROTOCOL.INSTALLATION_TOKEN, id.token);

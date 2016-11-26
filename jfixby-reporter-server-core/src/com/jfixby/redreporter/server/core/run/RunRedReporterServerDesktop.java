@@ -54,10 +54,10 @@ public class RunRedReporterServerDesktop {
 		trunced.remove(trunced.getKeyAt(0));
 		trunced.remove(trunced.getKeyAt(0));
 
-		server.updateSystemInfo(id, trunced.toJavaMap());
+		server.updateSystemInfo(id, trunced);
 
 		mySQL.getTable(BankSchema.SYSTEM_INFO.TableName).listAll().print("all");
-		server.updateSystemInfo(id, Sys.getSystemInfo().listParameters().toJavaMap());
+		server.updateSystemInfo(id, Sys.getSystemInfo().listParameters());
 
 		mySQL.getTable(BankSchema.SYSTEM_INFO.TableName).listAll().print("all+");
 

@@ -2,10 +2,10 @@
 package com.jfixby.redreporter.server.api;
 
 import java.io.IOException;
-import java.util.Map;
 
 import com.jfixby.cmns.api.ComponentInstaller;
 import com.jfixby.cmns.api.assets.ID;
+import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.redreporter.api.InstallationID;
 
 public class ReporterServer {

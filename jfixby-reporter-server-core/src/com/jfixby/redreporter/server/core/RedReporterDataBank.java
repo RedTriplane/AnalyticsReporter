@@ -105,7 +105,7 @@ public class RedReporterDataBank {
 		}
 	}
 
-	public void updateSystemInfo (final ID token, final java.util.Map<String, String> values) throws IOException {
+	public void updateSystemInfo (final ID token, final Map<String, String> values) throws IOException {
 		try {
 			final Long id = this.getIDForToken(token.toString());
 			if (id == null) {
@@ -152,12 +152,12 @@ public class RedReporterDataBank {
 		table.addEntry(entry);
 	}
 
-	private void registerSystemInfo (final long install_id, final java.util.Map<String, String> values) throws SQLException {
+	private void registerSystemInfo (final long install_id, final Map<String, String> values) throws SQLException {
 		final MySQLTable table = this.mySQL.getTable(BankSchema.SYSTEM_INFO.TableName);
 
 		final MySQLTableSchema schema = table.getSchema();
 		final List<MySQLEntry> batch = Collections.newList();
-		for (final String key : values.keySet()) {
+		for (final String key : values.keys()) {
 			final MySQLEntry entry = table.newMySQLEntry();
 			final String value = values.get(key);
 
