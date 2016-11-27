@@ -62,6 +62,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		config.setLogin(CONFIG.DB_LOGIN);
 		config.setPassword(CONFIG.DB_PASSWORD);
 		config.setDBName(CONFIG.DB_NAME);
+		config.setConnectionDrainTime(60 * 10);// 10 minutes before connection to RDS drains
 		config.setUseSSL(!true);
 
 		final MySQL mySQL = new MySQL(config);
@@ -220,6 +221,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		if (ip == null || ip.length() == 0 || "unknown".equalsIgnoreCase(ip)) {
 			ip = request.getRemoteAddr();
 		}
+		L.d("ip", "<" + ip + ">");
 		return ip;
 	}
 

@@ -35,7 +35,7 @@ public class RunRedReporterServerDesktop {
 		config.setPassword(CONFIG.DB_PASSWORD);
 		config.setDBName(CONFIG.DB_NAME);
 		config.setUseSSL(!true);
-		Sys.exit();
+		config.setConnectionDrainTime(5);
 		final MySQL mySQL = new MySQL(config);
 
 		final RedReporterDataBank bank = new RedReporterDataBank(mySQL);
@@ -45,7 +45,7 @@ public class RunRedReporterServerDesktop {
 		final RedReporterServer server = new RedReporterServer(serveConfig);
 		server.startServer();
 
-		final ID id = Names.newID("test-token");
+		final ID id = Names.newID("test-token-" + System.currentTimeMillis());
 		L.d("id", id);
 		server.registerInstallation(id);
 

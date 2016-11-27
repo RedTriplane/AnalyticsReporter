@@ -21,7 +21,6 @@ public class RegisterInstallationTest {
 	public static void main (final String[] args) throws IOException {
 		DesktopSetup.deploy();
 		Json.installComponent(new RedJson());
-
 // final File cache = LocalFileSystem.ApplicationHome().child("report-cache");
 		final ReporterHttpClientConfig config = new ReporterHttpClientConfig();
 
