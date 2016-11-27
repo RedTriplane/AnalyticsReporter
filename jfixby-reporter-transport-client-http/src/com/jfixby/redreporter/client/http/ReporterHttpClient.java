@@ -87,6 +87,7 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 	public void pingServers () {
 		this.servers.updatePings();
 		this.servers.updatePings();
+		this.servers.printPings();
 	}
 
 }

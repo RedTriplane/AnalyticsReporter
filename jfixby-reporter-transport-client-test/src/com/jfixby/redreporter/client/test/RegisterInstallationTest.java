@@ -31,7 +31,7 @@ public class RegisterInstallationTest {
 		}
 
 		{
-			final String url_string = "https://rr.red-triplane.com";
+			final String url_string = "https://rr-0.red-triplane.com";
 			final HttpURL url = Http.newURL(url_string);
 			config.addAnalyticsServerUrl(url);
 		}
@@ -41,6 +41,7 @@ public class RegisterInstallationTest {
 		final ReporterHttpClient client = new ReporterHttpClient(config);
 		ReporterTransport.installComponent(client);
 		ReporterTransport.pingServers();
+		Sys.exit();
 		final InstallationID installReg = ReporterTransport.registerInstallation(systemInfo);
 
 		L.d("register install", installReg.token + " (" + installReg.token.length() + ")");
