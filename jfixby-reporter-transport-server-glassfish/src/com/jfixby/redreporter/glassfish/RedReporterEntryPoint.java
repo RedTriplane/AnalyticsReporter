@@ -24,6 +24,7 @@ import com.jfixby.cmns.api.math.Average;
 import com.jfixby.cmns.api.math.FloatMath;
 import com.jfixby.cmns.api.math.IntegerMath;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.server.api.ReporterServer;
@@ -139,7 +140,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		final ID token = ReporterServer.invoke().newToken(arg.requestID);
 
 		final InstallationID id = ReporterServer.registerInstallation(token);
-		arg.message.values.put(client_ip, this.getHeader(client_ip, arg.inputHeaders));
+		arg.message.values.put(SystemInfoTags.Net.client_ip, this.getHeader(SystemInfoTags.Net.client_ip, arg.inputHeaders));
 
 		final Map<String, String> params = Collections.newMap();
 		Collections.scanCollection(Collections.newList(arg.message.values.keySet()), 0,
@@ -165,7 +166,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		final double sec = FloatMath.roundToDigit(this.average.getLast(), 3);
 		msg.append("         server time: " + new Date()).append(SEPARATOR);
 		msg.append(SEPARATOR);
-		msg.append("           client ip: " + arg.inputHeaders.get(client_ip)).append(SEPARATOR);
+		msg.append("           client ip: " + arg.inputHeaders.get(SystemInfoTags.Net.client_ip)).append(SEPARATOR);
 		msg.append("          request id: " + arg.requestID).append(SEPARATOR);
 		msg.append(SEPARATOR);
 		msg.append("request processed in: " + sec + " sec").append(SEPARATOR);
