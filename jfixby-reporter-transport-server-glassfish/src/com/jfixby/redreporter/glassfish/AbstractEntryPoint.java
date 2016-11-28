@@ -36,6 +36,8 @@ import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
 import com.jfixby.cmns.db.mysql.MySQLTableSchema;
+import com.jfixby.cmns.ver.VERSION_STAGE;
+import com.jfixby.cmns.ver.Version;
 import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
@@ -48,14 +50,24 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 	/**
 	 *
 	 */
+
 	private static final long serialVersionUID = -1649148797847741708L;
 	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
 	private static MySQL mySQL;
+	public static Version version;
 	public static final String instance_id;
 
 	static {
 		DesktopSetup.deploy();
 		Json.installComponent(new RedJson());
+
+		version = new Version();
+		version.major = 1;
+		version.minor = 0;
+		version.build = 42;
+		version.packageName = "com.jfixby.redreporter.glassfish";
+		version.stage = VERSION_STAGE.ALPHA;
+		version.versionCode = 43;
 
 		final MySQLConfig config = new MySQLConfig();
 
@@ -63,7 +75,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		config.setLogin(CONFIG.DB_LOGIN);
 		config.setPassword(CONFIG.DB_PASSWORD);
 		config.setDBName(CONFIG.DB_NAME);
-		config.setConnectionDrainTime(60 * 0 * 10);// 10 minutes before connection to RDS drains
+		config.setConnectionDrainTime(30);
 		config.setUseSSL(!true);
 
 		mySQL = new MySQL(config);

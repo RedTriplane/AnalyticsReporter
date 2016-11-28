@@ -165,6 +165,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		this.average.addValue(this.measureProcessingTime(arg));
 		final double sec = FloatMath.roundToDigit(this.average.getLast(), 3);
 		msg.append("         server time: " + new Date()).append(SEPARATOR);
+		msg.append("         	 version: " + version.getPackageVersionString()).append(SEPARATOR);
 		msg.append(SEPARATOR);
 		msg.append("           client ip: " + arg.inputHeaders.get(SystemInfoTags.Net.client_ip)).append(SEPARATOR);
 		msg.append("          request id: " + arg.requestID).append(SEPARATOR);
