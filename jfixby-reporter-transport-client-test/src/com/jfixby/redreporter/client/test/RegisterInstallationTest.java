@@ -41,7 +41,6 @@ public class RegisterInstallationTest {
 		final ReporterHttpClient client = new ReporterHttpClient(config);
 		ReporterTransport.installComponent(client);
 		ReporterTransport.pingServers();
-		Sys.exit();
 		final InstallationID installReg = ReporterTransport.registerInstallation(systemInfo);
 
 		L.d("register install", installReg.token + " (" + installReg.token.length() + ")");

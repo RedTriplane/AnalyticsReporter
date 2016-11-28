@@ -161,7 +161,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 	private void sayHello (final RedReporterEntryPointArguments arg) throws IOException {
 		final StringBuilder msg = new StringBuilder();
-		msg.append("Service is operating: normally").append(SEPARATOR);
+		msg.append("Service is operating: " + serviceState()).append(SEPARATOR);
 		this.average.addValue(this.measureProcessingTime(arg));
 		final double sec = FloatMath.roundToDigit(this.average.getLast(), 3);
 		msg.append("         server time: " + new Date()).append(SEPARATOR);

@@ -35,6 +35,7 @@ import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
+import com.jfixby.cmns.db.mysql.MySQLTableSchema;
 import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
@@ -49,6 +50,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 	 */
 	private static final long serialVersionUID = -1649148797847741708L;
 	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
+	private static MySQL mySQL;
 	public static final String instance_id;
 
 	static {
@@ -61,10 +63,10 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		config.setLogin(CONFIG.DB_LOGIN);
 		config.setPassword(CONFIG.DB_PASSWORD);
 		config.setDBName(CONFIG.DB_NAME);
-		config.setConnectionDrainTime(60 * 10);// 10 minutes before connection to RDS drains
+		config.setConnectionDrainTime(60 * 0 * 10);// 10 minutes before connection to RDS drains
 		config.setUseSSL(!true);
 
-		final MySQL mySQL = new MySQL(config);
+		mySQL = new MySQL(config);
 
 		final RedReporterDataBank bank = new RedReporterDataBank(mySQL);
 
@@ -78,6 +80,16 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 			e.printStackTrace();
 			Sys.exit();
 		}
+	}
+
+	public static String serviceState () {
+		try {
+			final MySQLTableSchema schema = mySQL.getTable("installs").getSchema();
+			return "[OK]";
+		} catch (final Throwable e) {
+			e.printStackTrace();
+		}
+		return "[ERROR]";
 	}
 
 	static private String red_instance_id () {
