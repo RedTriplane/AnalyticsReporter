@@ -8,7 +8,7 @@ import com.jfixby.redreporter.api.Report;
 
 public class ReporterTransport {
 
-	static private ComponentInstaller<ReporterTransportComponent> componentInstaller = new ComponentInstaller<>(
+	static private ComponentInstaller<ReporterTransportComponent> componentInstaller = new ComponentInstaller<ReporterTransportComponent>(
 		"ReporterTransport");
 
 	public static final void installComponent (final ReporterTransportComponent component_to_install) {

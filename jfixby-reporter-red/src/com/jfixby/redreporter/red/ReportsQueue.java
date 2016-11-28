@@ -11,7 +11,7 @@ import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public class ReportsQueue {
 
-	final LinkedList<RedReport> queue = new LinkedList<>();
+	final LinkedList<RedReport> queue = new LinkedList<RedReport>();
 	private final List<Job> jobs = Collections.newList();
 	private final GetTokenJob getToken = new GetTokenJob();
 	private final ProcessQueueJob processQueueJob = new ProcessQueueJob(this);

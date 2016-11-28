@@ -21,7 +21,7 @@ public class PingServer {
 		DesktopSetup.deploy();
 		Json.installComponent(new RedJson());
 
-		final String url_string = "https://rr.red-triplane.com/api";
+		final String url_string = "https://rr-0.red-triplane.com/api";
 		final HttpURL url = Http.newURL(url_string);
 
 		final HttpConnection connect = Http.newConnection(url);

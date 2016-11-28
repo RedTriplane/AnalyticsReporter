@@ -5,7 +5,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-transport-api"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
