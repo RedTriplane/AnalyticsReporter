@@ -20,6 +20,7 @@ public class ServerHandler {
 
 	private final HttpURL url;
 	private long ping = Long.MAX_VALUE;
+	private int code;
 
 	public ServerHandler (final HttpURL url) {
 		this.url = url;
@@ -35,7 +36,7 @@ public class ServerHandler {
 			final HttpConnection connect = Http.newConnection(spec);
 			connect.open();
 
-			final int code = connect.getResponseCode();
+			this.code = connect.getResponseCode();
 			connect.close();
 			this.ping = System.currentTimeMillis() - timestamp;
 		} catch (final IOException e) {
@@ -47,7 +48,7 @@ public class ServerHandler {
 
 	@Override
 	public String toString () {
-		return "" + this.url + " ping: " + this.ping() + "";
+		return "[" + this.code + "] " + this.url + " ping: " + this.ping() + "";
 	}
 
 	private String ping () {

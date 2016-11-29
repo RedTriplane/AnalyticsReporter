@@ -45,11 +45,14 @@ public class RegisterInstallationTest {
 		config.setInstallationIDStorageFolder(iidStorage);
 		final ReporterHttpClient client = new ReporterHttpClient(config);
 		ReporterTransport.installComponent(client);
-		ReporterTransport.pingServers();
-		final InstallationID installReg = ReporterTransport.getInstallationID();
 
-		L.d("register install", installReg);
-		ReporterTransport.deleteInstallationID();
+		while (true) {
+			ReporterTransport.pingServers();
+			final InstallationID installReg = ReporterTransport.getInstallationID();
+
+			L.d("register install", installReg);
+			ReporterTransport.deleteInstallationID();
+		}
 	}
 
 }

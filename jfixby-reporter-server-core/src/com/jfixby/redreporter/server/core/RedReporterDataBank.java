@@ -30,48 +30,10 @@ public class RedReporterDataBank {
 
 	}
 
-// public void connect () throws IOException {
-// try {
-// this.mySQL.connect();
-// } catch (final SQLException e) {
-// e.printStackTrace();
-// throw new IOException(e);
-// }
-// }
-//
-// public void disconnect () {
-// this.mySQL.disconnect();
-// }
-
-	private void testReg () {
-		try {
-			final MySQLTable table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
-
-			table.clear();
-
-			final MySQLEntry entry = table.newMySQLEntry();
-
-			final MySQLTableSchema schema = table.getSchema();
-			schema.print();
-
-			entry.set(schema, 2, System.currentTimeMillis() + "");
-			entry.set(schema, 0, "installID" + System.currentTimeMillis());
-
-			table.addEntry(entry);
-
-			final List<MySQLEntry> list = table.listAll();
-			list.print("list");
-			this.mySQL.disconnect();
-		} catch (final Exception e) {
-			e.printStackTrace();
-		}
-	}
-
 	MySQLTable settingsTable;
 
 	public ServerSettings getServerSettings () throws IOException {
 		try {
-			this.mySQL.connect();
 			final ServerSettings result = new ServerSettings();
 			if (this.settingsTable == null) {
 				this.settingsTable = this.mySQL.getTable(ServerSettings.TABLE_NAME);
@@ -94,13 +56,11 @@ public class RedReporterDataBank {
 			e.printStackTrace();
 			throw new IOException(e);
 		} finally {
-			this.mySQL.disconnect();
 		}
 	}
 
 	public InstallationID registerInstallation (final ID token) throws IOException {
 		try {
-			this.mySQL.connect();
 			this.registerToken(token);
 			final InstallationID reg = new InstallationID();
 			reg.token = token.toString();
@@ -109,23 +69,20 @@ public class RedReporterDataBank {
 			e.printStackTrace();
 			throw new IOException(e);
 		} finally {
-			this.mySQL.disconnect();
 		}
 	}
 
 	public void updateSystemInfo (final ID token, final Map<String, String> values) throws IOException {
 		try {
-			this.mySQL.connect();
 			final Long id = this.getIDForToken(token.toString());
 			if (id == null) {
-				throw new SQLException("Token not found " + token);
+				throw new IOException("Token not found " + token);
 			}
 			this.registerSystemInfo(id, values);
 		} catch (final SQLException e) {
 			e.printStackTrace();
 			throw new IOException(e);
 		} finally {
-			this.mySQL.disconnect();
 		}
 	}
 
@@ -185,7 +142,6 @@ public class RedReporterDataBank {
 
 	public void resetTables () throws IOException {
 		try {
-			this.mySQL.connect();
 			{
 				final MySQLTable table = this.mySQL.getTable(BankSchema.SYSTEM_INFO.TableName);
 
@@ -198,7 +154,6 @@ public class RedReporterDataBank {
 		} catch (final Exception e) {
 			throw new IOException(e);
 		} finally {
-			this.mySQL.disconnect();
 		}
 	}
 

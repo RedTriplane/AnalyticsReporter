@@ -84,6 +84,7 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 
 	@Override
 	public boolean deleteInstallationID () {
+		this.iid = null;
 		if (this.iidStorage == null) {
 			return false;
 		}
@@ -220,7 +221,7 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 
 	@Override
 	public void pingServers () {
-		this.servers.updatePings();
+// this.servers.updatePings();
 		this.servers.updatePings();
 		this.servers.printPings();
 	}
