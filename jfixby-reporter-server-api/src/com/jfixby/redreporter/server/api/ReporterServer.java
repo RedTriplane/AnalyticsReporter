@@ -30,7 +30,7 @@ public class ReporterServer {
 		return invoke().updateSystemInfo(token, values);
 	}
 
-	public static ServerState getState () {
+	public static ServerStatus getState () {
 		return invoke().getState();
 	}
 

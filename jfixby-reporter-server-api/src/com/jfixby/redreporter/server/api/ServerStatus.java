@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.server.api;
 
-public enum ServerState {
+public enum ServerStatus {
 	ERROR, OK, STARTING
 
 }

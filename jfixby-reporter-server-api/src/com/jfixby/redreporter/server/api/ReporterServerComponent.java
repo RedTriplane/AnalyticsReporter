@@ -13,5 +13,5 @@ public interface ReporterServerComponent {
 
 	boolean updateSystemInfo (final ID token, Map<String, String> values);
 
-	ServerState getState ();
+	ServerStatus getState ();
 }

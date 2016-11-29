@@ -15,19 +15,55 @@ import com.jfixby.cmns.api.net.http.HttpConnectionSpecs;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.http.METHOD;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.redreporter.api.ServerState;
+import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 
 public class ServerHandler {
 
 	private final HttpURL url;
 	private long ping = Long.MAX_VALUE;
 	private int code;
+	ServerState status = ServerState.FAILED;
+	private String serverProcesingTime;
+
+	@Override
+	public String toString () {
+		return "[" + this.code() + "] " + this.url + " ping=" + this.ping() + " ServerState=" + this.status + " processingTime="
+			+ this.serverProcesingTime;
+
+	}
+
+	public long getPing () {
+		return this.ping;
+	}
 
 	public ServerHandler (final HttpURL url) {
 		this.url = url;
 	}
 
-	public long updatePing () {
+	public void check () {
+		this.code = -1;
+		this.ping = Long.MAX_VALUE;
+		this.status = ServerState.FAILED;
+		this.serverProcesingTime = "<UNKNOWN>";
+		this.updatePeek();
+		if (this.code != 200) {
+			return;
+		}
+		this.updatePing();
+	}
+
+	private void updatePing () {
+		this.ping = Long.MAX_VALUE;
 		final long timestamp = System.currentTimeMillis();
+		final Message ping = new Message(REPORTER_PROTOCOL.PING);
+		final Message pong = this.exchange(ping);
+		this.ping = System.currentTimeMillis() - timestamp;
+
+	}
+
+	public int updatePeek () {
+		this.code = -1;
 		try {
 			final HttpConnectionSpecs spec = Http.newConnectionSpecs();
 			spec.setURL(this.url);
@@ -38,17 +74,17 @@ public class ServerHandler {
 
 			this.code = connect.getResponseCode();
 			connect.close();
-			this.ping = System.currentTimeMillis() - timestamp;
 		} catch (final IOException e) {
-// L.e("ping " + this.url, e);
-			this.ping = Long.MAX_VALUE;
+			this.code = -1;
 		}
-		return this.ping;
+		return this.code;
 	}
 
-	@Override
-	public String toString () {
-		return "[" + this.code + "] " + this.url + " ping: " + this.ping() + "";
+	private String code () {
+		if (this.code == -1) {
+			return "X";
+		}
+		return this.code + "";
 	}
 
 	private String ping () {
@@ -56,33 +92,27 @@ public class ServerHandler {
 			return this.ping + "";
 		}
 		return "<NOT REACHABLE>";
-
 	}
 
 	public HttpURL getUrl () {
 		return this.url;
 	}
 
-	public long getPing () {
-		return this.ping;
-	}
-
 	public Message exchange (final Message message) {
 		try {
 			return this.exchange(message, null);
 		} catch (final IOException e) {
-// L.e(" ", e.getMessage());
-// L.d(e);
-// e.printStackTrace();
-// Sys.exit();
+			this.status = ServerState.FAILED;
+			this.serverProcesingTime = Long.MAX_VALUE + "";
 		}
 		return null;
 
 	}
 
-	public Message exchange (final Message message, final Mapping<String, String> headers) throws IOException {
+	private Message exchange (final Message message, final Mapping<String, String> headers) throws IOException {
 		Debug.checkNull("message", message);
-
+		this.status = ServerState.FAILED;
+		this.serverProcesingTime = "UNKNOWN";
 		final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
 		conSpec.setURL(this.url);
 
@@ -130,7 +160,8 @@ public class ServerHandler {
 		}
 
 		final Message response = IO.deserialize(Message.class, responceBytes);
-
+		this.serverProcesingTime = response.values.get(REPORTER_PROTOCOL.SERVER_RESPONDED_IN);
+		this.status = ServerState.OK;
 		return response;
 
 	}

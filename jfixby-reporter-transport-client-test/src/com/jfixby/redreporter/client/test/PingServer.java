@@ -27,12 +27,17 @@ public class PingServer {
 			final HttpURL url = Http.newURL(url_string);
 			transport_config.addAnalyticsServerUrl(url);
 		}
+// {
+// final String url_string = "http://127.0.0.1:8080/";
+// final HttpURL url = Http.newURL(url_string);
+// transport_config.addAnalyticsServerUrl(url);
+// }
 		final File iidStorage = LocalFileSystem.ApplicationHome();
 		transport_config.setInstallationIDStorageFolder(iidStorage);
 		final ReporterHttpClient transport = new ReporterHttpClient(transport_config);
 		ReporterTransport.installComponent(transport);
 		while (true) {
-			ReporterTransport.pingServers();
+			ReporterTransport.checkServers();
 		}
 	}
 // final String url_string = "https://rr-0.red-triplane.com";

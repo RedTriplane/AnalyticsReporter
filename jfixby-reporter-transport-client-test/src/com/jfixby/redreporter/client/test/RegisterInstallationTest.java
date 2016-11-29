@@ -47,7 +47,7 @@ public class RegisterInstallationTest {
 		ReporterTransport.installComponent(client);
 
 		while (true) {
-			ReporterTransport.pingServers();
+			ReporterTransport.checkServers();
 			final InstallationID installReg = ReporterTransport.getInstallationID();
 
 			L.d("register install", installReg);

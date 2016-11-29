@@ -56,7 +56,6 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 		}
 		final SystemInfo systemInfo = Sys.getSystemInfo();
 		systemInfo.putValue(REPORTER_PROTOCOL.CACHE_FOLDER_OK, this.iidStorage != null);
-		this.updatePings();
 		this.iid = this.registerInstallation(systemInfo);
 		if (this.iid == null) {
 			return null;
@@ -194,14 +193,6 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 		return null;
 	}
 
-	public void updatePings () {
-		this.servers.updatePings();
-	}
-
-	public void printPings () {
-		this.servers.printPings();
-	}
-
 	@Override
 	public boolean sendReport (final Report report) {
 		final Message message = new Message(REPORTER_PROTOCOL.REPORT);
@@ -220,10 +211,11 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 	}
 
 	@Override
-	public void pingServers () {
+	public void checkServers () {
 // this.servers.updatePings();
-		this.servers.updatePings();
-		this.servers.printPings();
+		this.servers.check();
+		this.servers.printStatuses();
+
 	}
 
 }

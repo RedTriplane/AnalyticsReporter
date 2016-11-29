@@ -9,7 +9,7 @@ import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.server.api.ReporterServerComponent;
-import com.jfixby.redreporter.server.api.ServerState;
+import com.jfixby.redreporter.server.api.ServerStatus;
 
 public class RedReporterServer implements ReporterServerComponent {
 
@@ -23,17 +23,17 @@ public class RedReporterServer implements ReporterServerComponent {
 	}
 
 	@Override
-	public ServerState getState () {
+	public ServerStatus getState () {
 		try {
 			this.checkStarted();
 			this.bank.getServerSettings();
-			return ServerState.OK;
+			return ServerStatus.OK;
 		} catch (final IOException e) {
 			e.printStackTrace();
 			if (this.idgen != null) {
-				return ServerState.ERROR;
+				return ServerStatus.ERROR;
 			} else {
-				return ServerState.STARTING;
+				return ServerStatus.STARTING;
 			}
 		}
 	}

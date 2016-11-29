@@ -1,6 +1,7 @@
 
 package com.jfixby.redreporter.glassfish;
 
+import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 
 import com.jfixby.cmns.api.assets.ID;
@@ -17,6 +18,7 @@ public class RedReporterEntryPointArguments {
 	public ServletOutputStream server_to_client_stream;
 	public long timestamp;
 	public Map<String, List<String>> inputHeaders;
+	public ServletInputStream client_to_server_stream;
 
 	public void print () {
 		L.d("---[" + this.request_number + "]-----------------------------------");

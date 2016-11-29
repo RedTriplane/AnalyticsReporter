@@ -16,7 +16,9 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 
 		@Override
 		public int compare (final ServerHandler o1, final ServerHandler o2) {
-			return IntegerMath.compare(o1.getPing(), o2.getPing());
+			final long ping1 = o1.getPing();
+			final long ping2 = o2.getPing();
+			return IntegerMath.compare(ping1, ping2);
 		}
 	};
 
@@ -24,27 +26,26 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 		this.servers.add(handler);
 	}
 
-	public void updatePings () {
+	public void check () {
 		if (this.servers.size() == 0) {
 			return;
 		}
 		for (final ServerHandler h : this.servers) {
-			h.updatePing();
-
+			h.check();
 		}
 		this.servers.sort(this.comparator);
 		this.best = this.servers.getElementAt(0);
 	}
 
-	public void printPings () {
-		this.servers.print("pings");
+	public void printStatuses () {
+		this.servers.print("");
 	}
 
 	public ServerHandler getBestServer () {
 		if (this.best != null) {
 			return this.best;
 		}
-		this.updatePings();
+		this.check();
 		return this.best;
 	}
 
