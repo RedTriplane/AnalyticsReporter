@@ -7,7 +7,6 @@ import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.io.IO;
 import com.jfixby.cmns.api.java.ByteArray;
-import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
@@ -40,7 +39,7 @@ public class ServerHandler {
 			connect.close();
 			this.ping = System.currentTimeMillis() - timestamp;
 		} catch (final IOException e) {
-			L.e("ping " + this.url, e);
+// L.e("ping " + this.url, e);
 			this.ping = Long.MAX_VALUE;
 		}
 		return this.ping;
@@ -71,9 +70,13 @@ public class ServerHandler {
 		try {
 			return this.exchange(message, null);
 		} catch (final IOException e) {
-			e.printStackTrace();
+// L.e(" ", e.getMessage());
+// L.d(e);
+// e.printStackTrace();
+// Sys.exit();
 		}
 		return null;
+
 	}
 
 	public Message exchange (final Message message, final Mapping<String, String> headers) throws IOException {
@@ -114,7 +117,17 @@ public class ServerHandler {
 		is.open();
 		final ByteArray rdata = is.readAll();
 		is.close();
+		if (rdata == null) {
+			return null;
+		}
+		if (rdata.size() == 0) {
+			return null;
+		}
 		final ByteArray responceBytes = IO.decompress(rdata);
+		if (responceBytes == null) {
+			return null;
+		}
+
 		final Message response = IO.deserialize(Message.class, responceBytes);
 
 		return response;

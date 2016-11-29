@@ -43,7 +43,6 @@ public class RunRedReporterServerDesktop {
 		final RedReporterServerConfig serveConfig = new RedReporterServerConfig();
 		serveConfig.setRedReporterDataBank(bank);
 		final RedReporterServer server = new RedReporterServer(serveConfig);
-		server.startServer();
 
 		final ID id = Names.newID("test-token-" + System.currentTimeMillis());
 		L.d("id", id);
@@ -62,8 +61,6 @@ public class RunRedReporterServerDesktop {
 		mySQL.getTable(BankSchema.SYSTEM_INFO.TableName).listAll().print("all+");
 
 // server.testReg();
-
-		server.stop();
 
 	}
 

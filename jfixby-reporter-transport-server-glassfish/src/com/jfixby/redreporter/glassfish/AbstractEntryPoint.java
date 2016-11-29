@@ -30,12 +30,10 @@ import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
 import com.jfixby.cmns.api.net.http.HttpURL;
-import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
-import com.jfixby.cmns.db.mysql.MySQLTableSchema;
 import com.jfixby.cmns.ver.VERSION_STAGE;
 import com.jfixby.cmns.ver.Version;
 import com.jfixby.red.desktop.DesktopSetup;
@@ -55,6 +53,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
 	private static MySQL mySQL;
 	public static Version version;
+	private static RedReporterDataBank bank;
 	public static final String instance_id;
 
 	static {
@@ -64,7 +63,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		version = new Version();
 		version.major = 1;
 		version.minor = 0;
-		version.build = 44;
+		version.build = 50;
 		version.packageName = "com.jfixby.redreporter.glassfish";
 		version.stage = VERSION_STAGE.ALPHA;
 		version.versionCode = 0;
@@ -80,28 +79,17 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 
 		mySQL = new MySQL(config);
 
-		final RedReporterDataBank bank = new RedReporterDataBank(mySQL);
+		bank = new RedReporterDataBank(mySQL);
 
 		final RedReporterServerConfig server_config = new RedReporterServerConfig();
 		server_config.setRedReporterDataBank(bank);
 		instance_id = red_instance_id();
 		ReporterServer.installComponent(new RedReporterServer(server_config));
-		try {
-			ReporterServer.startServer();
-		} catch (final IOException e) {
-			e.printStackTrace();
-			Sys.exit();
-		}
+
 	}
 
 	public static String serviceState () {
-		try {
-			final MySQLTableSchema schema = mySQL.getTable("installs").getSchema();
-			return "[OK]";
-		} catch (final Throwable e) {
-			e.printStackTrace();
-		}
-		return "[ERROR]";
+		return "[" + ReporterServer.getState() + "]";
 	}
 
 	static private String red_instance_id () {

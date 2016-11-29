@@ -4,7 +4,6 @@ package com.jfixby.redreporter.red;
 import com.jfixby.cmns.api.err.ErrorComponent;
 import com.jfixby.cmns.api.err.NotImplementedYetException;
 import com.jfixby.red.err.RedError;
-import com.jfixby.redreporter.api.Report;
 import com.jfixby.redreporter.api.err.ErrorReporterComponent;
 
 public class RedReporterErrorsListener implements ErrorComponent {
@@ -28,37 +27,37 @@ public class RedReporterErrorsListener implements ErrorComponent {
 
 	@Override
 	public void reportWarning (final String message) {
-		final Report report = this.master.newReport();
-		report.addWarning(message);
-		report.submit();
-		this.defaultErrorListener.reportWarning(message);
+// final Report report = this.master.newReport();
+// report.addWarning(message);
+// report.submit();
+// this.defaultErrorListener.reportWarning(message);
 	}
 
 	@Override
 	public void reportError (final String message) {
-		final Report report = this.master.newReport();
-		report.addError(message);
-		report.submit();
-		this.defaultErrorListener.reportError(message);
+// final Report report = this.master.newReport();
+// report.addError(message);
+// report.submit();
+// this.defaultErrorListener.reportError(message);
 
 	}
 
 	@Override
 	public void reportError (final Throwable e) {
-		final Report report = this.master.newReport();
-		report.addError(e);
-		report.submit();
-		this.defaultErrorListener.reportError(e);
+// final Report report = this.master.newReport();
+// report.addError(e);
+// report.submit();
+// this.defaultErrorListener.reportError(e);
 
 	}
 
 	@Override
 	public void reportError (final String message, final Throwable e) {
-		final Report report = this.master.newReport();
-		report.addError(message);
-		report.addError(e);
-		report.submit();
-		this.defaultErrorListener.reportError(message, e);
+// final Report report = this.master.newReport();
+// report.addError(message);
+// report.addError(e);
+// report.submit();
+// this.defaultErrorListener.reportError(message, e);
 
 	}
 
@@ -69,11 +68,11 @@ public class RedReporterErrorsListener implements ErrorComponent {
 
 	@Override
 	public void reportGCLeak (final String msg) {
-		final Report report = this.master.newReport();
-		report.reportGCLeak(msg);
-// report.addError(e);
-		report.submit();
-		this.defaultErrorListener.reportGCLeak(msg);
+// final Report report = this.master.newReport();
+// report.reportGCLeak(msg);
+//// report.addError(e);
+// report.submit();
+// this.defaultErrorListener.reportGCLeak(msg);
 	}
 
 }

@@ -134,12 +134,21 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 
 	public static final int MAX_PARAMETERS = 1000;
 
-	private Message registerInstallation (final RedReporterEntryPointArguments arg) throws IOException {
+	private Message registerInstallation (final RedReporterEntryPointArguments arg) {
 		final Message result = new Message(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
 
-		final ID token = ReporterServer.invoke().newToken(arg.requestID);
+		final ID token = ReporterServer.newToken(arg.requestID);
+
+		if (token == null) {
+			return null;
+		}
 
 		final InstallationID id = ReporterServer.registerInstallation(token);
+
+		if (id == null) {
+			return null;
+		}
+
 		arg.message.values.put(SystemInfoTags.Net.client_ip, this.getHeader(SystemInfoTags.Net.client_ip, arg.inputHeaders));
 
 		final Map<String, String> params = Collections.newMap();
@@ -148,7 +157,11 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 				params.put(k, arg.message.values.get(k));
 			});
 
-		ReporterServer.updateSystemInfo(token, params);
+		final boolean success = ReporterServer.updateSystemInfo(token, params);
+
+		if (!success) {
+			return null;
+		}
 
 		L.d("register install", id.token);
 		result.values.put(REPORTER_PROTOCOL.INSTALLATION_TOKEN, id.token);

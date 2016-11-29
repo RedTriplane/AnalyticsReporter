@@ -16,4 +16,20 @@ public class DesktopReporter extends RedReporter {
 
 	}
 
+	@Override
+	public void stopService () {
+	}
+
+	@Override
+	public void unDeployUncaughtExceptionHandler () {
+	}
+
+	@Override
+	public void unDeployErrorsListener () {
+	}
+
+	@Override
+	public void unDeployLogsListener () {
+	}
+
 }

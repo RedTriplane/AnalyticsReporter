@@ -7,4 +7,9 @@ public class InstallationID implements java.io.Serializable {
 
 	public String token;
 
+	@Override
+	public String toString () {
+		return this.token + " (" + this.token.length() + ")";
+	}
+
 }

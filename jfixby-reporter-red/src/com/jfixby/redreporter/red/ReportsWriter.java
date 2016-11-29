@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.red;
 
-import com.jfixby.redreporter.api.Report;
+import com.jfixby.redreporter.api.analytics.Report;
 
 public class ReportsWriter {
 

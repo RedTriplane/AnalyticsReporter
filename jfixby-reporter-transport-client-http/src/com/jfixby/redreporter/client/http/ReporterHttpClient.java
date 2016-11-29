@@ -1,25 +1,43 @@
 
 package com.jfixby.redreporter.client.http;
 
+import java.io.IOException;
+
 import com.jfixby.cmns.api.collections.Collection;
 import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.err.Err;
+import com.jfixby.cmns.api.file.File;
+import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.sys.SystemInfo;
 import com.jfixby.redreporter.api.InstallationID;
-import com.jfixby.redreporter.api.Report;
+import com.jfixby.redreporter.api.analytics.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransportComponent;
 
 public class ReporterHttpClient implements ReporterTransportComponent {
+	private static final String INSTALLATION_ID_FILE_NAME = "com.red-triplane.iid";
 	final ServerHandlers servers = new ServerHandlers();
+	private File iidStorage;
+	InstallationID iid;
+	private boolean iidSaved = false;
 
 	public ReporterHttpClient (final ReporterHttpClientConfig config) {
 		Debug.checkNull("config", config);
 
 		final Collection<HttpURL> urls = config.listServers();
+		this.iidStorage = config.getInstallationIDStorageFolder();
+		Debug.checkNull("InstallationIDStorageFolder", this.iidStorage);
+		try {
+			this.iidStorage.checkExists();
+			this.iidStorage.checkIsFolder();
+		} catch (final Throwable e) {
+			this.iidStorage = null;
+			Err.reportError(e);
+		}
 		Debug.checkTrue("no analytics servers provided", urls.size() > 0);
 		for (final HttpURL url : urls) {
 			final ServerHandler handler = new ServerHandler(url);
@@ -28,6 +46,86 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 	}
 
 	@Override
+	synchronized public InstallationID getInstallationID () {
+		if (this.iid != null) {
+			return this.iid;
+		}
+		this.readFromStorage();
+		if (this.iid != null) {
+			return this.iid;
+		}
+		final SystemInfo systemInfo = Sys.getSystemInfo();
+		systemInfo.putValue(REPORTER_PROTOCOL.CACHE_FOLDER_OK, this.iidStorage != null);
+		this.updatePings();
+		this.iid = this.registerInstallation(systemInfo);
+		if (this.iid == null) {
+			return null;
+		}
+
+		this.iidSaved = this.saveIID();
+
+		return this.iid;
+	}
+
+	private boolean saveIID () {
+		if (this.iidStorage == null) {
+			return false;
+		}
+		final File iidFile = this.iidStorage.child(INSTALLATION_ID_FILE_NAME);
+		try {
+			iidFile.writeString(this.iid.token);
+			return true;
+		} catch (final IOException e) {
+			e.printStackTrace();
+			Err.reportError(e);
+			return false;
+		}
+	}
+
+	private InstallationID readFromStorage () {
+		if (this.iidStorage == null) {
+			return null;
+		}
+		final File iidFile = this.iidStorage.child(INSTALLATION_ID_FILE_NAME);
+		try {
+			if (!iidFile.exists()) {
+				return null;
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+			Err.reportError(e);
+			return null;
+		}
+		try {
+			if (!iidFile.isFile()) {
+				return null;
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+			Err.reportError(e);
+			return null;
+		}
+
+		String token;
+		try {
+			token = iidFile.readToString();
+		} catch (final IOException e) {
+			e.printStackTrace();
+			Err.reportError(e);
+			return null;
+		}
+		if (token == null) {
+			return null;
+		}
+
+		if ("".equals(token)) {
+			return null;
+		}
+
+		this.iid = new InstallationID();
+		return this.iid;
+	}
+
 	public InstallationID registerInstallation (final SystemInfo systemInfo) {
 
 		final Mapping<String, String> params = systemInfo.listParameters();
@@ -53,6 +151,8 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 			final Message response = server.exchange(request);
 			if (response != null) {
 				return response;
+			} else {
+				L.d("  exchange failed", server);
 			}
 		}
 		return null;

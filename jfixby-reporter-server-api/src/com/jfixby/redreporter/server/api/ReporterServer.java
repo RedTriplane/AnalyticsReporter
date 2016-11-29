@@ -1,8 +1,6 @@
 
 package com.jfixby.redreporter.server.api;
 
-import java.io.IOException;
-
 import com.jfixby.cmns.api.ComponentInstaller;
 import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Map;
@@ -24,16 +22,19 @@ public class ReporterServer {
 		return componentInstaller.getComponent();
 	}
 
-//
-	public static InstallationID registerInstallation (final ID token) throws IOException {
+	public static InstallationID registerInstallation (final ID token) {
 		return invoke().registerInstallation(token);
 	}
 
-	public static void startServer () throws IOException {
-		invoke().startServer();
+	public static boolean updateSystemInfo (final ID token, final Map<String, String> values) {
+		return invoke().updateSystemInfo(token, values);
 	}
 
-	public static void updateSystemInfo (final ID token, final Map<String, String> values) throws IOException {
-		invoke().updateSystemInfo(token, values);
+	public static ServerState getState () {
+		return invoke().getState();
+	}
+
+	public static ID newToken (final ID requestID) {
+		return invoke().newToken(requestID);
 	}
 }

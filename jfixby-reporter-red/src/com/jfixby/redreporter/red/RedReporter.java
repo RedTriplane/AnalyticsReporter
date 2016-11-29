@@ -16,7 +16,7 @@ import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.taskman.Job;
 import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.PRIORITY;
-import com.jfixby.redreporter.api.Report;
+import com.jfixby.redreporter.api.analytics.Report;
 import com.jfixby.redreporter.api.err.ErrorReporterComponent;
 
 public abstract class RedReporter implements ErrorReporterComponent {
@@ -92,7 +92,6 @@ public abstract class RedReporter implements ErrorReporterComponent {
 		L.installComponent(this.logsListener);
 	}
 
-	@Override
 	public Report newReport () {
 		return this.writer.newReport();
 	}

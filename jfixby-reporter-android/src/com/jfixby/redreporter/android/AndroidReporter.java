@@ -13,4 +13,20 @@ public class AndroidReporter extends RedReporter {
 	public void startService () {
 	}
 
+	@Override
+	public void stopService () {
+	}
+
+	@Override
+	public void unDeployUncaughtExceptionHandler () {
+	}
+
+	@Override
+	public void unDeployErrorsListener () {
+	}
+
+	@Override
+	public void unDeployLogsListener () {
+	}
+
 }

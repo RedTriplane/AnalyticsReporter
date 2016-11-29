@@ -1,5 +1,7 @@
 
-package com.jfixby.redreporter.api;
+package com.jfixby.redreporter.api.analytics;
+
+import com.jfixby.redreporter.api.PRIORITY;
 
 public interface Report {
 

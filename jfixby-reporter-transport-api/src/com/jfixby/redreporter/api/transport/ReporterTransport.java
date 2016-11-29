@@ -2,9 +2,8 @@
 package com.jfixby.redreporter.api.transport;
 
 import com.jfixby.cmns.api.ComponentInstaller;
-import com.jfixby.cmns.api.sys.SystemInfo;
 import com.jfixby.redreporter.api.InstallationID;
-import com.jfixby.redreporter.api.Report;
+import com.jfixby.redreporter.api.analytics.Report;
 
 public class ReporterTransport {
 
@@ -23,16 +22,16 @@ public class ReporterTransport {
 		return componentInstaller.getComponent();
 	}
 
-	public static InstallationID registerInstallation (final SystemInfo systemInfo) {
-		return invoke().registerInstallation(systemInfo);
-	}
-
 	public static boolean sendReport (final Report message) {
 		return invoke().sendReport(message);
 	}
 
 	public static void pingServers () {
 		invoke().pingServers();
+	}
+
+	public static InstallationID getInstallationID () {
+		return invoke().getInstallationID();
 	}
 
 }

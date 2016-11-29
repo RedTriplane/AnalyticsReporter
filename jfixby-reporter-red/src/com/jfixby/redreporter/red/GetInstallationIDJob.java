@@ -5,14 +5,12 @@ import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.sys.SystemInfo;
 import com.jfixby.cmns.api.taskman.Job;
-import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
-import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public class GetInstallationIDJob implements Job {
 
 	private final RedReporter redReporter;
-	private boolean done = false;
+	private final boolean done = false;
 	private SystemInfo systemInfo;
 
 	public GetInstallationIDJob (final RedReporter redReporter) {
@@ -28,17 +26,17 @@ public class GetInstallationIDJob implements Job {
 
 	@Override
 	public void doPush () throws Throwable {
-		try {
-			final InstallationID id = ReporterTransport.registerInstallation(this.systemInfo);
-			if (id != null) {
-				this.redReporter.setupInstallationID(id);
-				this.redReporter.resetSleep();
-				this.done = true;
-				return;
-			}
-		} catch (final Throwable e) {
-			L.e(e);
-		}
+// try {
+// final InstallationID id = ReporterTransport.registerInstallation(this.systemInfo);
+// if (id != null) {
+// this.redReporter.setupInstallationID(id);
+// this.redReporter.resetSleep();
+// this.done = true;
+// return;
+// }
+// } catch (final Throwable e) {
+// L.e(e);
+// }
 		this.redReporter.speep(RedReporter.m10);
 	}
 
