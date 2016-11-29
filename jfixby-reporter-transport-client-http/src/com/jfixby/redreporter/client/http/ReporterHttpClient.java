@@ -82,6 +82,40 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 		}
 	}
 
+	@Override
+	public boolean deleteInstallationID () {
+		if (this.iidStorage == null) {
+			return false;
+		}
+		final File iidFile = this.iidStorage.child(INSTALLATION_ID_FILE_NAME);
+		try {
+			if (!iidFile.exists()) {
+				return false;
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+			Err.reportError(e);
+			return false;
+		}
+		try {
+			if (!iidFile.isFile()) {
+				return false;
+			}
+		} catch (final IOException e) {
+			e.printStackTrace();
+			Err.reportError(e);
+			return false;
+		}
+
+		try {
+			iidFile.delete();
+		} catch (final IOException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return true;
+	}
+
 	private InstallationID readFromStorage () {
 		if (this.iidStorage == null) {
 			return null;
@@ -123,6 +157,7 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 		}
 
 		this.iid = new InstallationID();
+		this.iid.token = token;
 		return this.iid;
 	}
 

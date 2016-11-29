@@ -35,6 +35,11 @@ public class RegisterInstallationTest {
 			final HttpURL url = Http.newURL(url_string);
 			config.addAnalyticsServerUrl(url);
 		}
+		{
+			final String url_string = "https://rr-1.red-triplane.com";
+			final HttpURL url = Http.newURL(url_string);
+			config.addAnalyticsServerUrl(url);
+		}
 
 		final File iidStorage = LocalFileSystem.ApplicationHome();
 		config.setInstallationIDStorageFolder(iidStorage);
@@ -44,6 +49,7 @@ public class RegisterInstallationTest {
 		final InstallationID installReg = ReporterTransport.getInstallationID();
 
 		L.d("register install", installReg);
+		ReporterTransport.deleteInstallationID();
 	}
 
 }

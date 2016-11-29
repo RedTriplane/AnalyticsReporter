@@ -12,4 +12,6 @@ public interface ReporterTransportComponent {
 
 	InstallationID getInstallationID ();
 
+	boolean deleteInstallationID ();
+
 }

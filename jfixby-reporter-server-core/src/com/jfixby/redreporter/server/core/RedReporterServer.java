@@ -24,34 +24,30 @@ public class RedReporterServer implements ReporterServerComponent {
 
 	@Override
 	public ServerState getState () {
-		if (this.idgen != null) {
-			try {
-				this.loadSettings();
-				return ServerState.OK;
-			} catch (final IOException e) {
-				e.printStackTrace();
-				return ServerState.ERROR;
+		try {
+			final boolean alreadyStarted = this.checkStarted();
+			if (alreadyStarted) {
+				this.bank.getServerSettings();
 			}
-		} else {
-			try {
-				this.checkStarted();
-				return ServerState.OK;
-			} catch (final IOException e) {
-				e.printStackTrace();
+			return ServerState.OK;
+		} catch (final IOException e) {
+			e.printStackTrace();
+			if (this.idgen != null) {
+				return ServerState.ERROR;
+			} else {
 				return ServerState.STARTING;
 			}
 		}
-
 	}
 
-	synchronized private void checkStarted () throws IOException {
+	synchronized private boolean checkStarted () throws IOException {
 		if (this.idgen != null) {
-			return;
+			return true;
 		}
-		this.loadSettings();
-		final String salt0 = this.serverSettings().getSalat0();
+		this.serverSettings = this.bank.getServerSettings();
+		final String salt0 = this.serverSettings.getSalat0();
 		this.idgen = new InstallationIDGenerator0(salt0);
-		return;
+		return false;
 	}
 
 	@Override
@@ -89,17 +85,6 @@ public class RedReporterServer implements ReporterServerComponent {
 			e.printStackTrace();
 			return false;
 		}
-	}
-
-	private ServerSettings serverSettings () throws IOException {
-		if (this.serverSettings == null) {
-			this.loadSettings();
-		}
-		return this.serverSettings;
-	}
-
-	private void loadSettings () throws IOException {
-		this.serverSettings = this.bank.getServerSettings();
 	}
 
 }

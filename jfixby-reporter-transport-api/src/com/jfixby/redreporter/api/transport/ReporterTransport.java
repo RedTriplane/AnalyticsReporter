@@ -34,4 +34,8 @@ public class ReporterTransport {
 		return invoke().getInstallationID();
 	}
 
+	public static boolean deleteInstallationID () {
+		return invoke().deleteInstallationID();
+	}
+
 }

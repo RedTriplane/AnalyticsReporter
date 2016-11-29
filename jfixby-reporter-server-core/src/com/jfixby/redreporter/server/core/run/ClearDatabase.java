@@ -29,9 +29,7 @@ public class ClearDatabase {
 		final MySQL mySQL = new MySQL(config);
 
 		final RedReporterDataBank bank = new RedReporterDataBank(mySQL);
-		mySQL.connect();
 		bank.resetTables();
-		mySQL.disconnect();
 
 	}
 
