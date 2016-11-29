@@ -15,7 +15,7 @@ import com.jfixby.cmns.api.net.http.HttpConnectionSpecs;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.http.METHOD;
 import com.jfixby.cmns.api.net.message.Message;
-import com.jfixby.redreporter.api.ServerState;
+import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 
 public class ServerHandler {
@@ -23,7 +23,7 @@ public class ServerHandler {
 	private final HttpURL url;
 	private long ping = Long.MAX_VALUE;
 	private int code;
-	ServerState status = ServerState.FAILED;
+	ServerStatus status = ServerStatus.NO_RESPONSE;
 	private String serverProcesingTime;
 
 	@Override
@@ -44,7 +44,7 @@ public class ServerHandler {
 	public void check () {
 		this.code = -1;
 		this.ping = Long.MAX_VALUE;
-		this.status = ServerState.FAILED;
+		this.status = ServerStatus.NO_RESPONSE;
 		this.serverProcesingTime = "<UNKNOWN>";
 		this.updatePeek();
 		if (this.code != 200) {
@@ -102,7 +102,7 @@ public class ServerHandler {
 		try {
 			return this.exchange(message, null);
 		} catch (final IOException e) {
-			this.status = ServerState.FAILED;
+			this.status = ServerStatus.NO_RESPONSE;
 			this.serverProcesingTime = Long.MAX_VALUE + "";
 		}
 		return null;
@@ -111,7 +111,7 @@ public class ServerHandler {
 
 	private Message exchange (final Message message, final Mapping<String, String> headers) throws IOException {
 		Debug.checkNull("message", message);
-		this.status = ServerState.FAILED;
+		this.status = ServerStatus.NO_RESPONSE;
 		this.serverProcesingTime = "UNKNOWN";
 		final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
 		conSpec.setURL(this.url);
@@ -161,7 +161,7 @@ public class ServerHandler {
 
 		final Message response = IO.deserialize(Message.class, responceBytes);
 		this.serverProcesingTime = response.values.get(REPORTER_PROTOCOL.SERVER_RESPONDED_IN);
-		this.status = ServerState.OK;
+		this.status = ServerStatus.OK;
 		return response;
 
 	}

@@ -296,6 +296,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			return this.registerInstallation(arg);
 		}
 		if (REPORTER_PROTOCOL.PING.equals(arg.message.header)) {
+			arg.message.values.put(REPORTER_PROTOCOL.SERVER_STATUS, "" + ReporterServer.getState());
 			return arg.message;
 		}
 		return this.unknownHeader(arg);

@@ -8,8 +8,8 @@ import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.redreporter.api.InstallationID;
+import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.server.api.ReporterServerComponent;
-import com.jfixby.redreporter.server.api.ServerStatus;
 
 public class RedReporterServer implements ReporterServerComponent {
 
