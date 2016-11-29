@@ -31,8 +31,8 @@ public class ReporterServer {
 		return invoke().updateSystemInfo(token, values);
 	}
 
-	public static ServerStatus getState () {
-		return invoke().getState();
+	public static ServerStatus getStatus () {
+		return invoke().getStatus();
 	}
 
 	public static ID newToken (final ID requestID) {

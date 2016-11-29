@@ -23,7 +23,7 @@ public class RedReporterServer implements ReporterServerComponent {
 	}
 
 	@Override
-	public ServerStatus getState () {
+	public ServerStatus getStatus () {
 		try {
 			this.checkStarted();
 			this.bank.getServerSettings();

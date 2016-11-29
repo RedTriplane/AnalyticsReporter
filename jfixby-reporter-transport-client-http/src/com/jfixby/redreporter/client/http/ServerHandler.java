@@ -15,7 +15,6 @@ import com.jfixby.cmns.api.net.http.HttpConnectionSpecs;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.http.METHOD;
 import com.jfixby.cmns.api.net.message.Message;
-import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 
 public class ServerHandler {
@@ -23,14 +22,26 @@ public class ServerHandler {
 	private final HttpURL url;
 	private long ping = Long.MAX_VALUE;
 	private int code;
-	ServerStatus status = ServerStatus.NO_RESPONSE;
+	String status = NO_RESPONSE;
+	String serverVersion = UNKNOWN;
+
 	private String serverProcesingTime;
+	static final String NO_RESPONSE = "NO_RESPONSE";
+	private static final String UNKNOWN = "UNKNOWN";
 
 	@Override
 	public String toString () {
-		return "[" + this.code() + "] " + this.url + " ping=" + this.ping() + " ServerState=" + this.status + " processingTime="
-			+ this.serverProcesingTime;
+		return "[" + this.code() + "] " + this.url + " ping=" + this.ping() + " ServerState=" + this.status() + " processingTime="
+			+ this.serverProcesingTime();
 
+	}
+
+	private String serverProcesingTime () {
+		return this.serverProcesingTime;
+	}
+
+	private String status () {
+		return "<" + this.status + ">";
 	}
 
 	public long getPing () {
@@ -44,8 +55,8 @@ public class ServerHandler {
 	public void check () {
 		this.code = -1;
 		this.ping = Long.MAX_VALUE;
-		this.status = ServerStatus.NO_RESPONSE;
-		this.serverProcesingTime = "<UNKNOWN>";
+		this.status = NO_RESPONSE;
+		this.serverProcesingTime = UNKNOWN;
 		this.updatePeek();
 		if (this.code != 200) {
 			return;
@@ -102,7 +113,7 @@ public class ServerHandler {
 		try {
 			return this.exchange(message, null);
 		} catch (final IOException e) {
-			this.status = ServerStatus.NO_RESPONSE;
+			this.status = NO_RESPONSE;
 			this.serverProcesingTime = Long.MAX_VALUE + "";
 		}
 		return null;
@@ -111,8 +122,8 @@ public class ServerHandler {
 
 	private Message exchange (final Message message, final Mapping<String, String> headers) throws IOException {
 		Debug.checkNull("message", message);
-		this.status = ServerStatus.NO_RESPONSE;
-		this.serverProcesingTime = "UNKNOWN";
+		this.status = NO_RESPONSE;
+		this.serverProcesingTime = UNKNOWN;
 		final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
 		conSpec.setURL(this.url);
 
@@ -161,7 +172,8 @@ public class ServerHandler {
 
 		final Message response = IO.deserialize(Message.class, responceBytes);
 		this.serverProcesingTime = response.values.get(REPORTER_PROTOCOL.SERVER_RESPONDED_IN);
-		this.status = ServerStatus.OK;
+		this.status = response.values.get(REPORTER_PROTOCOL.SERVER_STATUS);
+		this.serverVersion = response.values.get(REPORTER_PROTOCOL.SERVER_CODE_VERSION);
 		return response;
 
 	}
