@@ -70,7 +70,6 @@ public class RedReporterDataBank {
 	MySQLTable settingsTable;
 
 	public ServerSettings getServerSettings () throws IOException {
-
 		try {
 			this.mySQL.connect();
 			final ServerSettings result = new ServerSettings();

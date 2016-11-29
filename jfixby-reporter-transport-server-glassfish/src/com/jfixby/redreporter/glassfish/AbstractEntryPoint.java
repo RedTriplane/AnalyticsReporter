@@ -63,7 +63,7 @@ public abstract class AbstractEntryPoint extends HttpServlet {
 		version = new Version();
 		version.major = 1;
 		version.minor = 0;
-		version.build = 50;
+		version.build = 53;
 		version.packageName = "com.jfixby.redreporter.glassfish";
 		version.stage = VERSION_STAGE.ALPHA;
 		version.versionCode = 0;

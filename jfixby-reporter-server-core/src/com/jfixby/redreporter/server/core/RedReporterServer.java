@@ -25,10 +25,8 @@ public class RedReporterServer implements ReporterServerComponent {
 	@Override
 	public ServerState getState () {
 		try {
-			final boolean alreadyStarted = this.checkStarted();
-			if (alreadyStarted) {
-				this.bank.getServerSettings();
-			}
+			this.checkStarted();
+			this.bank.getServerSettings();
 			return ServerState.OK;
 		} catch (final IOException e) {
 			e.printStackTrace();
