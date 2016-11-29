@@ -132,7 +132,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		return null;
 	}
 
-	public static final int MAX_PARAMETERS = 50;
+	public static final int MAX_PARAMETERS = 1000;
 
 	private Message registerInstallation (final RedReporterEntryPointArguments arg) throws IOException {
 		final Message result = new Message(REPORTER_PROTOCOL.INSTALLATION_TOKEN);

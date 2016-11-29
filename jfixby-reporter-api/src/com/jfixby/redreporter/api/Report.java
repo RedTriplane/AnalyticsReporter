@@ -18,4 +18,6 @@ public interface Report {
 
 	void submit ();
 
+	void setPriority (PRIORITY priority);
+
 }

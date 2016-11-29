@@ -5,11 +5,11 @@ import com.jfixby.cmns.api.err.ErrorComponent;
 import com.jfixby.cmns.api.err.NotImplementedYetException;
 import com.jfixby.red.err.RedError;
 import com.jfixby.redreporter.api.Report;
-import com.jfixby.redreporter.api.ReporterComponent;
+import com.jfixby.redreporter.api.err.ErrorReporterComponent;
 
 public class RedReporterErrorsListener implements ErrorComponent {
 
-	private final ReporterComponent master;
+	private final ErrorReporterComponent master;
 	private ErrorComponent defaultErrorListener;
 
 	public RedReporterErrorsListener (final RedReporter redReporter) {
