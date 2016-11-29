@@ -83,9 +83,9 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 			arg.message = IO.deserialize(Message.class, data);
 			is.close();
 
-			final Message answer = this.processMessage(arg);
+			Message answer = this.processMessage(arg);
 			if (answer == null) {
-				return;
+				answer = new Message(REPORTER_PROTOCOL.ERR);
 			}
 			final OutputStream os = IO.newOutputStream( () -> server_to_client_stream);
 			os.open();
@@ -129,7 +129,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 	private Message unknownHeader (final RedReporterEntryPointArguments arg) {
 		L.d("unknown header");
 		arg.message.print();
-		return null;
+		return new Message(REPORTER_PROTOCOL.UNKNOWN_HEADER);
 	}
 
 	public static final int MAX_PARAMETERS = 1000;
@@ -140,13 +140,13 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		final ID token = ReporterServer.newToken(arg.requestID);
 
 		if (token == null) {
-			return null;
+			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
 
 		final InstallationID id = ReporterServer.registerInstallation(token);
 
 		if (id == null) {
-			return null;
+			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
 
 		arg.message.values.put(SystemInfoTags.Net.client_ip, this.getHeader(SystemInfoTags.Net.client_ip, arg.inputHeaders));
@@ -160,7 +160,7 @@ public class RedReporterEntryPoint extends AbstractEntryPoint {
 		final boolean success = ReporterServer.updateSystemInfo(token, params);
 
 		if (!success) {
-			return null;
+			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
 
 		L.d("register install", id.token);
