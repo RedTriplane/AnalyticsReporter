@@ -14,5 +14,6 @@ public class REPORTER_PROTOCOL {
 	public static final String SERVER_RESPONDED_IN = "AnalyticsReporter.SERVER_RESPONDED_IN";
 	public static final String SERVER_STATUS = "AnalyticsReporter.SERVER_STATUS";
 	public static final String SERVER_CODE_VERSION = "AnalyticsReporter.SERVER_CODE_VERSION";
+	public static final String REQUEST_ID = "AnalyticsReporter.REQUEST_ID";
 
 }

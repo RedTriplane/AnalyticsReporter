@@ -28,11 +28,19 @@ public class AllServersCheck implements ServersCheck {
 		}
 
 		while (this.totalNumberOfparticipants.value > 0) {
-			Sys.sleep(15);
+// Sys.yeld();
+			Sys.sleep(1);
 		}
 		L.d("cheking servers done in", (System.currentTimeMillis() - startTime) + " ms");
-		Collections.newList(this.succeed).print("succeed");
-		Collections.newList(this.failed).print(" failed");
+		if (this.totalNumberOfparticipants.value > 0) {
+			L.d("still running", this.totalNumberOfparticipants.value);
+		}
+		if (this.succeed.size() > 0) {
+			Collections.newList(this.succeed).print("succeed");
+		}
+		if (this.failed.size() > 0) {
+			Collections.newList(this.failed).print(" failed");
+		}
 	}
 
 	final Vector<ServerPing> failed = new Vector<ServerPing>();

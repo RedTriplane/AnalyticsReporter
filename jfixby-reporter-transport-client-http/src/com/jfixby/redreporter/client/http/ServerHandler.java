@@ -109,16 +109,17 @@ public class ServerHandler {
 
 	public Message exchange (final Message message) {
 		try {
-			return this.exchange(message, null);
+			return exchange(message, null, this.url);
 		} catch (final IOException e) {
 		}
 		return null;
 	}
 
-	private Message exchange (final Message message, final Mapping<String, String> headers) throws IOException {
+	static private Message exchange (final Message message, final Mapping<String, String> headers, final HttpURL url)
+		throws IOException {
 		Debug.checkNull("message", message);
 		final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
-		conSpec.setURL(this.url);
+		conSpec.setURL(url);
 
 		conSpec.setMethod(METHOD.POST);
 		conSpec.setUseCaches(false);
@@ -150,7 +151,13 @@ public class ServerHandler {
 
 		final HttpConnectionInputStream is = connection.getInputStream();
 		is.open();
-		final ByteArray rdata = is.readAll();
+		ByteArray rdata;
+		try {
+			rdata = is.readAll();
+		} catch (final IOException e2) {
+			e2.printStackTrace();
+			rdata = null;
+		}
 		is.close();
 		if (rdata == null) {
 			return null;
@@ -168,7 +175,7 @@ public class ServerHandler {
 
 	}
 
-	public static final int SERVER_TIMEOUT = 5000;
+	public static final int SERVER_TIMEOUT = 1000;
 
 	public void check (final ServerRanker ranker) {
 		final ServerHandler server = this;

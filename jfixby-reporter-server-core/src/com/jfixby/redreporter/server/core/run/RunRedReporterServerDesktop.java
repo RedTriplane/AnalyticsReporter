@@ -35,7 +35,6 @@ public class RunRedReporterServerDesktop {
 		config.setPassword(CONFIG.DB_PASSWORD);
 		config.setDBName(CONFIG.DB_NAME);
 		config.setUseSSL(!true);
-		config.setConnectionDrainTime(5);
 		final MySQL mySQL = new MySQL(config);
 
 		final RedReporterDataBank bank = new RedReporterDataBank(mySQL);

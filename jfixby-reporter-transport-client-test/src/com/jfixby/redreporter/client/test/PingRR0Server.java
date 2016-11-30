@@ -27,12 +27,12 @@ public class PingRR0Server {
 		{
 			final String url_string = "https://rr-0.red-triplane.com/";
 			final HttpURL url = Http.newURL(url_string);
-			transport_config.addAnalyticsServerUrl(url);
+// transport_config.addAnalyticsServerUrl(url);
 		}
 		{
 			final String url_string = "http://127.0.0.1:8080/";
 			final HttpURL url = Http.newURL(url_string);
-			transport_config.addAnalyticsServerUrl(url);
+// transport_config.addAnalyticsServerUrl(url);
 		}
 
 		{
@@ -46,15 +46,23 @@ public class PingRR0Server {
 		final ReporterHttpClient transport = new ReporterHttpClient(transport_config);
 		ReporterTransport.installComponent(transport);
 
-		final int PARALLEL_CONNECTIONS = 1;
-		while (true) {
-			for (int i = 0; i < PARALLEL_CONNECTIONS; i++) {
-				final ServersCheck check = ReporterTransport.checkServers();
-				while (!check.isComplete()) {
-					Sys.sleep(100);
+		final int PARALLEL_CONNECTIONS = 10;
+
+		for (int i = 0; i < PARALLEL_CONNECTIONS; i++) {
+			final Thread t = new Thread() {
+				@Override
+				public void run () {
+					while (true) {
+						final ServersCheck check = ReporterTransport.checkServers();
+						while (!check.isComplete()) {
+							Sys.sleep(100);
+						}
+					}
 				}
-			}
+			};
+			t.start();
 		}
+
 	}
 // final String url_string = "https://rr-0.red-triplane.com";
 // final HttpURL url = Http.newURL(url_string);

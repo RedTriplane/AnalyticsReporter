@@ -91,10 +91,10 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		average = FloatMath.newAverage(MAX_VALUES);
 		version = new Version();
 		version.major = "1";
-		version.minor = "12";
-		version.build = "1";
+		version.minor = "14";
+		version.build = "0";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 623;
+		version.versionCode = 626;
 
 		final MySQLConfig config = new MySQLConfig();
 
@@ -102,8 +102,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		config.setLogin(CONFIG.DB_LOGIN);
 		config.setPassword(CONFIG.DB_PASSWORD);
 		config.setDBName(CONFIG.DB_NAME);
-		config.setConnectionDrainTime(30);
-		config.setUseSSL(!true);
+		config.setUseSSL(false);
 
 		mySQL = new MySQL(config);
 
@@ -147,88 +146,91 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	 * @throws ServletException if a servlet-specific error occurs
 	 * @throws IOException if an I/O error occurs */
 
-	protected void processRequest (final HttpServletRequest request, final HttpServletResponse response)
-		throws ServletException, IOException {
-
-		final boolean https = this.check_https(request);
-
-		if (PROTOCOL_POLICY() == PROTOCOL_POLICY.HTTPS_ONLY && !https) {
-			this.force_https(request, response);
-			return;
-		}
-		if (PROTOCOL_POLICY() == PROTOCOL_POLICY.HTTP_ONLY && https) {
-			this.force_http(request, response);
-			return;
-		}
-
-		String path_info = request.getPathInfo();
-		if (path_info == null) {
-			path_info = "";
-		}
-
-		final String reqUrl = request.getRequestURL() + "";
-		if (reqUrl.endsWith("favicon.ico")) {
-			return;
-		}
-
+	protected void processRequest (final HttpServletRequest request, final HttpServletResponse response) {
 		final RedReporterEntryPointArguments arg = new RedReporterEntryPointArguments();
-		arg.timestamp = System.currentTimeMillis();
-		arg.request_number = RedReporterEntryPoint.request_number();
-		final HttpSession session = request.getSession();
-		final String session_id = session.getId();
-		arg.requestID = Names.ROOT().child("iid-" + instance_id).child("sid-" + session_id).child("rqn-" + arg.request_number);
+		try {
+			final boolean https = this.check_https(request);
 
-		L.d("----Request[" + arg.requestID + "]----------------------------------------------");
-
-		final ServletInputStream client_to_server_stream = request.getInputStream();
-		final ServletOutputStream server_to_client_stream = response.getOutputStream();
-		final Map<String, List<String>> client_to_server_headers = Collections.newMap();
-		final Enumeration<String> header_names = request.getHeaderNames();
-
-		while (header_names.hasMoreElements()) {
-			final String key = header_names.nextElement();
-			final String value = request.getHeader(key);
-			client_to_server_headers.put(key, Collections.newList(value));
-		}
-		client_to_server_headers.put("reqUrl", Collections.newList(reqUrl));
-		client_to_server_headers.put("path_info", Collections.newList(path_info));
-		final String client_ip_addr = getClientIpAddr(request);
-		client_to_server_headers.put(SystemInfoTags.Net.client_ip, Collections.newList(client_ip_addr));
-
-		final java.util.Map<String, String[]> param_map = request.getParameterMap();
-		final Iterator<String> iterator = param_map.keySet().iterator();
-		while (iterator.hasNext()) {
-			final String key = iterator.next();
-			final String[] values = param_map.get(key);
-			final List<String> list = Collections.newList(values);
-			client_to_server_headers.put(key.toLowerCase(), list);
-		}
-		final Map<String, String> server_to_client_headers = Collections.newMap();
-
-		arg.inputHeaders = client_to_server_headers;
-		arg.server_to_client_stream = server_to_client_stream;
-		arg.client_to_server_stream = client_to_server_stream;
-// arg.print();
-		processRequest(arg);
-
-		final Iterator<String> i = server_to_client_headers.keys().iterator();
-		final String new_location = server_to_client_headers.get("WEB_SERVER.REDIRECT");
-		if (new_location != null) {
-			response.sendRedirect(new_location);
-			L.d("redirect: " + new_location);
-		} else {
-			while (i.hasNext()) {
-				final String key = i.next();
-				final String value = server_to_client_headers.get(key);
-				response.setHeader(key, value);
+			if (PROTOCOL_POLICY() == PROTOCOL_POLICY.HTTPS_ONLY && !https) {
+				this.force_https(request, response);
+				return;
 			}
+			if (PROTOCOL_POLICY() == PROTOCOL_POLICY.HTTP_ONLY && https) {
+				this.force_http(request, response);
+				return;
+			}
+
+			String path_info = request.getPathInfo();
+			if (path_info == null) {
+				path_info = "";
+			}
+
+			final String reqUrl = request.getRequestURL() + "";
+			if (reqUrl.endsWith("favicon.ico")) {
+				return;
+			}
+
+			arg.timestamp = System.currentTimeMillis();
+			arg.request_number = RedReporterEntryPoint.request_number();
+			final HttpSession session = request.getSession();
+			final String session_id = session.getId();
+			arg.requestID = Names.ROOT().child("iid-" + instance_id).child("sid-" + session_id).child("rqn-" + arg.request_number);
+
+			L.d("----Request[" + arg.requestID + "]----------------------------------------------");
+
+			final ServletInputStream client_to_server_stream = request.getInputStream();
+			final ServletOutputStream server_to_client_stream = response.getOutputStream();
+			final Map<String, List<String>> client_to_server_headers = Collections.newMap();
+			final Enumeration<String> header_names = request.getHeaderNames();
+
+			while (header_names.hasMoreElements()) {
+				final String key = header_names.nextElement();
+				final String value = request.getHeader(key);
+				client_to_server_headers.put(key, Collections.newList(value));
+			}
+			client_to_server_headers.put("reqUrl", Collections.newList(reqUrl));
+			client_to_server_headers.put("path_info", Collections.newList(path_info));
+			final String client_ip_addr = getClientIpAddr(request);
+			client_to_server_headers.put(SystemInfoTags.Net.client_ip, Collections.newList(client_ip_addr));
+
+			final java.util.Map<String, String[]> param_map = request.getParameterMap();
+			final Iterator<String> iterator = param_map.keySet().iterator();
+			while (iterator.hasNext()) {
+				final String key = iterator.next();
+				final String[] values = param_map.get(key);
+				final List<String> list = Collections.newList(values);
+				client_to_server_headers.put(key.toLowerCase(), list);
+			}
+			final Map<String, String> server_to_client_headers = Collections.newMap();
+
+			arg.inputHeaders = client_to_server_headers;
+			arg.server_to_client_stream = server_to_client_stream;
+			arg.client_to_server_stream = client_to_server_stream;
+// arg.print();
+			processRequest(arg);
+
+			final Iterator<String> i = server_to_client_headers.keys().iterator();
+			final String new_location = server_to_client_headers.get("WEB_SERVER.REDIRECT");
+			if (new_location != null) {
+				response.sendRedirect(new_location);
+				L.d("redirect: " + new_location);
+			} else {
+				while (i.hasNext()) {
+					final String key = i.next();
+					final String value = server_to_client_headers.get(key);
+					response.setHeader(key, value);
+				}
+			}
+			server_to_client_stream.flush();
+			server_to_client_stream.close();
+			final long processed_in = System.currentTimeMillis() - arg.timestamp;
+			L.d("request", arg.requestID);
+			L.d("processed in", processed_in + " ms");
+			L.d("          ip", client_ip_addr);
+		} catch (final Throwable e) {
+			L.e("failed request", arg.requestID);
+			e.printStackTrace();
 		}
-		server_to_client_stream.flush();
-		server_to_client_stream.close();
-		final long processed_in = System.currentTimeMillis() - arg.timestamp;
-		L.d("request", arg.requestID);
-		L.d("processed in", processed_in + " ms");
-		L.d("          ip", client_ip_addr);
 	}
 
 	/**
@@ -276,6 +278,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			final Long processingTime = System.currentTimeMillis() - arg.timestamp;
 			answer.attachments.put(REPORTER_PROTOCOL.SERVER_RESPONDED_IN, processingTime);
 			arg.message.values.put(REPORTER_PROTOCOL.SERVER_CODE_VERSION, "" + version.getVersionString());
+			arg.message.values.put(REPORTER_PROTOCOL.REQUEST_ID, arg.requestID + "");
 			final OutputStream os = IO.newOutputStream( () -> arg.server_to_client_stream);
 			os.open();
 
