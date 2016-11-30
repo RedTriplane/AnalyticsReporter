@@ -16,7 +16,7 @@ public class ServerPing {
 	public long serverProcesingTime;
 	public HttpURL url;
 	public ServerHandler server;
-	public Throwable error;
+	public String error;
 
 	public boolean isGood () {
 		if (this.code == -1) {

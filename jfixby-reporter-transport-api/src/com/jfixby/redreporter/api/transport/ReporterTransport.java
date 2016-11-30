@@ -26,8 +26,8 @@ public class ReporterTransport {
 		return invoke().sendReport(message);
 	}
 
-	public static void checkServers () {
-		invoke().checkServers();
+	public static ServersCheck checkServers () {
+		return invoke().checkServers();
 	}
 
 	public static InstallationID getInstallationID () {

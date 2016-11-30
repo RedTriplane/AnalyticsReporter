@@ -7,8 +7,8 @@ import java.util.Vector;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.Set;
 import com.jfixby.cmns.api.java.Int;
-import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
+import com.jfixby.redreporter.api.transport.ServersCheck;
 
 public class ServerHandlers implements Iterable<ServerHandler> {
 
@@ -40,7 +40,7 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 			}
 		};
 		for (final ServerHandler server : this.servers) {
-			server.rank(ranker);
+			server.check(ranker);
 		}
 
 		long passed;
@@ -62,37 +62,9 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 		return this.servers.iterator();
 	}
 
-	public void checkAll () {
-		this.servers.print("cheking servers");
-		final Vector<ServerPing> failed = new Vector<ServerPing>();
-		final Vector<ServerPing> succeed = new Vector<ServerPing>();
-
-		final Int totalNumberOfparticipants = new Int(this.servers.size());
-		final long startTime = Sys.SystemTime().currentTimeMillis();
-		final ServerRanker ranker = new ServerRanker() {
-
-			@Override
-			public void onSuccess (final ServerHandler server, final ServerPing result) {
-				succeed.add(result);
-				totalNumberOfparticipants.value--;
-			}
-
-			@Override
-			public void onFail (final ServerHandler server, final ServerPing result) {
-				failed.add(result);
-				totalNumberOfparticipants.value--;
-			}
-		};
-		for (final ServerHandler server : this.servers) {
-			server.rank(ranker);
-		}
-
-		while (totalNumberOfparticipants.value > 0) {
-			Sys.sleep(15);
-		}
-		L.d("cheking servers done in", (System.currentTimeMillis() - startTime) + " ms");
-		Collections.newList(succeed).print("succeed");
-		Collections.newList(failed).print(" failed");
+	public ServersCheck checkAll () {
+		final AllServersCheck check = new AllServersCheck(this.servers);
+		return check;
 
 	}
 }

@@ -7,6 +7,7 @@ import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.io.IO;
 import com.jfixby.cmns.api.java.ByteArray;
+import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
@@ -41,11 +42,15 @@ public class ServerHandler {
 		ping.status = ServerStatus.NO_RESPONSE;
 		ping.serverVersion = ServerPing.UNKNOWN;
 		ping.serverProcesingTime = Long.MAX_VALUE;
-		updatePeek(ping);
-		if (ping.code != 200) {
-			return ping;
+		try {
+			updatePeek(ping);
+			if (ping.code != 200) {
+				return ping;
+			}
+			updatePing(ping);
+		} catch (final Throwable e) {
+			ping.error = L.stackTraceToString(e);
 		}
-		updatePing(ping);
 		return ping;
 	}
 
@@ -57,12 +62,26 @@ public class ServerHandler {
 		final Message pongMessage = ping.server.exchange(pingMessage);
 		try {
 			ping.status = (ServerStatus)pongMessage.attachments.get(REPORTER_PROTOCOL.SERVER_STATUS);
-			ping.serverProcesingTime = (Long)pongMessage.attachments.get(REPORTER_PROTOCOL.SERVER_RESPONDED_IN);
-			ping.serverVersion = pongMessage.values.get(REPORTER_PROTOCOL.SERVER_CODE_VERSION);
-			ping.ping = System.currentTimeMillis() - timestamp;
 		} catch (final Throwable e) {
-			ping.error = e;
+			ping.error = "failed to read: ServerStatus";
+			return;
 		}
+
+		try {
+			ping.serverProcesingTime = (Long)pongMessage.attachments.get(REPORTER_PROTOCOL.SERVER_RESPONDED_IN);
+		} catch (final Throwable e) {
+			ping.error = "failed to read: serverProcesingTime";
+			return;
+		}
+
+		try {
+			ping.serverVersion = pongMessage.values.get(REPORTER_PROTOCOL.SERVER_CODE_VERSION);
+		} catch (final Throwable e) {
+			ping.error = "failed to read: serverVersion";
+			return;
+		}
+
+		ping.ping = System.currentTimeMillis() - timestamp;
 
 	}
 
@@ -151,7 +170,7 @@ public class ServerHandler {
 
 	public static final int SERVER_TIMEOUT = 5000;
 
-	public void rank (final ServerRanker ranker) {
+	public void check (final ServerRanker ranker) {
 		final ServerHandler server = this;
 		final Thread t = new Thread() {
 			@Override

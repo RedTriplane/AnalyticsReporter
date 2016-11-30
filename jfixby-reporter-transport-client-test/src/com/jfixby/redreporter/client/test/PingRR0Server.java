@@ -13,6 +13,7 @@ import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
+import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
 
@@ -45,19 +46,13 @@ public class PingRR0Server {
 		final ReporterHttpClient transport = new ReporterHttpClient(transport_config);
 		ReporterTransport.installComponent(transport);
 
-		ReporterTransport.checkServers();
-		Sys.exit();
-
-		final int PARALLEL_CONNECTIONS = 100;
+		final int PARALLEL_CONNECTIONS = 1;
 		while (true) {
 			for (int i = 0; i < PARALLEL_CONNECTIONS; i++) {
-				final Thread t = new Thread() {
-					@Override
-					public void run () {
-						ReporterTransport.checkServers();
-					}
-				};
-				t.start();
+				final ServersCheck check = ReporterTransport.checkServers();
+				while (!check.isComplete()) {
+					Sys.sleep(100);
+				}
 			}
 		}
 	}

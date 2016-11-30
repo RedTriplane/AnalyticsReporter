@@ -17,6 +17,7 @@ import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.analytics.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransportComponent;
+import com.jfixby.redreporter.api.transport.ServersCheck;
 
 public class ReporterHttpClient implements ReporterTransportComponent {
 	private static final String INSTALLATION_ID_FILE_NAME = "com.red-triplane.iid";
@@ -211,8 +212,8 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 	}
 
 	@Override
-	public void checkServers () {
-		this.servers.checkAll();
+	public ServersCheck checkServers () {
+		return this.servers.checkAll();
 
 	}
 

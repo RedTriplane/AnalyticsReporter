@@ -26,6 +26,8 @@ import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
+import com.jfixby.cmns.api.floatn.Float2;
+import com.jfixby.cmns.api.geometry.Geometry;
 import com.jfixby.cmns.api.io.Buffer;
 import com.jfixby.cmns.api.io.BufferInputStream;
 import com.jfixby.cmns.api.io.GZipInputStream;
@@ -33,6 +35,7 @@ import com.jfixby.cmns.api.io.IO;
 import com.jfixby.cmns.api.io.InputStream;
 import com.jfixby.cmns.api.io.OutputStream;
 import com.jfixby.cmns.api.java.ByteArray;
+import com.jfixby.cmns.api.java.Int;
 import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.math.Average;
@@ -47,7 +50,6 @@ import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
-import com.jfixby.cmns.ver.VERSION_STAGE;
 import com.jfixby.cmns.ver.Version;
 import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.redreporter.api.InstallationID;
@@ -70,18 +72,29 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	public static Version version;
 	private static RedReporterDataBank bank;
 	public static final String instance_id;
+	static int MAX_VALUES = 75;
+	static final Average average;
+
+	final static synchronized private void addValueToAverage (final double val, final Float2 value, final Int size) {
+		average.addValue(val);
+		if (size != null) {
+			size.value = average.size();
+		}
+		if (value != null) {
+			value.setX(average.getAverage());
+		}
+	}
 
 	static {
 		DesktopSetup.deploy();
 		Json.installComponent(new RedJson());
-
+		average = FloatMath.newAverage(MAX_VALUES);
 		version = new Version();
-		version.major = 1;
-		version.minor = 10;
-		version.build = 2;
+		version.major = "1";
+		version.minor = "12";
+		version.build = "1";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.stage = VERSION_STAGE.ALPHA;
-		version.versionCode = 0;
+		version.versionCode = 623;
 
 		final MySQLConfig config = new MySQLConfig();
 
@@ -196,7 +209,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		arg.server_to_client_stream = server_to_client_stream;
 		arg.client_to_server_stream = client_to_server_stream;
 // arg.print();
-		this.processRequest(arg);
+		processRequest(arg);
 
 		final Iterator<String> i = server_to_client_headers.keys().iterator();
 		final String new_location = server_to_client_headers.get("WEB_SERVER.REDIRECT");
@@ -224,15 +237,15 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	private static final long MAX_BYTES_TO_READ = 1024 * 100;
 	static long request = 0;
 
-	void processRequest (final RedReporterEntryPointArguments arg) {
+	static void processRequest (final RedReporterEntryPointArguments arg) {
 		try {
-			final String len = this.getHeader("content-length", arg.inputHeaders);
+			final String len = getHeader("content-length", arg.inputHeaders);
 			if (len == null) {
-				this.sayHello(arg);
+				sayHello(arg);
 				return;
 			}
 			if ("0".equals(len)) {
-				this.sayHello(arg);
+				sayHello(arg);
 				return;
 			}
 			final InputStream is = IO.newInputStream( () -> arg.client_to_server_stream);
@@ -256,7 +269,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			arg.message = IO.deserialize(Message.class, data);
 			is.close();
 
-			Message answer = this.processMessage(arg);
+			Message answer = processMessage(arg);
 			if (answer == null) {
 				answer = new Message(REPORTER_PROTOCOL.ERR);
 			}
@@ -276,10 +289,10 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		}
 // outputHeaders.print("outputHeaders");
 
-		this.average.addValue(this.measureProcessingTime(arg));
+		addValueToAverage(measureProcessingTime(arg), null, null);
 	}
 
-	private String getHeader (final String string, final Map<String, List<String>> inputHeaders) {
+	static private String getHeader (final String string, final Map<String, List<String>> inputHeaders) {
 		final List<String> list = inputHeaders.get(string);
 		if (list == null) {
 			return null;
@@ -295,18 +308,20 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		return request;
 	}
 
-	private Message processMessage (final RedReporterEntryPointArguments arg) throws IOException {
+	static private Message
+
+		processMessage (final RedReporterEntryPointArguments arg) throws IOException {
 		if (REPORTER_PROTOCOL.REGISTER_INSTALLATION.equals(arg.message.header)) {
-			return this.registerInstallation(arg);
+			return registerInstallation(arg);
 		}
 		if (REPORTER_PROTOCOL.PING.equals(arg.message.header)) {
 			arg.message.attachments.put(REPORTER_PROTOCOL.SERVER_STATUS, ReporterServer.getStatus());
 			return arg.message;
 		}
-		return this.unknownHeader(arg);
+		return unknownHeader(arg);
 	}
 
-	private Message unknownHeader (final RedReporterEntryPointArguments arg) {
+	static private Message unknownHeader (final RedReporterEntryPointArguments arg) {
 		L.d("unknown header");
 		arg.message.print();
 		return new Message(REPORTER_PROTOCOL.UNKNOWN_HEADER);
@@ -314,7 +329,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 	public static final int MAX_PARAMETERS = 1000;
 
-	private Message registerInstallation (final RedReporterEntryPointArguments arg) {
+	static private Message registerInstallation (final RedReporterEntryPointArguments arg) {
 		final Message result = new Message(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
 
 		final ID token = ReporterServer.newToken(arg.requestID);
@@ -329,7 +344,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
 
-		arg.message.values.put(SystemInfoTags.Net.client_ip, this.getHeader(SystemInfoTags.Net.client_ip, arg.inputHeaders));
+		arg.message.values.put(SystemInfoTags.Net.client_ip, getHeader(SystemInfoTags.Net.client_ip, arg.inputHeaders));
 
 		final Map<String, String> params = Collections.newMap();
 		Collections.scanCollection(Collections.newList(arg.message.values.keySet()), 0,
@@ -349,14 +364,15 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	}
 
 	public final static String SEPARATOR = System.getProperty("line.separator");
-	int MAX_VALUES = 10;
-	final Average average = FloatMath.newAverage(this.MAX_VALUES);
 
-	private void sayHello (final RedReporterEntryPointArguments arg) throws IOException {
+	static private void sayHello (final RedReporterEntryPointArguments arg) throws IOException {
 		final StringBuilder msg = new StringBuilder();
 		msg.append("Service is operating: " + serviceState()).append(SEPARATOR);
-		this.average.addValue(this.measureProcessingTime(arg));
-		final double sec = FloatMath.roundToDigit(this.average.getLast(), 3);
+		final double val = measureProcessingTime(arg);
+		final Float2 value = Geometry.newFloat2();
+		final Int size = new Int();
+		addValueToAverage(val, value, size);
+		final double sec = FloatMath.roundToDigit(val, 3);
 		msg.append("         server time: " + new Date()).append(SEPARATOR);
 		msg.append("         	 version: " + version.getPackageVersionString()).append(SEPARATOR);
 		msg.append(SEPARATOR);
@@ -364,13 +380,13 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		msg.append("          request id: " + arg.requestID).append(SEPARATOR);
 		msg.append(SEPARATOR);
 		msg.append("request processed in: " + sec + " sec").append(SEPARATOR);
-		msg.append("average for the last: " + this.average.size() + " requests").append(SEPARATOR);
-		msg.append("                  is: " + FloatMath.roundToDigit(this.average.getAverage(), 3) + " sec").append(SEPARATOR);
+		msg.append("average for the last: " + size.value + " requests").append(SEPARATOR);
+		msg.append("                  is: " + FloatMath.roundToDigit(value.getX(), 3) + " sec").append(SEPARATOR);
 
 		arg.server_to_client_stream.write(msg.toString().getBytes());
 	}
 
-	private double measureProcessingTime (final RedReporterEntryPointArguments arg) {
+	static private double measureProcessingTime (final RedReporterEntryPointArguments arg) {
 		return (System.currentTimeMillis() - arg.timestamp) / 1000d;
 	}
 
@@ -455,11 +471,11 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		return "Short description";
 	}// </editor-fold>
 
-	private boolean check_https (final HttpServletRequest request) {
+	static private boolean check_https (final HttpServletRequest request) {
 		return request.isSecure();
 	}
 
-	private void force_https (final HttpServletRequest request, final HttpServletResponse res) throws IOException {
+	static private void force_https (final HttpServletRequest request, final HttpServletResponse res) throws IOException {
 		final String protocol = request.getScheme();
 
 		String reqUrl = request.getRequestURL().toString().replaceFirst(protocol, "https");
@@ -472,7 +488,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		res.sendRedirect(reqUrl);
 	}
 
-	private void force_http (final HttpServletRequest request, final HttpServletResponse res) throws IOException {
+	static private void force_http (final HttpServletRequest request, final HttpServletResponse res) throws IOException {
 		final String protocol = request.getScheme();
 
 		String reqUrl = request.getRequestURL().toString().replaceFirst(protocol, "http");

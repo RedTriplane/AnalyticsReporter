@@ -8,7 +8,7 @@ public interface ReporterTransportComponent {
 
 	boolean sendReport (Report message);
 
-	void checkServers ();
+	ServersCheck checkServers ();
 
 	InstallationID getInstallationID ();
 

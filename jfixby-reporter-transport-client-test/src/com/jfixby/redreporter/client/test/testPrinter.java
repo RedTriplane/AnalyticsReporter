@@ -3,7 +3,6 @@ package com.jfixby.redreporter.client.test;
 
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.red.desktop.DesktopSetup;
-import com.jfixby.redreporter.red.RedReportMessage;
 
 public class testPrinter {
 
@@ -13,11 +12,11 @@ public class testPrinter {
 			call(0);
 		} catch (final Throwable e) {
 			L.d("--------------------------------------------------------");
-			final String str = RedReportMessage.getStackTrace(e);
+			final String str = L.component().stackTraceToString(e);
 			L.d(str);
 
 			L.d("--------------------------------------------------------");
-			final String trace = RedReportMessage.throwableToString(e);
+			final String trace = L.component().throwableToString(e);
 			L.d(trace);
 			L.d("--------------------------------------------------------");
 		}
