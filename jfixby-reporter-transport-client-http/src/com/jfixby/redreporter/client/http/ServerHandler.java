@@ -15,98 +15,73 @@ import com.jfixby.cmns.api.net.http.HttpConnectionSpecs;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.http.METHOD;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 
 public class ServerHandler {
 
 	private final HttpURL url;
-	private long ping = Long.MAX_VALUE;
-	private int code;
-	String status = NO_RESPONSE;
-	String serverVersion = UNKNOWN;
-
-	private String serverProcesingTime;
-	static final String NO_RESPONSE = "NO_RESPONSE";
-	private static final String UNKNOWN = "UNKNOWN";
-
-	@Override
-	public String toString () {
-		return "[" + this.code() + "] " + this.url + " ping=" + this.ping() + " ServerState=" + this.status() + " processingTime="
-			+ this.serverProcesingTime() + " serverVersion=" + this.serverVersion();
-	}
-
-	private String serverVersion () {
-		return "<" + this.serverVersion + ">";
-	}
-
-	private String serverProcesingTime () {
-		return this.serverProcesingTime;
-	}
-
-	private String status () {
-		return "<" + this.status + ">";
-	}
-
-	public long getPing () {
-		return this.ping;
-	}
 
 	public ServerHandler (final HttpURL url) {
 		this.url = url;
 	}
 
-	public void check () {
-		this.code = -1;
-		this.ping = Long.MAX_VALUE;
-		this.status = NO_RESPONSE;
-		this.serverVersion = UNKNOWN;
-		this.serverProcesingTime = UNKNOWN;
-		this.updatePeek();
-		if (this.code != 200) {
-			return;
+	@Override
+	public String toString () {
+		return "Server[" + this.url + "]";
+	}
+
+	private ServerPing check () {
+		final ServerHandler server = this;
+		final ServerPing ping = new ServerPing();
+		ping.code = -1;
+		ping.server = server;
+		ping.url = this.url;
+		ping.ping = Long.MAX_VALUE;
+		ping.status = ServerStatus.NO_RESPONSE;
+		ping.serverVersion = ServerPing.UNKNOWN;
+		ping.serverProcesingTime = Long.MAX_VALUE;
+		updatePeek(ping);
+		if (ping.code != 200) {
+			return ping;
 		}
-		this.updatePing();
+		updatePing(ping);
+		return ping;
 	}
 
-	private void updatePing () {
-		this.ping = Long.MAX_VALUE;
+	static private void updatePing (final ServerPing ping) {
+
+		ping.ping = Long.MAX_VALUE;
 		final long timestamp = System.currentTimeMillis();
-		final Message ping = new Message(REPORTER_PROTOCOL.PING);
-		final Message pong = this.exchange(ping);
-		this.ping = System.currentTimeMillis() - timestamp;
+		final Message pingMessage = new Message(REPORTER_PROTOCOL.PING);
+		final Message pongMessage = ping.server.exchange(pingMessage);
+		try {
+			ping.status = (ServerStatus)pongMessage.attachments.get(REPORTER_PROTOCOL.SERVER_STATUS);
+			ping.serverProcesingTime = (Long)pongMessage.attachments.get(REPORTER_PROTOCOL.SERVER_RESPONDED_IN);
+			ping.serverVersion = pongMessage.values.get(REPORTER_PROTOCOL.SERVER_CODE_VERSION);
+			ping.ping = System.currentTimeMillis() - timestamp;
+		} catch (final Throwable e) {
+			ping.error = e;
+		}
 
 	}
 
-	public int updatePeek () {
-		this.code = -1;
+	static private int updatePeek (final ServerPing ping) {
+		ping.code = -1;
 		try {
 			final HttpConnectionSpecs spec = Http.newConnectionSpecs();
-			spec.setURL(this.url);
+			spec.setURL(ping.url);
 			spec.setDoInput(true);
 
 			final HttpConnection connect = Http.newConnection(spec);
 			connect.open();
 
-			this.code = connect.getResponseCode();
+			ping.code = connect.getResponseCode();
 			connect.close();
 		} catch (final IOException e) {
-			this.code = -1;
+			ping.code = -1;
 		}
-		return this.code;
-	}
-
-	private String code () {
-		if (this.code == -1) {
-			return "X";
-		}
-		return this.code + "";
-	}
-
-	private String ping () {
-		if (this.ping < 60000L) {
-			return this.ping + "";
-		}
-		return "<NOT REACHABLE>";
+		return ping.code;
 	}
 
 	public HttpURL getUrl () {
@@ -117,17 +92,12 @@ public class ServerHandler {
 		try {
 			return this.exchange(message, null);
 		} catch (final IOException e) {
-			this.status = NO_RESPONSE;
-			this.serverProcesingTime = Long.MAX_VALUE + "";
 		}
 		return null;
-
 	}
 
 	private Message exchange (final Message message, final Mapping<String, String> headers) throws IOException {
 		Debug.checkNull("message", message);
-		this.status = NO_RESPONSE;
-		this.serverProcesingTime = UNKNOWN;
 		final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
 		conSpec.setURL(this.url);
 
@@ -175,13 +145,26 @@ public class ServerHandler {
 		}
 
 		final Message response = IO.deserialize(Message.class, responceBytes);
-		this.serverProcesingTime = response.values.get(REPORTER_PROTOCOL.SERVER_RESPONDED_IN);
-		this.status = response.values.get(REPORTER_PROTOCOL.SERVER_STATUS);
-		this.serverVersion = response.values.get(REPORTER_PROTOCOL.SERVER_CODE_VERSION);
 		return response;
 
 	}
 
-	public static final int SERVER_TIMEOUT = 14000;
+	public static final int SERVER_TIMEOUT = 5000;
+
+	public void rank (final ServerRanker ranker) {
+		final ServerHandler server = this;
+		final Thread t = new Thread() {
+			@Override
+			public void run () {
+				final ServerPing ping = ServerHandler.this.check();
+				if (ping.isGood()) {
+					ranker.onSuccess(server, ping);
+				} else {
+					ranker.onFail(server, ping);
+				}
+			}
+		};
+		t.start();
+	}
 
 }

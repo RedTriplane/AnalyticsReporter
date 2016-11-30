@@ -77,7 +77,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 		version = new Version();
 		version.major = 1;
-		version.minor = 9;
+		version.minor = 10;
 		version.build = 2;
 		version.packageName = "com.jfixby.redreporter.glassfish";
 		version.stage = VERSION_STAGE.ALPHA;
@@ -260,7 +260,8 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			if (answer == null) {
 				answer = new Message(REPORTER_PROTOCOL.ERR);
 			}
-			answer.values.put(REPORTER_PROTOCOL.SERVER_RESPONDED_IN, "" + (System.currentTimeMillis() - arg.timestamp));
+			final Long processingTime = System.currentTimeMillis() - arg.timestamp;
+			answer.attachments.put(REPORTER_PROTOCOL.SERVER_RESPONDED_IN, processingTime);
 			arg.message.values.put(REPORTER_PROTOCOL.SERVER_CODE_VERSION, "" + version.getVersionString());
 			final OutputStream os = IO.newOutputStream( () -> arg.server_to_client_stream);
 			os.open();
@@ -299,7 +300,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			return this.registerInstallation(arg);
 		}
 		if (REPORTER_PROTOCOL.PING.equals(arg.message.header)) {
-			arg.message.values.put(REPORTER_PROTOCOL.SERVER_STATUS, "" + ReporterServer.getStatus());
+			arg.message.attachments.put(REPORTER_PROTOCOL.SERVER_STATUS, ReporterServer.getStatus());
 			return arg.message;
 		}
 		return this.unknownHeader(arg);

@@ -10,12 +10,13 @@ import com.jfixby.cmns.api.file.LocalFileSystem;
 import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpURL;
+import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
 
-public class PingServer {
+public class PingRR0Server {
 
 	public static void main (final String[] args) throws MalformedURLException, IOException {
 		DesktopSetup.deploy();
@@ -30,14 +31,34 @@ public class PingServer {
 		{
 			final String url_string = "http://127.0.0.1:8080/";
 			final HttpURL url = Http.newURL(url_string);
-// transport_config.addAnalyticsServerUrl(url);
+			transport_config.addAnalyticsServerUrl(url);
 		}
+
+		{
+			final String url_string = "http://ec2-35-156-134-204.eu-central-1.compute.amazonaws.com/";
+			final HttpURL url = Http.newURL(url_string);
+			transport_config.addAnalyticsServerUrl(url);
+		}
+
 		final File iidStorage = LocalFileSystem.ApplicationHome();
 		transport_config.setInstallationIDStorageFolder(iidStorage);
 		final ReporterHttpClient transport = new ReporterHttpClient(transport_config);
 		ReporterTransport.installComponent(transport);
+
+		ReporterTransport.checkServers();
+		Sys.exit();
+
+		final int PARALLEL_CONNECTIONS = 100;
 		while (true) {
-			ReporterTransport.checkServers();
+			for (int i = 0; i < PARALLEL_CONNECTIONS; i++) {
+				final Thread t = new Thread() {
+					@Override
+					public void run () {
+						ReporterTransport.checkServers();
+					}
+				};
+				t.start();
+			}
 		}
 	}
 // final String url_string = "https://rr-0.red-triplane.com";

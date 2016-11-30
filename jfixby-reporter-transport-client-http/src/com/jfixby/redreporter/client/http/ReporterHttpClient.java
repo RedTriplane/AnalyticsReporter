@@ -212,9 +212,7 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 
 	@Override
 	public void checkServers () {
-// this.servers.updatePings();
-		this.servers.check();
-		this.servers.printStatuses();
+		this.servers.checkAll();
 
 	}
 
