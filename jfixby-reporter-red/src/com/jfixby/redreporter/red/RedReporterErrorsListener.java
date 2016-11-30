@@ -67,7 +67,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	}
 
 	@Override
-	public void reportGCLeak (final String msg) {
+	public void reportGCLeak (final String msg, final Object leakingObject) {
 // final Report report = this.master.newReport();
 // report.reportGCLeak(msg);
 //// report.addError(e);

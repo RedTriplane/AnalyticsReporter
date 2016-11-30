@@ -173,7 +173,7 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 			return null;
 		}
 
-		response.print();
+// response.print();
 
 		final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
 		final InstallationID reg = new InstallationID();
@@ -201,7 +201,7 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 		if (response == null) {
 			return false;
 		}
-		response.print();
+// response.print();
 
 		return true;
 	}

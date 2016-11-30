@@ -32,8 +32,11 @@ public class ServerHandler {
 	@Override
 	public String toString () {
 		return "[" + this.code() + "] " + this.url + " ping=" + this.ping() + " ServerState=" + this.status() + " processingTime="
-			+ this.serverProcesingTime();
+			+ this.serverProcesingTime() + " serverVersion=" + this.serverVersion();
+	}
 
+	private String serverVersion () {
+		return "<" + this.serverVersion + ">";
 	}
 
 	private String serverProcesingTime () {
@@ -56,6 +59,7 @@ public class ServerHandler {
 		this.code = -1;
 		this.ping = Long.MAX_VALUE;
 		this.status = NO_RESPONSE;
+		this.serverVersion = UNKNOWN;
 		this.serverProcesingTime = UNKNOWN;
 		this.updatePeek();
 		if (this.code != 200) {
@@ -146,7 +150,7 @@ public class ServerHandler {
 
 		final HttpConnectionOutputStream os = connection.getOutputStream();
 		os.open();
-		message.print();
+// message.print();
 
 		final ByteArray data = IO.serialize(message);
 

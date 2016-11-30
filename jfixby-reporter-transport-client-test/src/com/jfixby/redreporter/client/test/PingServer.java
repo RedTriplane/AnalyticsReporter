@@ -25,12 +25,12 @@ public class PingServer {
 		{
 			final String url_string = "https://rr-0.red-triplane.com/";
 			final HttpURL url = Http.newURL(url_string);
-// transport_config.addAnalyticsServerUrl(url);
+			transport_config.addAnalyticsServerUrl(url);
 		}
 		{
 			final String url_string = "http://127.0.0.1:8080/";
 			final HttpURL url = Http.newURL(url_string);
-			transport_config.addAnalyticsServerUrl(url);
+// transport_config.addAnalyticsServerUrl(url);
 		}
 		final File iidStorage = LocalFileSystem.ApplicationHome();
 		transport_config.setInstallationIDStorageFolder(iidStorage);

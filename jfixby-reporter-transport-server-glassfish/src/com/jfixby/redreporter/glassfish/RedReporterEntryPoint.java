@@ -78,7 +78,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		version = new Version();
 		version.major = 1;
 		version.minor = 9;
-		version.build = 1;
+		version.build = 2;
 		version.packageName = "com.jfixby.redreporter.glassfish";
 		version.stage = VERSION_STAGE.ALPHA;
 		version.versionCode = 0;
@@ -136,9 +136,6 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 	protected void processRequest (final HttpServletRequest request, final HttpServletResponse response)
 		throws ServletException, IOException {
-		final RedReporterEntryPointArguments arg = new RedReporterEntryPointArguments();
-		arg.timestamp = System.currentTimeMillis();
-		arg.request_number = RedReporterEntryPoint.request_number();
 
 		final boolean https = this.check_https(request);
 
@@ -161,8 +158,14 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			return;
 		}
 
+		final RedReporterEntryPointArguments arg = new RedReporterEntryPointArguments();
+		arg.timestamp = System.currentTimeMillis();
+		arg.request_number = RedReporterEntryPoint.request_number();
 		final HttpSession session = request.getSession();
 		final String session_id = session.getId();
+		arg.requestID = Names.ROOT().child("iid-" + instance_id).child("sid-" + session_id).child("rqn-" + arg.request_number);
+
+		L.d("----Request[" + arg.requestID + "]----------------------------------------------");
 
 		final ServletInputStream client_to_server_stream = request.getInputStream();
 		final ServletOutputStream server_to_client_stream = response.getOutputStream();
@@ -190,7 +193,6 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		final Map<String, String> server_to_client_headers = Collections.newMap();
 
 		arg.inputHeaders = client_to_server_headers;
-		arg.requestID = Names.ROOT().child("iid-" + instance_id).child("sid-" + session_id).child("rqn-" + arg.request_number);
 		arg.server_to_client_stream = server_to_client_stream;
 		arg.client_to_server_stream = client_to_server_stream;
 // arg.print();
