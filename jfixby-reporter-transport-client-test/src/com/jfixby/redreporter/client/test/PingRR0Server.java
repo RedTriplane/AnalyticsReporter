@@ -14,7 +14,6 @@ import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.red.desktop.DesktopSetup;
-import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
@@ -47,22 +46,21 @@ public class PingRR0Server {
 		final File iidStorage = LocalFileSystem.ApplicationHome();
 		transport_config.setInstallationIDStorageFolder(iidStorage);
 		final ReporterHttpClient transport = new ReporterHttpClient(transport_config);
-		ReporterTransport.installComponent(transport);
 
-		final int PARALLEL_CONNECTIONS = 10;
+		final int PARALLEL_CONNECTIONS = 1;
 
 		for (int i = 0; i < PARALLEL_CONNECTIONS; i++) {
 			final Thread t = new Thread() {
 				@Override
 				public void run () {
 					while (true) {
-						final ServersCheckParams params = ReporterTransport.newServersCheckParams();
+						final ServersCheckParams params = transport.newServersCheckParams();
 						params.setTimeOut(30000L);
-						final ServersCheck check = ReporterTransport.checkServers(params);
+						final ServersCheck check = transport.checkServers(params);
 						requests_made++;
 						L.d("requests_made", requests_made + " " + new Date());
 						while (!check.isComplete()) {
-							Sys.sleep(100);
+							Sys.sleep(1500);
 						}
 					}
 				}

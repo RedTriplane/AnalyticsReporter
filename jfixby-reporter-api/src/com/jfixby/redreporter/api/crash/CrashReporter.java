@@ -1,22 +1,22 @@
 
-package com.jfixby.redreporter.api.err;
+package com.jfixby.redreporter.api.crash;
 
 import com.jfixby.cmns.api.ComponentInstaller;
 
-public class ErrorReporter {
+public class CrashReporter {
 
-	static private ComponentInstaller<ErrorReporterComponent> componentInstaller = new ComponentInstaller<ErrorReporterComponent>(
-		"ErrorReporter");
+	static private ComponentInstaller<CrashReporterComponent> componentInstaller = new ComponentInstaller<CrashReporterComponent>(
+		"CrashReporterComponent");
 
-	public static final void installComponent (final ErrorReporterComponent component_to_install) {
+	public static final void installComponent (final CrashReporterComponent component_to_install) {
 		componentInstaller.installComponent(component_to_install);
 	}
 
-	public static final ErrorReporterComponent invoke () {
+	public static final CrashReporterComponent invoke () {
 		return componentInstaller.invokeComponent();
 	}
 
-	public static final ErrorReporterComponent component () {
+	public static final CrashReporterComponent component () {
 		return componentInstaller.getComponent();
 	}
 
@@ -50,14 +50,6 @@ public class ErrorReporter {
 
 	public static void unDeployLogsListener () {
 		invoke().unDeployLogsListener();
-	}
-
-	public static void reportCrash (final Throwable e) {
-		invoke().reportCrash(e);
-	}
-
-	public static void reportProblem (final Throwable e) {
-		invoke().reportProblem(e);
 	}
 
 }

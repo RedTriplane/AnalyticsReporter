@@ -101,9 +101,12 @@ public class ServerHandler {
 			spec.setDoInput(true);
 			spec.setConnectTimeout(args.timeout);
 			spec.setReadTimeout(args.timeout);
-			if (args != null && args.timeout <= 0) {
+			if (args == null || args.timeout <= 0) {
 				spec.setConnectTimeout(SERVER_DEFAULT_TIMEOUT);
 				spec.setReadTimeout(SERVER_DEFAULT_TIMEOUT);
+			} else {
+				spec.setConnectTimeout(args.timeout);
+				spec.setReadTimeout(args.timeout);
 			}
 
 			final HttpConnection connect = Http.newConnection(spec);
@@ -150,11 +153,13 @@ public class ServerHandler {
 			conSpec.addRequesrProperties(headers);
 		}
 
-		conSpec.setConnectTimeout(args.timeout);
-		conSpec.setReadTimeout(args.timeout);
-		if (args != null && args.timeout <= 0) {
+		if (args == null || args.timeout <= 0) {
+
 			conSpec.setConnectTimeout(SERVER_DEFAULT_TIMEOUT);
 			conSpec.setReadTimeout(SERVER_DEFAULT_TIMEOUT);
+		} else {
+			conSpec.setConnectTimeout(args.timeout);
+			conSpec.setReadTimeout(args.timeout);
 		}
 
 		final HttpConnection connection = Http.newConnection(conSpec);

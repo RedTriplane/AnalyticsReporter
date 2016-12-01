@@ -6,4 +6,4 @@
  *
  */
 
-package com.jfixby.redreporter.err;
+package com.jfixby.redreporter.crash.desktop;

@@ -4,17 +4,16 @@ package com.jfixby.redreporter.red;
 import java.util.LinkedList;
 
 import com.jfixby.cmns.api.err.Err;
-import com.jfixby.redreporter.api.transport.ReporterTransport;
+import com.jfixby.redreporter.crash.RedCrashReporter;
 
 public class ReportsQueue {
 
 	final LinkedList<RedReport> cachedReportsQ = new LinkedList<RedReport>();
 	final LinkedList<RedReport> nonCachedReportsQueue = new LinkedList<RedReport>();
 
-	final ProcessQueueJob processQueueJob = new ProcessQueueJob(this);
-	private final RedReporter redReporter;
+	private final RedCrashReporter redReporter;
 
-	public ReportsQueue (final RedReporter redReporter) {
+	public ReportsQueue (final RedCrashReporter redReporter) {
 		this.redReporter = redReporter;
 	}
 
@@ -37,16 +36,8 @@ public class ReportsQueue {
 	}
 
 	public boolean tryToSendReport (final RedReport reportsQueue) {
-		final boolean success = ReporterTransport.sendReport(reportsQueue);
-		return success;
-	}
-
-	public ProcessQueueJob getProcessQueueJob () {
-		return this.processQueueJob;
-	}
-
-	public boolean isOperatingWithCache () {
-		return this.redReporter.cacheFolderState == RedReporter.CACHE_FOLDER_SUCCESSFULLY_CREATED;
+		Err.reportError("");
+		return false;
 	}
 
 }

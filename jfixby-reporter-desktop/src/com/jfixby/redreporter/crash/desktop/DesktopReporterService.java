@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter.desktop;
+package com.jfixby.redreporter.crash.desktop;
 
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.taskman.Task;
@@ -8,9 +8,9 @@ import com.jfixby.cmns.api.taskman.TaskSpecs;
 
 public class DesktopReporterService {
 
-	private final DesktopReporter master;
+	private final DesktopCrashReporter master;
 
-	public DesktopReporterService (final DesktopReporter desktopReporter) {
+	public DesktopReporterService (final DesktopCrashReporter desktopReporter) {
 		this.master = desktopReporter;
 	}
 
@@ -26,8 +26,10 @@ public class DesktopReporterService {
 		specs.setName("red-reporter-service");
 		specs.setRunInSeparatedThread(true);
 
-		specs.addJobs(this.master.buildJobList());
 		this.task = TaskManager.newTask(specs);
+	}
+
+	public void stop () {
 	}
 
 }

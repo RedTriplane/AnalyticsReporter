@@ -5,8 +5,8 @@ import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.err.Err;
-import com.jfixby.redreporter.api.PRIORITY;
 import com.jfixby.redreporter.api.analytics.Report;
+import com.jfixby.redreporter.crash.RedCrashReporter;
 
 public class RedReport implements Report {
 	boolean submited = false;
@@ -16,9 +16,9 @@ public class RedReport implements Report {
 
 	static long ID = 0;
 	long id = 0;
-	private final RedReporter master;
+	private final RedCrashReporter master;
 
-	public RedReport (final RedReporter redReporter) {
+	public RedReport (final RedCrashReporter redReporter) {
 		this.master = redReporter;
 		this.timestamp = System.currentTimeMillis();
 		this.id = ID++;
@@ -38,7 +38,6 @@ public class RedReport implements Report {
 		if (this.submited) {
 			Err.reportWarning("report is already submitted " + this);
 		}
-		this.master.submit(this);
 		this.submited = true;
 	}
 
@@ -80,10 +79,6 @@ public class RedReport implements Report {
 	@Override
 	public String toString () {
 		return "RedReport [id=" + this.id + ", timestamp=" + this.timestamp + "]";
-	}
-
-	@Override
-	public void setPriority (final PRIORITY priority) {
 	}
 
 }

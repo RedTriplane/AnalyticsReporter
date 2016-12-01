@@ -1,22 +1,27 @@
 
-package com.jfixby.redreporter.red;
+package com.jfixby.redreporter.crash;
 
 import com.jfixby.cmns.api.err.ErrorComponent;
 import com.jfixby.cmns.api.err.NotImplementedYetException;
 import com.jfixby.red.err.RedError;
-import com.jfixby.redreporter.api.err.ErrorReporterComponent;
 
 public class RedReporterErrorsListener implements ErrorComponent {
 
-	private final ErrorReporterComponent master;
+	private final RedCrashReporter master;
 	private ErrorComponent defaultErrorListener;
+	private ErrorComponent child;
 
-	public RedReporterErrorsListener (final RedReporter redReporter) {
+	public RedReporterErrorsListener (final RedCrashReporter redReporter) {
 		this.master = redReporter;
 	}
 
 	public void setChildListener (final ErrorComponent defaultErrorListener) {
 		this.defaultErrorListener = defaultErrorListener;
+		this.child = defaultErrorListener;
+	}
+
+	public ErrorComponent getChildListener () {
+		return this.child;
 	}
 
 	public void deploy () {
@@ -73,6 +78,10 @@ public class RedReporterErrorsListener implements ErrorComponent {
 //// report.addError(e);
 // report.submit();
 // this.defaultErrorListener.reportGCLeak(msg);
+	}
+
+	@Override
+	public void reportError (final Thread t, final Throwable e) {
 	}
 
 }

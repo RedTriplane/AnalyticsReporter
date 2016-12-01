@@ -7,12 +7,10 @@ import com.jfixby.cmns.adopted.gdx.json.RedJson;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.LocalFileSystem;
 import com.jfixby.cmns.api.json.Json;
-import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.red.desktop.DesktopSetup;
-import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
@@ -44,16 +42,9 @@ public class RegisterInstallationTest {
 
 		final File iidStorage = LocalFileSystem.ApplicationHome();
 		config.setInstallationIDStorageFolder(iidStorage);
-		final ReporterHttpClient client = new ReporterHttpClient(config);
-		ReporterTransport.installComponent(client);
+		final ReporterTransport client = new ReporterHttpClient(config);
 		Sys.exit();
-		while (true) {
-			ReporterTransport.checkServers();
-			final InstallationID installReg = ReporterTransport.getInstallationID();
 
-			L.d("register install", installReg);
-			ReporterTransport.deleteInstallationID();
-		}
 	}
 
 }

@@ -1,8 +1,6 @@
 
 package com.jfixby.redreporter.api.analytics;
 
-import com.jfixby.redreporter.api.PRIORITY;
-
 public interface Report {
 
 	public static final String WARNING = "Report.WARNING";
@@ -19,7 +17,5 @@ public interface Report {
 	void reportGCLeak (String msg);
 
 	void submit ();
-
-	void setPriority (PRIORITY priority);
 
 }

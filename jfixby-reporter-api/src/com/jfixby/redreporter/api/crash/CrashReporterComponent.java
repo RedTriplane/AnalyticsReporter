@@ -1,7 +1,7 @@
 
-package com.jfixby.redreporter.api.err;
+package com.jfixby.redreporter.api.crash;
 
-public interface ErrorReporterComponent {
+public interface CrashReporterComponent {
 
 	void startService ();
 
@@ -12,10 +12,6 @@ public interface ErrorReporterComponent {
 	void deployErrorsListener ();
 
 	void deployLogsListener ();
-
-	void reportProblem (Throwable e);
-
-	void reportCrash (Throwable e);
 
 	void unDeployUncaughtExceptionHandler ();
 
