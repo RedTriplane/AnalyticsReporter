@@ -94,9 +94,9 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		version = new Version();
 		version.major = "1";
 		version.minor = "15";
-		version.build = "1";
+		version.build = "2";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 631;
+		version.versionCode = 632;
 
 		final MySQLConfig config = new MySQLConfig();
 
