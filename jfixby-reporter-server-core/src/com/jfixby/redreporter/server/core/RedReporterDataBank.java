@@ -29,15 +29,13 @@ public class RedReporterDataBank {
 
 	}
 
-	MySQLTable settingsTable;
-
-	public ServerSettings getServerSettings () throws IOException {
-
+	public ServerSettings readSettings () throws IOException {
+		final MySQLTable settingsTable;
 		final ServerSettings result = new ServerSettings();
-		if (this.settingsTable == null) {
-			this.settingsTable = this.mySQL.getTable(ServerSettings.TABLE_NAME);
-		}
-		final List<MySQLEntry> settingslist = this.settingsTable.listAll();
+
+		settingsTable = this.mySQL.getTable(ServerSettings.TABLE_NAME);
+
+		final List<MySQLEntry> settingslist = settingsTable.listAll();
 		final Map<String, String> settings = Collections.newMap();
 		for (final MySQLEntry entry : settingslist) {
 			final String parameter_name = entry.getValue(ServerSettings.PARAMETER_NAME);
