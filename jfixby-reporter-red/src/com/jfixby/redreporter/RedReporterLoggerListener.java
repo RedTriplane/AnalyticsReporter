@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter.crash;
+package com.jfixby.redreporter;
 
 import com.jfixby.cmns.api.log.LoggerComponent;
 import com.jfixby.cmns.api.log.MESSAGE_MARKER;

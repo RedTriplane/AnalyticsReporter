@@ -1,8 +1,5 @@
 
-package com.jfixby.redreporter.crash.desktop;
-
-import com.jfixby.redreporter.DesktopCrashReporterService;
-import com.jfixby.redreporter.crash.RedCrashReporter;
+package com.jfixby.redreporter;
 
 public class DesktopCrashReporter extends RedCrashReporter {
 	final DesktopCrashReporterService service = new DesktopCrashReporterService(this.getServiceJob());

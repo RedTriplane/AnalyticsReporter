@@ -10,9 +10,9 @@ import com.jfixby.redreporter.api.analytics.Report;
 
 public class ReportsQueue {
 
-	final LinkedList<RedReport> all = new LinkedList<RedReport>();
-	final LinkedHashSet<RedReport> nonCached = new LinkedHashSet<RedReport>();
-	final HashSet<RedReport> toRemove = new HashSet<RedReport>();
+	private final LinkedList<RedReport> all = new LinkedList<RedReport>();
+	private final LinkedHashSet<RedReport> nonCached = new LinkedHashSet<RedReport>();
+	private final HashSet<RedReport> toRemove = new HashSet<RedReport>();
 
 	public synchronized int size () {
 		return this.all.size();

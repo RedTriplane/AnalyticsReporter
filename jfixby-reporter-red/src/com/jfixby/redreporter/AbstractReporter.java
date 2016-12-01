@@ -3,9 +3,14 @@ package com.jfixby.redreporter;
 
 import java.io.IOException;
 
+import com.jfixby.cmns.api.collections.Collection;
+import com.jfixby.cmns.api.collections.Collections;
+import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.err.Err;
+import com.jfixby.cmns.api.file.ChildrenList;
 import com.jfixby.cmns.api.file.File;
+import com.jfixby.cmns.api.file.FileFilter;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.taskman.Job;
@@ -13,11 +18,11 @@ import com.jfixby.redreporter.api.analytics.Report;
 import com.jfixby.redreporter.api.analytics.SERVICE_MODE;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
-public class AbstractReporter {
+public abstract class AbstractReporter {
 	private static final boolean OK = true;
 	private final File logsCache;
 	private final ReporterTransport transport;
-	boolean cacheIsValid;
+	private boolean cacheIsValid;
 	private SERVICE_MODE mode;
 
 	public AbstractReporter (final ReporterTransport transport, final File logsCache) {
@@ -74,7 +79,26 @@ public class AbstractReporter {
 	}
 
 	final private long period = 100;
-	final Job serviceJob = new Job() {
+
+	abstract void loadReportsFromCache ();
+
+	final Job loadCache = new Job() {
+
+		@Override
+		public void doStart () throws Throwable {
+			AbstractReporter.this.loadReportsFromCache();
+		}
+
+		@Override
+		public void doPush () throws Throwable {
+		}
+
+		@Override
+		public boolean isDone () {
+			return true;
+		}
+	};
+	final Job pushService = new Job() {
 
 		@Override
 		public void doStart () throws Throwable {
@@ -94,6 +118,8 @@ public class AbstractReporter {
 			return AbstractReporter.this.stopJob;
 		}
 	};
+	final List<Job> serviceJob = Collections.newList(this.loadCache, this.pushService);
+
 	private boolean stopJob;
 	boolean serviceIsStopping = false;
 
@@ -105,7 +131,7 @@ public class AbstractReporter {
 		}
 	}
 
-	public Job getServiceJob () {
+	public Collection<Job> getServiceJob () {
 		return this.serviceJob;
 	}
 
@@ -116,6 +142,37 @@ public class AbstractReporter {
 
 	final public SERVICE_MODE getServiceMode () {
 		return this.mode;
+	}
+
+	void loadReportsFromCache (final FileFilter filter) {
+		final File cache = this.getCache();
+		if (cache == null) {
+			return;
+		}
+		ChildrenList list = null;
+		try {
+			list = cache.listDirectChildren(filter);
+		} catch (final IOException e) {
+			e.printStackTrace();
+			Err.reportError(e);
+		}
+		for (final File file : list) {
+			this.loadCrashReport(file);
+		}
+	}
+
+	private void loadCrashReport (final File file) {
+		final RedReport report = new RedReport();
+		try {
+			report.readFromFile(file);
+			this.submitReport(report);
+		} catch (final IOException e) {
+			Err.reportWarning("failed to read crash file: " + file, e);
+		}
+	}
+
+	private void submitReport (final RedReport report) {
+		this.queue.add(report);
 	}
 
 }

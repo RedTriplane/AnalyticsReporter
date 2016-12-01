@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter.crash;
+package com.jfixby.redreporter;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 

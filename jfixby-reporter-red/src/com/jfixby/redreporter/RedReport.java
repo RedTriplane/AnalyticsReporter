@@ -1,10 +1,13 @@
 
 package com.jfixby.redreporter;
 
+import java.io.IOException;
+
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.err.Err;
+import com.jfixby.cmns.api.file.File;
 import com.jfixby.redreporter.api.analytics.Report;
 
 public class RedReport implements Report {
@@ -79,6 +82,9 @@ public class RedReport implements Report {
 		final List<RedReportMessage> bag = this.getBag(Report.GCLEAK);
 		final RedReportMessage messgae = new RedReportMessage(Report.GCLEAK, msg);
 		bag.add(messgae);
+	}
+
+	public void readFromFile (final File file) throws IOException {
 	}
 
 }

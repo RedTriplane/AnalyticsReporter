@@ -1,19 +1,21 @@
 
-package com.jfixby.redreporter.crash;
+package com.jfixby.redreporter;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.err.ErrorComponent;
 import com.jfixby.cmns.api.file.File;
+import com.jfixby.cmns.api.file.FileFilter;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.log.LoggerComponent;
 import com.jfixby.cmns.api.sys.Sys;
-import com.jfixby.redreporter.AbstractReporter;
 import com.jfixby.redreporter.api.crash.CrashReporterComponent;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public abstract class RedCrashReporter extends AbstractReporter implements CrashReporterComponent {
+
+	protected static final String CRASH_FILE_NAME_SUFFIX = ".crash.log";
 
 	public RedCrashReporter (final ReporterTransport transport, final File logsCache) {
 		super(transport, logsCache);
@@ -22,6 +24,13 @@ public abstract class RedCrashReporter extends AbstractReporter implements Crash
 	final RedReporterUncaughtExceptionHandler uncaughtExceptionHandler = new RedReporterUncaughtExceptionHandler(this);
 	final RedReporterErrorsListener errorsListener = new RedReporterErrorsListener(this);
 	final RedReporterLoggerListener logsListener = new RedReporterLoggerListener(this);
+	private final FileFilter crash_files_filter = new FileFilter() {
+
+		@Override
+		public boolean fits (final File element) {
+			return element.getName().endsWith(CRASH_FILE_NAME_SUFFIX);
+		}
+	};
 
 	@Override
 	public void deployUncaughtExceptionHandler () {
@@ -70,6 +79,11 @@ public abstract class RedCrashReporter extends AbstractReporter implements Crash
 	public void unDeployLogsListener () {
 		L.deInstallCurrentComponent();
 		L.installComponent(this.logsListener.getChild());
+	}
+
+	@Override
+	void loadReportsFromCache () {
+		this.loadReportsFromCache(this.crash_files_filter);
 	}
 
 	// ------------------------------------------------------------------------------------------------

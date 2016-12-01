@@ -1,6 +1,7 @@
 
 package com.jfixby.redreporter;
 
+import com.jfixby.cmns.api.collections.Collection;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.taskman.Job;
 import com.jfixby.cmns.api.taskman.Task;
@@ -9,10 +10,10 @@ import com.jfixby.cmns.api.taskman.TaskSpecs;
 
 public class DesktopCrashReporterService {
 
-	final private Job job;
+	final private Collection<Job> job;
 
-	public DesktopCrashReporterService (final Job desktopReporter) {
-		this.job = desktopReporter;
+	public DesktopCrashReporterService (final Collection<Job> collection) {
+		this.job = collection;
 	}
 
 	boolean wasStarted = false;
@@ -26,7 +27,7 @@ public class DesktopCrashReporterService {
 		final TaskSpecs specs = TaskManager.newTaskSpecs();
 		specs.setName("red-reporter-service");
 		specs.setRunInSeparatedThread(true);
-		specs.addJob(this.job);
+		specs.addJobs(this.job);
 
 		this.task = TaskManager.newTask(specs);
 	}

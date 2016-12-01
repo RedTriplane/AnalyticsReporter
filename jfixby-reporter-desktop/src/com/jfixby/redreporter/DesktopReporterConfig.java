@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter.crash.desktop;
+package com.jfixby.redreporter;
 
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
