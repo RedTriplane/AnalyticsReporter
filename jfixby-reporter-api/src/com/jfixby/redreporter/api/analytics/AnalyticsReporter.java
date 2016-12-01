@@ -24,8 +24,8 @@ public class AnalyticsReporter {
 		invoke().startService();
 	}
 
-	public static void stopService () {
-		invoke().stopService();
+	public static void stopService (final boolean wait) {
+		invoke().stopService(wait);
 	}
 
 	public static void setServiceMode (final SERVICE_MODE mode) {

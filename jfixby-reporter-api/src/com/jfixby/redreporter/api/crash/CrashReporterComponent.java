@@ -5,7 +5,7 @@ public interface CrashReporterComponent {
 
 	void startService ();
 
-	void stopService ();
+	void stopService (boolean wait);
 
 	void deployUncaughtExceptionHandler ();
 

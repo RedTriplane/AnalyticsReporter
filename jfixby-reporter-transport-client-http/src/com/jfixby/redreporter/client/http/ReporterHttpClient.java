@@ -2,15 +2,11 @@
 package com.jfixby.redreporter.client.http;
 
 import com.jfixby.cmns.api.collections.Collection;
-import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
-import com.jfixby.cmns.api.sys.SystemInfo;
-import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.analytics.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
@@ -38,49 +34,61 @@ public class ReporterHttpClient implements ReporterTransport {
 		}
 	}
 
-	public InstallationID registerInstallation (final SystemInfo systemInfo) {
+// public InstallationID registerInstallation (final SystemInfo systemInfo) {
+//
+// final Mapping<String, String> params = systemInfo.listParameters();
+//
+// final Message request = new Message(REPORTER_PROTOCOL.REGISTER_INSTALLATION);
+// request.values.putAll(params.toJavaMap());
+//
+// final Message response = exchange(this.servers, request);
+// if (response == null) {
+// return null;
+// }
+//
+//// response.print();
+//
+// final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
+// if (token == null) {
+// return null;
+// }
+// final InstallationID reg = new InstallationID(token);
+// return reg;
+// }
 
-		final Mapping<String, String> params = systemInfo.listParameters();
-
-		final Message request = new Message(REPORTER_PROTOCOL.REGISTER_INSTALLATION);
-		request.values.putAll(params.toJavaMap());
-
-		final Message response = exchange(this.servers, request);
-		if (response == null) {
-			return null;
-		}
-
-// response.print();
-
-		final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
-		if (token == null) {
-			return null;
-		}
-		final InstallationID reg = new InstallationID(token);
-		return reg;
-	}
-
-	public static Message exchange (final ServerHandlers servers, final Message request) {
-		for (final ServerHandler server : servers) {
-			final Message response = server.exchange(request);
-			if (response != null) {
-				return response;
-			} else {
-				L.d("  exchange failed", server);
-			}
-		}
-		return null;
+	public Message exchange (final ServerHandlers servers, final Message request) {
+		final Message response = null;
+		this.checkToken(response);
+		Err.reportNotImplementedYet();
+// for (final ServerHandler server : servers) {
+// final Message response = server.exchange(request);
+// if (response != null) {
+// return response;
+// } else {
+// L.d(" exchange failed", server);
+// }
+// }
+// return null;
+		return request;
 	}
 
 	@Override
 	public boolean sendReport (final Report report) {
 		final Message message = new Message(REPORTER_PROTOCOL.REPORT);
 		this.packToMessage(report, message);
-		final Message response = exchange(this.servers, message);
+		final Message response = this.exchange(this.servers, message);
 		if (response == null) {
 			return false;
 		}
+
 		return true;
+	}
+
+	private void checkToken (final Message response) {
+		final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
+		if (token != null) {
+			this.storage.updateToken(token);
+		}
 	}
 
 	private void packToMessage (final Report report, final Message message) {

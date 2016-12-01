@@ -15,6 +15,10 @@ import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public abstract class RedCrashReporter extends AbstractReporter implements CrashReporterComponent {
 
+	public RedCrashReporter (final ReporterTransport transport, final File logsCache) {
+		super(transport, logsCache);
+	}
+
 	final RedReporterUncaughtExceptionHandler uncaughtExceptionHandler = new RedReporterUncaughtExceptionHandler(this);
 	final RedReporterErrorsListener errorsListener = new RedReporterErrorsListener(this);
 	final RedReporterLoggerListener logsListener = new RedReporterLoggerListener(this);
@@ -66,10 +70,6 @@ public abstract class RedCrashReporter extends AbstractReporter implements Crash
 	public void unDeployLogsListener () {
 		L.deInstallCurrentComponent();
 		L.installComponent(this.logsListener.getChild());
-	}
-
-	public RedCrashReporter (final ReporterTransport transport, final File logsCache) {
-		super(transport, logsCache);
 	}
 
 	// ------------------------------------------------------------------------------------------------

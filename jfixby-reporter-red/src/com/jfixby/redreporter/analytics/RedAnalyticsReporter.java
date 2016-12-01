@@ -6,11 +6,10 @@ import com.jfixby.redreporter.AbstractReporter;
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterComponent;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
-public class RedAnalyticsReporter extends AbstractReporter implements AnalyticsReporterComponent {
+public abstract class RedAnalyticsReporter extends AbstractReporter implements AnalyticsReporterComponent {
 
 	public RedAnalyticsReporter (final ReporterTransport transport, final File logsCache) {
 		super(transport, logsCache);
-
 	}
 
 }

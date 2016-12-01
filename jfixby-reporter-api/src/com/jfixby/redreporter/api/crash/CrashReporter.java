@@ -36,8 +36,8 @@ public class CrashReporter {
 		invoke().deployLogsListener();
 	}
 
-	public static void stopService () {
-		invoke().stopService();
+	public static void stopService (final boolean wait) {
+		invoke().stopService(wait);
 	}
 
 	public static void unDeployUncaughtExceptionHandler () {

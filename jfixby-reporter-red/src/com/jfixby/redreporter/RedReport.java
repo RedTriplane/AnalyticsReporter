@@ -6,7 +6,6 @@ import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.redreporter.api.analytics.Report;
-import com.jfixby.redreporter.crash.RedCrashReporter;
 
 public class RedReport implements Report {
 	boolean submited = false;
@@ -14,19 +13,25 @@ public class RedReport implements Report {
 
 	final Map<String, List<RedReportMessage>> group_message = Collections.newMap();
 
-	static long ID = 0;
-	long id = 0;
-	private final RedCrashReporter master;
+	private boolean isCached;
 
-	public RedReport (final RedCrashReporter redReporter) {
-		this.master = redReporter;
+	public RedReport () {
 		this.timestamp = System.currentTimeMillis();
-		this.id = ID++;
 // this.group_message.put(Report.WARNING, this.newList());
 // this.group_message.put(Report.ERROR, this.newList());
 // this.group_message.put(Report.GCLEAK, this.newList());
 // this.group_message.put(Report.INFO, this.newList());
+	}
 
+	@Override
+	public void dispose () {
+	}
+
+	public boolean cache () {
+		if (!this.isCached) {
+			return true;
+		}
+		return false;
 	}
 
 	private List<RedReportMessage> newList () {
@@ -74,11 +79,6 @@ public class RedReport implements Report {
 		final List<RedReportMessage> bag = this.getBag(Report.GCLEAK);
 		final RedReportMessage messgae = new RedReportMessage(Report.GCLEAK, msg);
 		bag.add(messgae);
-	}
-
-	@Override
-	public String toString () {
-		return "RedReport [id=" + this.id + ", timestamp=" + this.timestamp + "]";
 	}
 
 }

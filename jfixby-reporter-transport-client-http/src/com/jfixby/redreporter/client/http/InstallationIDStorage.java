@@ -41,18 +41,19 @@ public class InstallationIDStorage {
 		this.iidStorage = iidStorage;
 	}
 
-	private boolean saveIID () {
-		if (this.iidStorage == null) {
-			return false;
+	public synchronized boolean updateToken (final String token) {
+		if (this.iid == null || !this.iid.token.equals(token)) {
+			this.iid = new InstallationID(token);
+			final File iidFile = this.iidStorage.child(this.installationIDFileName);
+			try {
+				iidFile.writeString(this.iid.token);
+				return true;
+			} catch (final IOException e) {
+				e.printStackTrace();
+				return false;
+			}
 		}
-		final File iidFile = this.iidStorage.child(this.installationIDFileName);
-		try {
-			iidFile.writeString(this.iid.token);
-			return true;
-		} catch (final IOException e) {
-			e.printStackTrace();
-			return false;
-		}
+		return false;
 	}
 
 	public synchronized boolean deleteID () {
