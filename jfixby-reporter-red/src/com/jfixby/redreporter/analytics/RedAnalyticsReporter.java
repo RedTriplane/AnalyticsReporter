@@ -1,7 +1,8 @@
+
 package com.jfixby.redreporter.analytics;
 
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterComponent;
-import com.jfixby.redreporter.api.analytics.AnalyticsReporterServiceMode;
+import com.jfixby.redreporter.api.analytics.SERVICE_MODE;
 
 public class RedAnalyticsReporter implements AnalyticsReporterComponent {
 
@@ -14,7 +15,12 @@ public class RedAnalyticsReporter implements AnalyticsReporterComponent {
 	}
 
 	@Override
-	public void setServiceMode (AnalyticsReporterServiceMode mode) {
+	public void setServiceMode (final SERVICE_MODE mode) {
+	}
+
+	@Override
+	public SERVICE_MODE getServiceMode () {
+		return null;
 	}
 
 }

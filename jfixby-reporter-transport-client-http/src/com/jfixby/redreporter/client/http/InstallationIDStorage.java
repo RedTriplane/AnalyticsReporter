@@ -120,8 +120,7 @@ public class InstallationIDStorage {
 			return null;
 		}
 
-		final InstallationID iid = new InstallationID();
-		iid.token = token;
+		final InstallationID iid = new InstallationID(token);
 		return iid;
 	}
 

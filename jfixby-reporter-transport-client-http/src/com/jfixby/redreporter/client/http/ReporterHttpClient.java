@@ -53,8 +53,10 @@ public class ReporterHttpClient implements ReporterTransport {
 // response.print();
 
 		final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
-		final InstallationID reg = new InstallationID();
-		reg.token = token;
+		if (token == null) {
+			return null;
+		}
+		final InstallationID reg = new InstallationID(token);
 		return reg;
 	}
 

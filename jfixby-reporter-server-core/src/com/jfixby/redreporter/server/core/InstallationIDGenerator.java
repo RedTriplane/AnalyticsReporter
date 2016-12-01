@@ -4,13 +4,13 @@ package com.jfixby.redreporter.server.core;
 import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.md5.MD5;
 
-public class InstallationIDGenerator0 {
+public class InstallationIDGenerator {
 
 	private final String salt0;
 
 	public static final long TIMESTAMP_OFFSET = System.currentTimeMillis();
 
-	public InstallationIDGenerator0 (final String salt0) {
+	public InstallationIDGenerator (final String salt0) {
 		this.salt0 = salt0;
 	}
 

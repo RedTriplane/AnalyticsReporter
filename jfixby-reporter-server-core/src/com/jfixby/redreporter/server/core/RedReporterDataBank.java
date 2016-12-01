@@ -63,8 +63,8 @@ public class RedReporterDataBank {
 		entry.set(schema, schema.indexOf(BankSchema.INSTALLS.token), token + "");
 
 		table.addEntry(entry);
-		final InstallationID reg = new InstallationID();
-		reg.token = token.toString();
+
+		final InstallationID reg = new InstallationID(token.toString());
 		return reg;
 	}
 

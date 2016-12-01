@@ -28,7 +28,7 @@ public class AnalyticsReporter {
 		invoke().stopService();
 	}
 
-	public static void setServiceMode (final AnalyticsReporterServiceMode mode) {
+	public static void setServiceMode (final SERVICE_MODE mode) {
 		invoke().setServiceMode(mode);
 	}
 

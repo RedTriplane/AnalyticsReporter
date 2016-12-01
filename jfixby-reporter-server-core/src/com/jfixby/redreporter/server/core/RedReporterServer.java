@@ -14,7 +14,7 @@ import com.jfixby.redreporter.server.api.ReporterServerComponent;
 public class RedReporterServer implements ReporterServerComponent {
 
 	private final RedReporterDataBank bank;
-	private InstallationIDGenerator0 idgen;
+	private InstallationIDGenerator idgen;
 
 	public RedReporterServer (final RedReporterServerConfig cfg) {
 		this.bank = cfg.getRedReporterDataBank();
@@ -43,7 +43,7 @@ public class RedReporterServer implements ReporterServerComponent {
 		}
 		final ServerSettings serverSettings = this.bank.readSettings();
 		final String salt0 = serverSettings.getSalat0();
-		this.idgen = new InstallationIDGenerator0(salt0);
+		this.idgen = new InstallationIDGenerator(salt0);
 		return false;
 	}
 

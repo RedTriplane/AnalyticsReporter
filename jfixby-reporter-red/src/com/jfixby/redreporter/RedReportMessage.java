@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter.red;
+package com.jfixby.redreporter;
 
 import com.jfixby.cmns.api.log.L;
 
