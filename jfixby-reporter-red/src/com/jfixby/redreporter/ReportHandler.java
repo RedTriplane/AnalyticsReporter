@@ -16,12 +16,18 @@ public class ReportHandler {
 
 	static long freeID = 10000000;
 
-	Report data;
+	private Report data;
 	private File file;
-	private final String id;
 
 	public ReportHandler () {
-		this.id = newID();
+
+	}
+
+	void pack () {
+		this.data = new Report();
+		this.data.local_id = newID();
+		this.data.timestamp = System.currentTimeMillis();
+
 	}
 
 	synchronized static private String newID () {
@@ -29,7 +35,10 @@ public class ReportHandler {
 	}
 
 	public boolean cache (final File cacheFolder, final String extention) {
-		this.file = cacheFolder.child(this.id + extention);
+		if (this.data == null) {
+			this.pack();
+		}
+		this.file = cacheFolder.child(this.getData().local_id + extention);
 		final JsonString json = Json.serializeToString(this.data);
 		final ByteArray compressed = IO.compress(JUtils.newByteArray(json.toString().getBytes()));
 		try {
@@ -41,6 +50,13 @@ public class ReportHandler {
 			return false;
 		}
 
+	}
+
+	Report getData () {
+		if (this.data == null) {
+			this.pack();
+		}
+		return this.data;
 	}
 
 	public void dispose () {
@@ -55,6 +71,7 @@ public class ReportHandler {
 			Err.reportWarning("failed to delete report file " + this.file, e);
 		}
 		this.file = null;
+		this.data = null;
 
 	}
 

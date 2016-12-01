@@ -68,7 +68,7 @@ public abstract class AbstractReporter {
 				return;
 			}
 			final ReportHandler report = this.queue.peek();
-			final boolean result = this.transport.sendReport(report.data);
+			final boolean result = this.transport.sendReport(report.getData());
 			if (result == OK) {
 				report.dispose();
 				this.queue.remove();
@@ -178,11 +178,9 @@ public abstract class AbstractReporter {
 	}
 
 	private void submitReport (final ReportHandler report) {
-		if (report.data == null) {
-			Err.reportError("Report data is null");
-		} else {
-			this.queue.add(report);
-		}
+		report.pack();
+		this.queue.add(report);
+
 	}
 
 }
