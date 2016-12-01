@@ -6,6 +6,9 @@ import com.jfixby.cmns.api.collections.Map;
 
 public class ServerSettings {
 
+	public ServerSettings () {
+	}
+
 	public static final String SALT_0 = "SALT_0";
 	public static final String PARAMETER_NAME = "parameter_name";
 	public static final String PARAMETER_VALUE = "parameter_value";

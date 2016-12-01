@@ -36,6 +36,8 @@ import com.jfixby.cmns.api.io.InputStream;
 import com.jfixby.cmns.api.io.OutputStream;
 import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.java.Int;
+import com.jfixby.cmns.api.java.gc.GCFisher;
+import com.jfixby.cmns.api.java.gc.MemoryStatistics;
 import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.math.Average;
@@ -91,10 +93,10 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		average = FloatMath.newAverage(MAX_VALUES);
 		version = new Version();
 		version.major = "1";
-		version.minor = "14";
-		version.build = "0";
+		version.minor = "15";
+		version.build = "1";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 626;
+		version.versionCode = 631;
 
 		final MySQLConfig config = new MySQLConfig();
 
@@ -148,15 +150,16 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 	protected void processRequest (final HttpServletRequest request, final HttpServletResponse response) {
 		final RedReporterEntryPointArguments arg = new RedReporterEntryPointArguments();
+		String client_ip_addr = "unknown";
 		try {
-			final boolean https = this.check_https(request);
+			final boolean https = check_https(request);
 
 			if (PROTOCOL_POLICY() == PROTOCOL_POLICY.HTTPS_ONLY && !https) {
-				this.force_https(request, response);
+				force_https(request, response);
 				return;
 			}
 			if (PROTOCOL_POLICY() == PROTOCOL_POLICY.HTTP_ONLY && https) {
-				this.force_http(request, response);
+				force_http(request, response);
 				return;
 			}
 
@@ -190,7 +193,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			}
 			client_to_server_headers.put("reqUrl", Collections.newList(reqUrl));
 			client_to_server_headers.put("path_info", Collections.newList(path_info));
-			final String client_ip_addr = getClientIpAddr(request);
+			client_ip_addr = getClientIpAddr(request);
 			client_to_server_headers.put(SystemInfoTags.Net.client_ip, Collections.newList(client_ip_addr));
 
 			final java.util.Map<String, String[]> param_map = request.getParameterMap();
@@ -223,14 +226,17 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			}
 			server_to_client_stream.flush();
 			server_to_client_stream.close();
-			final long processed_in = System.currentTimeMillis() - arg.timestamp;
-			L.d("request", arg.requestID);
-			L.d("processed in", processed_in + " ms");
-			L.d("          ip", client_ip_addr);
+
 		} catch (final Throwable e) {
 			L.e("failed request", arg.requestID);
 			e.printStackTrace();
 		}
+		final long processed_in = System.currentTimeMillis() - arg.timestamp;
+		L.d("request", arg.requestID);
+		L.d("processed in", processed_in + " ms");
+		L.d("          ip", client_ip_addr);
+		final MemoryStatistics memoryStats = GCFisher.getMemoryStatistics();
+		L.d("memory usage", memoryStats);
 	}
 
 	/**
@@ -377,7 +383,10 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		addValueToAverage(val, value, size);
 		final double sec = FloatMath.roundToDigit(val, 3);
 		msg.append("         server time: " + new Date()).append(SEPARATOR);
-		msg.append("         	 version: " + version.getPackageVersionString()).append(SEPARATOR);
+		final MemoryStatistics memoryStats = GCFisher.getMemoryStatistics();
+		msg.append("             version: " + version.getPackageVersionString()).append(SEPARATOR);
+		msg.append(SEPARATOR);
+		msg.append("        memory usage: " + memoryStats).append(SEPARATOR);
 		msg.append(SEPARATOR);
 		msg.append("           client ip: " + arg.inputHeaders.get(SystemInfoTags.Net.client_ip)).append(SEPARATOR);
 		msg.append("          request id: " + arg.requestID).append(SEPARATOR);

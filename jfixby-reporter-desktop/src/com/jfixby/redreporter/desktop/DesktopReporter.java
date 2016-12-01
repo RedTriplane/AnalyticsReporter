@@ -7,7 +7,7 @@ public class DesktopReporter extends RedReporter {
 	final DesktopReporterService service = new DesktopReporterService(this);
 
 	public DesktopReporter (final DesktopReporterConfig deskCfg) {
-		super(deskCfg.getAppHomeFolder());
+		super(deskCfg.getLogsCache());
 	}
 
 	@Override

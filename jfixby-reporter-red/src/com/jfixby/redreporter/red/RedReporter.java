@@ -51,6 +51,7 @@ public abstract class RedReporter implements ErrorReporterComponent {
 		this.home = appHomeFolder;
 		Debug.checkNull("home", this.home);
 		try {
+			this.home.makeFolder();
 			Debug.checkTrue("home is folder", this.home.isFolder());
 		} catch (final IOException e) {
 			e.printStackTrace();

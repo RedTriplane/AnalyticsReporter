@@ -34,6 +34,7 @@ public class ReporterHttpClient implements ReporterTransportComponent {
 		this.iidStorage = config.getInstallationIDStorageFolder();
 		Debug.checkNull("InstallationIDStorageFolder", this.iidStorage);
 		try {
+			this.iidStorage.makeFolder();
 			this.iidStorage.checkExists();
 			this.iidStorage.checkIsFolder();
 		} catch (final Throwable e) {

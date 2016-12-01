@@ -7,11 +7,11 @@ public class DesktopReporterConfig {
 
 	private File logsCache;
 
-	public void setAppHomeFolder (final File logsCache) {
+	public void setLogsCache (final File logsCache) {
 		this.logsCache = logsCache;
 	}
 
-	public File getAppHomeFolder () {
+	public File getLogsCache () {
 		return this.logsCache;
 	}
 
