@@ -11,15 +11,4 @@ public class DesktopCrashReporter extends RedCrashReporter {
 
 	}
 
-	@Override
-	public void startService () {
-		this.service.start();
-
-	}
-
-	@Override
-	public void stopService () {
-		this.service.stop();
-	}
-
 }

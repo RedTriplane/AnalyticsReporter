@@ -10,6 +10,7 @@ public class DesktopAnalyticsReporterSpecs {
 	ReporterTransport transport;
 
 	public void setTransport (final ReporterTransport transport) {
+		this.transport = transport;
 	}
 
 	public void setLogsCache (final File logs) {

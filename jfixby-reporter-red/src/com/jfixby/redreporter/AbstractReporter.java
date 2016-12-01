@@ -13,6 +13,7 @@ public class AbstractReporter {
 	private final File logsCache;
 	private final ReporterTransport transport;
 	boolean cacheIsValid;
+	private SERVICE_MODE mode;
 
 	public AbstractReporter (final ReporterTransport transport, final File logsCache) {
 		this.logsCache = Debug.checkNull("logsCache", logsCache);
@@ -27,17 +28,30 @@ public class AbstractReporter {
 		this.transport = Debug.checkNull("transport", transport);
 	}
 
-	public void startService () {
+	public File getCache () {
+		if (!this.cacheIsValid) {
+			return null;
+		}
+		return this.logsCache;
 	}
 
-	public void stopService () {
+	public ReporterTransport getTransport () {
+		return this.transport;
 	}
 
-	public void setServiceMode (final SERVICE_MODE mode) {
+	final public void startService () {
 	}
 
-	public SERVICE_MODE getServiceMode () {
-		return null;
+	final public void stopService () {
+	}
+
+	final public void setServiceMode (final SERVICE_MODE mode) {
+		Debug.checkNull("SERVICE_MODE", mode);
+		this.mode = mode;
+	}
+
+	final public SERVICE_MODE getServiceMode () {
+		return this.mode;
 	}
 
 }
