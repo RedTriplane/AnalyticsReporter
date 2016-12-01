@@ -1,26 +1,16 @@
 
 package com.jfixby.redreporter.analytics;
 
+import com.jfixby.cmns.api.file.File;
+import com.jfixby.redreporter.AbstractReporter;
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterComponent;
-import com.jfixby.redreporter.api.analytics.SERVICE_MODE;
+import com.jfixby.redreporter.api.transport.ReporterTransport;
 
-public class RedAnalyticsReporter implements AnalyticsReporterComponent {
+public class RedAnalyticsReporter extends AbstractReporter implements AnalyticsReporterComponent {
 
-	@Override
-	public void startService () {
-	}
+	public RedAnalyticsReporter (final ReporterTransport transport, final File logsCache) {
+		super(transport, logsCache);
 
-	@Override
-	public void stopService () {
-	}
-
-	@Override
-	public void setServiceMode (final SERVICE_MODE mode) {
-	}
-
-	@Override
-	public SERVICE_MODE getServiceMode () {
-		return null;
 	}
 
 }

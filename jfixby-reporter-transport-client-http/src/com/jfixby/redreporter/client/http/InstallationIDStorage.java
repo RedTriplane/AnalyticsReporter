@@ -14,7 +14,7 @@ public class InstallationIDStorage {
 
 	private final File iidStorage;
 	private InstallationID iid;
-	private static final String INSTALLATION_ID_FILE_NAME = "com.red-triplane.iid";
+	private final String installationIDFileName;
 
 	public synchronized InstallationID getID () {
 		if (this.iid != null) {
@@ -24,8 +24,12 @@ public class InstallationIDStorage {
 		return this.iid;
 	}
 
-	public InstallationIDStorage (File iidStorage) {
+	public InstallationIDStorage (File iidStorage, final String installationIDFileName) {
 		Debug.checkNull("InstallationIDStorageFolder", iidStorage);
+
+		Debug.checkEmpty("installationIDFileName", installationIDFileName);
+		this.installationIDFileName = Debug.checkNull("installationIDFileName", installationIDFileName);
+
 		try {
 			iidStorage.makeFolder();
 			iidStorage.checkExists();
@@ -41,7 +45,7 @@ public class InstallationIDStorage {
 		if (this.iidStorage == null) {
 			return false;
 		}
-		final File iidFile = this.iidStorage.child(INSTALLATION_ID_FILE_NAME);
+		final File iidFile = this.iidStorage.child(this.installationIDFileName);
 		try {
 			iidFile.writeString(this.iid.token);
 			return true;
@@ -56,7 +60,7 @@ public class InstallationIDStorage {
 		if (this.iidStorage == null) {
 			return true;
 		}
-		final File iidFile = this.iidStorage.child(INSTALLATION_ID_FILE_NAME);
+		final File iidFile = this.iidStorage.child(this.installationIDFileName);
 		try {
 			if (!iidFile.exists()) {
 				return false;
@@ -87,7 +91,7 @@ public class InstallationIDStorage {
 		if (this.iidStorage == null) {
 			return null;
 		}
-		final File iidFile = this.iidStorage.child(INSTALLATION_ID_FILE_NAME);
+		final File iidFile = this.iidStorage.child(this.installationIDFileName);
 		try {
 			if (!iidFile.exists()) {
 				return null;

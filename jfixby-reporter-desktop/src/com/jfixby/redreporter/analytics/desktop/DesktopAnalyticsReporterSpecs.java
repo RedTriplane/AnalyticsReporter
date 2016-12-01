@@ -6,10 +6,22 @@ import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public class DesktopAnalyticsReporterSpecs {
 
+	private File logs;
+	ReporterTransport transport;
+
 	public void setTransport (final ReporterTransport transport) {
 	}
 
 	public void setLogsCache (final File logs) {
+		this.logs = logs;
+	}
+
+	public File getLogsCache () {
+		return this.logs;
+	}
+
+	public ReporterTransport getTransport () {
+		return this.transport;
 	}
 
 }

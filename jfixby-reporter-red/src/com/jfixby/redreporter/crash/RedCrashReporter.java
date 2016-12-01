@@ -9,16 +9,15 @@ import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.log.LoggerComponent;
 import com.jfixby.cmns.api.sys.Sys;
+import com.jfixby.redreporter.AbstractReporter;
 import com.jfixby.redreporter.api.crash.CrashReporterComponent;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
-public abstract class RedCrashReporter implements CrashReporterComponent {
+public abstract class RedCrashReporter extends AbstractReporter implements CrashReporterComponent {
 
 	final RedReporterUncaughtExceptionHandler uncaughtExceptionHandler = new RedReporterUncaughtExceptionHandler(this);
 	final RedReporterErrorsListener errorsListener = new RedReporterErrorsListener(this);
 	final RedReporterLoggerListener logsListener = new RedReporterLoggerListener(this);
-	private final ReporterTransport transport;
-	private final File home;
 
 	@Override
 	public void deployUncaughtExceptionHandler () {
@@ -70,8 +69,7 @@ public abstract class RedCrashReporter implements CrashReporterComponent {
 	}
 
 	public RedCrashReporter (final ReporterTransport transport, final File logsCache) {
-		this.home = logsCache;
-		this.transport = transport;
+		super(transport, logsCache);
 	}
 
 	// ------------------------------------------------------------------------------------------------

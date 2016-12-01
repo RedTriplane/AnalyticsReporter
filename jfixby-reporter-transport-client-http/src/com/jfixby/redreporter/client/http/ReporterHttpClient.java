@@ -29,7 +29,7 @@ public class ReporterHttpClient implements ReporterTransport {
 		final File iidStorage;
 		iidStorage = config.getInstallationIDStorageFolder();
 
-		this.storage = new InstallationIDStorage(iidStorage);
+		this.storage = new InstallationIDStorage(iidStorage, config.getIIDFileName());
 
 		Debug.checkTrue("no analytics servers provided", urls.size() > 0);
 		for (final HttpURL url : urls) {

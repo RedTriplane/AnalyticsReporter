@@ -10,6 +10,7 @@ import com.jfixby.cmns.api.net.http.HttpURL;
 public class ReporterHttpClientConfig {
 	final Set<HttpURL> servers = Collections.newSet();
 	private File iidStorage;
+	private String IIDFileName;
 
 	public void addAnalyticsServerUrl (final HttpURL url) {
 		this.servers.add(url);
@@ -26,6 +27,14 @@ public class ReporterHttpClientConfig {
 
 	public File getInstallationIDStorageFolder () {
 		return this.iidStorage;
+	}
+
+	public String getIIDFileName () {
+		return this.IIDFileName;
+	}
+
+	public void setIIDFileName (final String installationIdFileName) {
+		this.IIDFileName = installationIdFileName;
 	}
 
 }
