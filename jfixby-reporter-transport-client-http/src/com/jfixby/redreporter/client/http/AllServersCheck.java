@@ -9,22 +9,26 @@ import com.jfixby.cmns.api.java.Int;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.transport.ServersCheck;
+import com.jfixby.redreporter.api.transport.ServersCheckParams;
 
 public class AllServersCheck implements ServersCheck {
 
 	private final Collection<ServerHandler> servers;
 	private final Int totalNumberOfparticipants;
+	private final long timeout;
+	final RequestArgs args = new RequestArgs();
 
-	public AllServersCheck (final Collection<ServerHandler> servers) {
+	public AllServersCheck (final Collection<ServerHandler> servers, final ServersCheckParams params) {
 		this.servers = servers;
 		this.totalNumberOfparticipants = new Int(this.servers.size());
+		this.timeout = params.getTimeOut();
 
 		this.servers.print("cheking servers");
 
 		final long startTime = Sys.SystemTime().currentTimeMillis();
-
+		this.args.timeout = this.timeout;
 		for (final ServerHandler server : this.servers) {
-			server.check(this.ranker);
+			server.check(this.ranker, this.args);
 		}
 
 		while (this.totalNumberOfparticipants.value > 0) {

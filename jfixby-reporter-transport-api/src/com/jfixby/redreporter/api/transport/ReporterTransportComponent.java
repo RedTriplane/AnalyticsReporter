@@ -8,10 +8,14 @@ public interface ReporterTransportComponent {
 
 	boolean sendReport (Report message);
 
-	ServersCheck checkServers ();
+	ServersCheck checkServers (ServersCheckParams params);
 
 	InstallationID getInstallationID ();
 
 	boolean deleteInstallationID ();
+
+	ServersCheckParams newServersCheckParams ();
+
+	ServersCheck checkServers ();
 
 }

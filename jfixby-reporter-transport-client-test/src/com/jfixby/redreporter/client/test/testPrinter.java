@@ -15,10 +15,6 @@ public class testPrinter {
 			final String str = L.component().stackTraceToString(e);
 			L.d(str);
 
-			L.d("--------------------------------------------------------");
-			final String trace = L.component().throwableToString(e);
-			L.d(trace);
-			L.d("--------------------------------------------------------");
 		}
 
 	}

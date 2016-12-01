@@ -32,7 +32,7 @@ public class ServerHandler {
 		return "Server[" + this.url + "]";
 	}
 
-	private ServerPing check () {
+	private ServerPing check (final RequestArgs args) {
 		final ServerHandler server = this;
 		final ServerPing ping = new ServerPing();
 		ping.code = -1;
@@ -43,23 +43,31 @@ public class ServerHandler {
 		ping.serverVersion = ServerPing.UNKNOWN;
 		ping.serverProcesingTime = Long.MAX_VALUE;
 		try {
-			updatePeek(ping);
+			updatePeek(ping, args);
 			if (ping.code != 200) {
 				return ping;
 			}
-			updatePing(ping);
+			updatePing(ping, args);
 		} catch (final Throwable e) {
 			ping.error = L.stackTraceToString(e);
 		}
 		return ping;
 	}
 
-	static private void updatePing (final ServerPing ping) {
+	static private void updatePing (final ServerPing ping, final RequestArgs args) {
 
 		ping.ping = Long.MAX_VALUE;
 		final long timestamp = System.currentTimeMillis();
 		final Message pingMessage = new Message(REPORTER_PROTOCOL.PING);
-		final Message pongMessage = ping.server.exchange(pingMessage);
+		final Message pongMessage = ping.server.exchange(pingMessage, args);
+
+		try {
+			ping.request_id = pongMessage.values.get(REPORTER_PROTOCOL.REQUEST_ID);
+		} catch (final Throwable e) {
+			ping.error = "failed to read: serverVersion";
+			return;
+		}
+
 		try {
 			ping.status = (ServerStatus)pongMessage.attachments.get(REPORTER_PROTOCOL.SERVER_STATUS);
 		} catch (final Throwable e) {
@@ -85,12 +93,18 @@ public class ServerHandler {
 
 	}
 
-	static private int updatePeek (final ServerPing ping) {
+	static private int updatePeek (final ServerPing ping, final RequestArgs args) {
 		ping.code = -1;
 		try {
 			final HttpConnectionSpecs spec = Http.newConnectionSpecs();
 			spec.setURL(ping.url);
 			spec.setDoInput(true);
+			spec.setConnectTimeout(args.timeout);
+			spec.setReadTimeout(args.timeout);
+			if (args != null && args.timeout <= 0) {
+				spec.setConnectTimeout(SERVER_DEFAULT_TIMEOUT);
+				spec.setReadTimeout(SERVER_DEFAULT_TIMEOUT);
+			}
 
 			final HttpConnection connect = Http.newConnection(spec);
 			connect.open();
@@ -99,6 +113,7 @@ public class ServerHandler {
 			connect.close();
 		} catch (final IOException e) {
 			ping.code = -1;
+			ping.error = L.stackTraceToString(e);
 		}
 		return ping.code;
 	}
@@ -107,16 +122,20 @@ public class ServerHandler {
 		return this.url;
 	}
 
-	public Message exchange (final Message message) {
+	public Message exchange (final Message message, final RequestArgs args) {
 		try {
-			return exchange(message, null, this.url);
+			return exchange(message, null, this.url, args);
 		} catch (final IOException e) {
 		}
 		return null;
 	}
 
-	static private Message exchange (final Message message, final Mapping<String, String> headers, final HttpURL url)
-		throws IOException {
+	public Message exchange (final Message message) {
+		return this.exchange(message, null);
+	}
+
+	static private Message exchange (final Message message, final Mapping<String, String> headers, final HttpURL url,
+		final RequestArgs args) throws IOException {
 		Debug.checkNull("message", message);
 		final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
 		conSpec.setURL(url);
@@ -131,8 +150,12 @@ public class ServerHandler {
 			conSpec.addRequesrProperties(headers);
 		}
 
-		conSpec.setConnectTimeout(SERVER_TIMEOUT);
-		conSpec.setReadTimeout(SERVER_TIMEOUT);
+		conSpec.setConnectTimeout(args.timeout);
+		conSpec.setReadTimeout(args.timeout);
+		if (args != null && args.timeout <= 0) {
+			conSpec.setConnectTimeout(SERVER_DEFAULT_TIMEOUT);
+			conSpec.setReadTimeout(SERVER_DEFAULT_TIMEOUT);
+		}
 
 		final HttpConnection connection = Http.newConnection(conSpec);
 
@@ -175,14 +198,14 @@ public class ServerHandler {
 
 	}
 
-	public static final int SERVER_TIMEOUT = 1000;
+	public static final int SERVER_DEFAULT_TIMEOUT = 3000;
 
-	public void check (final ServerRanker ranker) {
+	public void check (final ServerRanker ranker, final RequestArgs args) {
 		final ServerHandler server = this;
 		final Thread t = new Thread() {
 			@Override
 			public void run () {
-				final ServerPing ping = ServerHandler.this.check();
+				final ServerPing ping = ServerHandler.this.check(args);
 				if (ping.isGood()) {
 					ranker.onSuccess(server, ping);
 				} else {

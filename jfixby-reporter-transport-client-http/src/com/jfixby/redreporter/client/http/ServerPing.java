@@ -17,6 +17,7 @@ public class ServerPing {
 	public HttpURL url;
 	public ServerHandler server;
 	public String error;
+	public String request_id = "";
 
 	public boolean isGood () {
 		if (this.code == -1) {

@@ -9,6 +9,7 @@ import com.jfixby.cmns.api.collections.Set;
 import com.jfixby.cmns.api.java.Int;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.transport.ServersCheck;
+import com.jfixby.redreporter.api.transport.ServersCheckParams;
 
 public class ServerHandlers implements Iterable<ServerHandler> {
 
@@ -17,6 +18,8 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 	public void add (final ServerHandler handler) {
 		this.servers.add(handler);
 	}
+
+	final RequestArgs args = new RequestArgs();
 
 	public ServerPing getBestServerPing (final long timeLimit) {
 
@@ -39,8 +42,9 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 				totalNumberOfparticipants.value--;
 			}
 		};
+		this.args.timeout = (timeLimit);
 		for (final ServerHandler server : this.servers) {
-			server.check(ranker);
+			server.check(ranker, this.args);
 		}
 
 		long passed;
@@ -62,8 +66,8 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 		return this.servers.iterator();
 	}
 
-	public ServersCheck checkAll () {
-		final AllServersCheck check = new AllServersCheck(this.servers);
+	public ServersCheck checkAll (final ServersCheckParams params) {
+		final AllServersCheck check = new AllServersCheck(this.servers, params);
 		return check;
 
 	}

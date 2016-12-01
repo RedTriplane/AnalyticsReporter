@@ -26,16 +26,24 @@ public class ReporterTransport {
 		return invoke().sendReport(message);
 	}
 
-	public static ServersCheck checkServers () {
-		return invoke().checkServers();
-	}
-
 	public static InstallationID getInstallationID () {
 		return invoke().getInstallationID();
 	}
 
 	public static boolean deleteInstallationID () {
 		return invoke().deleteInstallationID();
+	}
+
+	public static ServersCheckParams newServersCheckParams () {
+		return invoke().newServersCheckParams();
+	}
+
+	public static ServersCheck checkServers () {
+		return invoke().checkServers();
+	}
+
+	public static ServersCheck checkServers (final ServersCheckParams params) {
+		return invoke().checkServers(params);
 	}
 
 }
