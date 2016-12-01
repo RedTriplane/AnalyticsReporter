@@ -27,4 +27,9 @@ public abstract class RedAnalyticsReporter extends AbstractReporter implements A
 		this.loadReportsFromCache(this.log_files_filter);
 	}
 
+	@Override
+	String getLogFileExtention () {
+		return LOGS_FILE_NAME_SUFFIX;
+	}
+
 }

@@ -9,7 +9,6 @@ import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.FileFilter;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.log.LoggerComponent;
-import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.crash.CrashReporterComponent;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
@@ -86,30 +85,9 @@ public abstract class RedCrashReporter extends AbstractReporter implements Crash
 		this.loadReportsFromCache(this.crash_files_filter);
 	}
 
-	// ------------------------------------------------------------------------------------------------
-
-	public static final long m1 = 60 * 1000;
-	public static final long m10 = m1 * 10;
-	public static final long H1 = m1 * 60;
-	public static final long H4 = 4 * H1;
-
-	private long sleep_attempt = 0;
-	private long base = 1000;
-	private long delta = 1000;
-
-	public void resetSleep () {
-		this.base = 1000;
-		this.delta = 1000;
-		this.sleep_attempt = 0;
-	}
-
-	public void speep (final long max) {
-		this.sleep_attempt++;
-		long sleepTime = this.base + this.sleep_attempt * this.sleep_attempt * this.delta;
-		if (sleepTime > max) {
-			sleepTime = max;
-		}
-		Sys.sleep(sleepTime);
+	@Override
+	String getLogFileExtention () {
+		return CRASH_FILE_NAME_SUFFIX;
 	}
 
 }

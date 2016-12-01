@@ -1,8 +1,6 @@
 
 package com.jfixby.redreporter;
 
-import java.io.IOException;
-
 import com.jfixby.cmns.api.err.ErrorComponent;
 import com.jfixby.cmns.api.err.NotImplementedYetException;
 import com.jfixby.red.err.RedError;
@@ -87,7 +85,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	}
 
 	@Override
-	public void reportWarning (final String msg, final IOException e) {
+	public void reportWarning (final String msg, final Throwable e) {
 	}
 
 }

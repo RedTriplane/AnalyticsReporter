@@ -14,7 +14,6 @@ import com.jfixby.cmns.api.file.FileFilter;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.taskman.Job;
-import com.jfixby.redreporter.api.analytics.Report;
 import com.jfixby.redreporter.api.analytics.SERVICE_MODE;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
@@ -23,7 +22,7 @@ public abstract class AbstractReporter {
 	private final File logsCache;
 	private final ReporterTransport transport;
 	private boolean cacheIsValid;
-	private SERVICE_MODE mode;
+	private SERVICE_MODE mode = SERVICE_MODE.NOISY;
 
 	public AbstractReporter (final ReporterTransport transport, final File logsCache) {
 		this.logsCache = Debug.checkNull("logsCache", logsCache);
@@ -57,28 +56,35 @@ public abstract class AbstractReporter {
 	}
 
 	private final void push () {
-		L.d("push", this);
+// L.d("push", this);
 		{
 			// --------------------------------
+			if (this.mode == SERVICE_MODE.QUIET) {
+				Sys.sleep(this.period_long);
+				return;
+			}
 			if (this.queue.size() == 0) {
 				Sys.sleep(this.period);
 				return;
 			}
-			final Report report = this.queue.peek();
-			final boolean result = this.transport.sendReport(report);
+			final ReportHandler report = this.queue.peek();
+			final boolean result = this.transport.sendReport(report.data);
 			if (result == OK) {
 				report.dispose();
 				this.queue.remove();
 				return;
 			}
 
-			this.queue.ensureCached();
+			this.queue.ensureCached(this.getCache(), this.getLogFileExtention());
 			// --------------------------------
 		}
-		Sys.sleep(1000);
+// Sys.sleep(1000);
 	}
 
+	abstract String getLogFileExtention ();
+
 	final private long period = 100;
+	final private long period_long = 5000;
 
 	abstract void loadReportsFromCache ();
 
@@ -162,17 +168,21 @@ public abstract class AbstractReporter {
 	}
 
 	private void loadCrashReport (final File file) {
-		final RedReport report = new RedReport();
-		try {
-			report.readFromFile(file);
+		final ReportHandler report = new ReportHandler();
+
+		final boolean success = report.readFromFile(file);
+		if (success) {
 			this.submitReport(report);
-		} catch (final IOException e) {
-			Err.reportWarning("failed to read crash file: " + file, e);
 		}
+
 	}
 
-	private void submitReport (final RedReport report) {
-		this.queue.add(report);
+	private void submitReport (final ReportHandler report) {
+		if (report.data == null) {
+			Err.reportError("Report data is null");
+		} else {
+			this.queue.add(report);
+		}
 	}
 
 }
