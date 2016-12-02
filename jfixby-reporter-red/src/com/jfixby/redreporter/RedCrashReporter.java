@@ -3,6 +3,7 @@ package com.jfixby.redreporter;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
+import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.err.ErrorComponent;
 import com.jfixby.cmns.api.file.File;
@@ -88,6 +89,11 @@ public abstract class RedCrashReporter extends AbstractReporter implements Crash
 	@Override
 	String getLogFileExtention () {
 		return CRASH_FILE_NAME_SUFFIX;
+	}
+
+	@Override
+	Mapping<String, String> onTryToSendReport (final RedReport report) {
+		return null;
 	}
 
 }

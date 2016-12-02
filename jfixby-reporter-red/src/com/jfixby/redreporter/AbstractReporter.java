@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.jfixby.cmns.api.collections.Collection;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
+import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.ChildrenList;
@@ -69,7 +70,7 @@ public abstract class AbstractReporter {
 				return;
 			}
 			final RedReport report = this.queue.peek();
-			final boolean result = this.transport.sendReport(report);
+			final boolean result = this.transport.sendReport(report, this.onTryToSendReport(report));
 			if (result == OK) {
 				report.dispose();
 				this.queue.remove();
@@ -83,6 +84,8 @@ public abstract class AbstractReporter {
 	}
 
 	abstract String getLogFileExtention ();
+
+	abstract Mapping<String, String> onTryToSendReport (RedReport report);
 
 	final private long period = 100;
 	final private long period_long = 5000;

@@ -1,6 +1,7 @@
 
 package com.jfixby.redreporter;
 
+import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.FileFilter;
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterComponent;
@@ -30,6 +31,11 @@ public abstract class RedAnalyticsReporter extends AbstractReporter implements A
 	@Override
 	String getLogFileExtention () {
 		return LOGS_FILE_NAME_SUFFIX;
+	}
+
+	@Override
+	Mapping<String, String> onTryToSendReport (final RedReport report) {
+		return null;
 	}
 
 }

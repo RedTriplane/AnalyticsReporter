@@ -17,4 +17,5 @@ public class DesktopCrashReporter extends RedCrashReporter {
 	public void stopService (final boolean wait) {
 		this.requestServiceStop(wait);
 	}
+
 }
