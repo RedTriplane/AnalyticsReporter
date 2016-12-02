@@ -7,8 +7,4 @@ public interface AnalyticsReporterComponent {
 
 	void stopService (final boolean wait);
 
-	void setServiceMode (SERVICE_MODE mode);
-
-	SERVICE_MODE getServiceMode ();
-
 }

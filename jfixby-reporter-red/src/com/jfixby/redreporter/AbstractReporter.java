@@ -11,10 +11,11 @@ import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.ChildrenList;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.FileFilter;
+import com.jfixby.cmns.api.java.gc.GARBAGE_MODE;
+import com.jfixby.cmns.api.java.gc.GCFisher;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.taskman.Job;
-import com.jfixby.redreporter.api.analytics.SERVICE_MODE;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public abstract class AbstractReporter {
@@ -22,7 +23,6 @@ public abstract class AbstractReporter {
 	private final File logsCache;
 	private final ReporterTransport transport;
 	private boolean cacheIsValid;
-	private SERVICE_MODE mode = SERVICE_MODE.NOISY;
 
 	public AbstractReporter (final ReporterTransport transport, final File logsCache) {
 		this.logsCache = Debug.checkNull("logsCache", logsCache);
@@ -59,7 +59,7 @@ public abstract class AbstractReporter {
 // L.d("push", this);
 		{
 			// --------------------------------
-			if (this.mode == SERVICE_MODE.QUIET) {
+			if (GCFisher.isGarbageModeFlag(GARBAGE_MODE.GARBAGE_SAVING)) {
 				Sys.sleep(this.period_long);
 				return;
 			}
@@ -139,15 +139,6 @@ public abstract class AbstractReporter {
 
 	public Collection<Job> getServiceJob () {
 		return this.serviceJob;
-	}
-
-	final public void setServiceMode (final SERVICE_MODE mode) {
-		Debug.checkNull("SERVICE_MODE", mode);
-		this.mode = mode;
-	}
-
-	final public SERVICE_MODE getServiceMode () {
-		return this.mode;
 	}
 
 	void loadReportsFromCache (final FileFilter filter) {

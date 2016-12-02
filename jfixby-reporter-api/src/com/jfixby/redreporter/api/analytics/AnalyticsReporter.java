@@ -28,8 +28,4 @@ public class AnalyticsReporter {
 		invoke().stopService(wait);
 	}
 
-	public static void setServiceMode (final SERVICE_MODE mode) {
-		invoke().setServiceMode(mode);
-	}
-
 }
