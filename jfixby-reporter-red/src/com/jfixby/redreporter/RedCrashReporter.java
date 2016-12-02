@@ -3,6 +3,10 @@ package com.jfixby.redreporter;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
+import com.jfixby.cmns.api.assets.ID;
+import com.jfixby.cmns.api.assets.Names;
+import com.jfixby.cmns.api.collections.Collections;
+import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.err.ErrorComponent;
@@ -10,15 +14,20 @@ import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.FileFilter;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.log.LoggerComponent;
+import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.crash.CrashReporterComponent;
+import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public abstract class RedCrashReporter extends AbstractReporter implements CrashReporterComponent {
 
 	protected static final String CRASH_FILE_NAME_SUFFIX = ".crash.log";
+	private final ID serviceID = Names.newID("com.red-triplane.reporter.crash");
 
 	public RedCrashReporter (final ReporterTransport transport, final File logsCache) {
 		super(transport, logsCache);
+		L.d("serviceID", this.serviceID);
+		Sys.exit();
 	}
 
 	final RedReporterUncaughtExceptionHandler uncaughtExceptionHandler = new RedReporterUncaughtExceptionHandler(this);
@@ -91,9 +100,12 @@ public abstract class RedCrashReporter extends AbstractReporter implements Crash
 		return CRASH_FILE_NAME_SUFFIX;
 	}
 
+	final Map<String, String> params = Collections.newMap();
+
 	@Override
 	Mapping<String, String> onTryToSendReport (final RedReport report) {
-		return null;
+		this.params.put(REPORTER_PROTOCOL.SERVICE_ID, this.serviceID + "");
+		return this.params;
 	}
 
 }

@@ -16,5 +16,6 @@ public class REPORTER_PROTOCOL {
 	public static final String SERVER_CODE_VERSION = "AnalyticsReporter.SERVER_CODE_VERSION";
 	public static final String REQUEST_ID = "AnalyticsReporter.REQUEST_ID";
 	public static final String REPORT_RECEIVED_OK = "AnalyticsReporter.REPORT_RECEIVED_OK";
+	public static final String SERVICE_ID = "AnalyticsReporter.ServiceID";
 
 }
