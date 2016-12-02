@@ -12,26 +12,26 @@ import com.jfixby.cmns.api.json.JsonString;
 import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.redreporter.api.analytics.Report;
 
-public class ReportHandler {
+public class RedReport implements Report {
 
 	static long freeID = 10000000;
 
-	private Report data;
+	private ReportData data;
 	private File file;
 
-	public ReportHandler () {
+	public RedReport () {
 
 	}
 
 	void pack () {
-		this.data = new Report();
+		this.data = new ReportData();
 		this.data.local_id = newID();
 		this.data.timestamp = System.currentTimeMillis();
 
 	}
 
 	synchronized static private String newID () {
-		return System.currentTimeMillis() + "." + freeID++;
+		return "" + freeID++;
 	}
 
 	public boolean cache (final File cacheFolder, final String extention) {
@@ -52,7 +52,7 @@ public class ReportHandler {
 
 	}
 
-	Report getData () {
+	private ReportData getData () {
 		if (this.data == null) {
 			this.pack();
 		}
@@ -80,7 +80,7 @@ public class ReportHandler {
 		try {
 			final ByteArray bytes = file.readBytes();
 			final ByteArray unzip = IO.decompress(bytes);
-			this.data = Json.deserializeFromString(Report.class, JUtils.newString(unzip.toArray()));
+			this.data = Json.deserializeFromString(ReportData.class, JUtils.newString(unzip.toArray()));
 			return true;
 		} catch (final IOException e) {
 			e.printStackTrace();

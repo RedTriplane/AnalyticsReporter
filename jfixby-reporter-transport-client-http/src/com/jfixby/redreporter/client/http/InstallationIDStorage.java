@@ -41,7 +41,7 @@ public class InstallationIDStorage {
 		this.iidStorage = iidStorage;
 	}
 
-	public synchronized boolean updateToken (final String token) {
+	public synchronized boolean setID (final String token) {
 		if (this.iid == null || !this.iid.token.equals(token)) {
 			this.iid = new InstallationID(token);
 			final File iidFile = this.iidStorage.child(this.installationIDFileName);

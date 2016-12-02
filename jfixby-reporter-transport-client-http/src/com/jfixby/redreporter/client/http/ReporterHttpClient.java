@@ -87,12 +87,12 @@ public class ReporterHttpClient implements ReporterTransport {
 	private void checkToken (final Message response) {
 		final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
 		if (token != null) {
-			this.storage.updateToken(token);
+			this.storage.setID(token);
 		}
 	}
 
 	private void packToMessage (final Report report, final Message message) {
-		Err.reportNotImplementedYet();
+
 	}
 
 	@Override

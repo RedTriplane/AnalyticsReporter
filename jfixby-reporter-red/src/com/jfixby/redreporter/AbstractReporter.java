@@ -67,8 +67,8 @@ public abstract class AbstractReporter {
 				Sys.sleep(this.period);
 				return;
 			}
-			final ReportHandler report = this.queue.peek();
-			final boolean result = this.transport.sendReport(report.getData());
+			final RedReport report = this.queue.peek();
+			final boolean result = this.transport.sendReport(report);
 			if (result == OK) {
 				report.dispose();
 				this.queue.remove();
@@ -168,7 +168,7 @@ public abstract class AbstractReporter {
 	}
 
 	private void loadCrashReport (final File file) {
-		final ReportHandler report = new ReportHandler();
+		final RedReport report = new RedReport();
 
 		final boolean success = report.readFromFile(file);
 		if (success) {
@@ -177,7 +177,7 @@ public abstract class AbstractReporter {
 
 	}
 
-	private void submitReport (final ReportHandler report) {
+	private void submitReport (final RedReport report) {
 		report.pack();
 		this.queue.add(report);
 
