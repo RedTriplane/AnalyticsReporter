@@ -6,11 +6,11 @@ import java.util.LinkedHashMap;
 
 import com.jfixby.cmns.api.log.L;
 
-public class ReportData implements java.io.Serializable {
+public class SrlzdReport implements java.io.Serializable {
 
 	private static final long serialVersionUID = -5531576045733934241L;
 	public String local_id;
-	public long timestamp;
+	public Long timestamp;
 
 	public LinkedHashMap<String, String> values = new LinkedHashMap<String, String>();
 	public LinkedHashMap<String, ArrayList<java.io.Serializable>> attachments = new LinkedHashMap<String, ArrayList<java.io.Serializable>>();

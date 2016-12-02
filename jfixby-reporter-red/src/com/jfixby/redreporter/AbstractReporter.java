@@ -16,6 +16,7 @@ import com.jfixby.cmns.api.java.gc.GCFisher;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.taskman.Job;
+import com.jfixby.redreporter.api.analytics.Report;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public abstract class AbstractReporter {
@@ -159,17 +160,18 @@ public abstract class AbstractReporter {
 	}
 
 	private void loadCrashReport (final File file) {
-		final RedReport report = new RedReport();
+		final RedReport report = RedReport.readFromCache(file);
 
-		final boolean success = report.readFromFile(file);
-		if (success) {
-			this.submitReport(report);
-		}
+		this.submitReport(report);
 
 	}
 
+	public Report newReport () {
+		final RedReport report = new RedReport();
+		return report;
+	}
+
 	private void submitReport (final RedReport report) {
-		report.pack();
 		this.queue.add(report);
 
 	}
