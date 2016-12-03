@@ -26,7 +26,6 @@ import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.LocalFileSystem;
 import com.jfixby.cmns.api.floatn.Float2;
@@ -203,8 +202,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			connect.close();
 			instance_id = JUtils.newString(data);
 		} catch (final Exception e) {
-			L.d(e);
-			Err.reportWarning("failed to get instance id", e);
+			L.e("failed to get instance id", e);
 			instance_id = "no_instance_id-" + System.currentTimeMillis();
 		}
 		return instance_id;
@@ -297,8 +295,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			server_to_client_stream.close();
 
 		} catch (final Throwable e) {
-			L.e("failed request", arg.requestID);
-			Err.reportWarning("failed request " + arg.requestID, e);
+			L.e("failed request " + arg.requestID, e);
 
 		}
 		final long processed_in = System.currentTimeMillis() - arg.timestamp;
@@ -363,8 +360,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			os.write(compressedResponse);
 			os.close();
 		} catch (final Throwable e) {
-			L.e(e);
-			Err.reportWarning("failed request " + arg.requestID, e);
+			L.e("failed request " + arg.requestID, e);
 		}
 // outputHeaders.print("outputHeaders");
 

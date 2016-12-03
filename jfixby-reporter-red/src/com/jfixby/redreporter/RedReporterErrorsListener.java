@@ -4,7 +4,6 @@ package com.jfixby.redreporter;
 import com.jfixby.cmns.api.err.ErrorComponent;
 import com.jfixby.cmns.api.err.NotImplementedYetException;
 import com.jfixby.red.err.RedError;
-import com.jfixby.redreporter.api.analytics.Report;
 
 public class RedReporterErrorsListener implements ErrorComponent {
 
@@ -29,14 +28,6 @@ public class RedReporterErrorsListener implements ErrorComponent {
 		if (this.defaultErrorListener == null) {
 			this.defaultErrorListener = new RedError();
 		}
-	}
-
-	@Override
-	public void reportWarning (final String message) {
-		final Report report = this.master.newReport();
-// report.addWarning(message);
-// report.submit();
-		this.defaultErrorListener.reportWarning(message);
 	}
 
 	@Override
@@ -84,12 +75,6 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	@Override
 	public void reportError (final Thread t, final Throwable e) {
 		this.defaultErrorListener.reportError(t, e);
-
-	}
-
-	@Override
-	public void reportWarning (final String msg, final Throwable e) {
-		this.defaultErrorListener.reportWarning(msg, e);
 
 	}
 

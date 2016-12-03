@@ -1,6 +1,7 @@
 
 package com.jfixby.redreporter.client.test;
 
+import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.red.desktop.DesktopSetup;
 
@@ -22,7 +23,7 @@ public class testPrinter {
 	private static void call (final int i) throws Exception {
 		try {
 			if (i == 3) {
-				throw new Error();
+				Err.reportNotImplementedYet();
 			}
 			call(i + 1);
 		} catch (final Throwable e) {

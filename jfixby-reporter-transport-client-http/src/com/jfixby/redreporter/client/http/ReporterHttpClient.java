@@ -4,9 +4,9 @@ package com.jfixby.redreporter.client.http;
 import com.jfixby.cmns.api.collections.Collection;
 import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.json.JsonString;
+import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.redreporter.api.analytics.Report;
@@ -61,7 +61,7 @@ public class ReporterHttpClient implements ReporterTransport {
 	public Message exchange (final ServerHandlers servers, final Message request) {
 		final Message response = null;
 		this.checkToken(response);
-		Err.reportWarning("exchange: not implemented yet");
+		L.e("exchange: not implemented yet");
 // for (final ServerHandler server : servers) {
 // final Message response = server.exchange(request);
 // if (response != null) {

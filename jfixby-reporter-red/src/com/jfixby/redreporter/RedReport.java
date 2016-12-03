@@ -4,7 +4,6 @@ package com.jfixby.redreporter;
 import java.io.IOException;
 
 import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.io.IO;
 import com.jfixby.cmns.api.java.ByteArray;
@@ -61,8 +60,7 @@ public class RedReport implements Report {
 		} catch (final IOException e) {
 			this.file = null;
 			this.failedToCache = true;
-			e.printStackTrace();
-			Err.reportWarning("failed to save report file " + this.file, e);
+			L.e("failed to save report file " + this.file, e);
 			return false;
 		}
 
@@ -89,8 +87,7 @@ public class RedReport implements Report {
 			L.d("deleting", this.file);
 			this.file.delete();
 		} catch (final IOException e) {
-			e.printStackTrace();
-			Err.reportWarning("failed to delete report file " + this.file, e);
+			L.e("failed to delete report file " + this.file, e);
 		}
 		this.file = null;
 
@@ -106,8 +103,7 @@ public class RedReport implements Report {
 			final RedReport report = new RedReport(file, data);
 			return report;
 		} catch (final IOException e) {
-			e.printStackTrace();
-			Err.reportWarning("failed to read report file: " + file, e);
+			L.e("failed to read report file: " + file, e);
 		}
 		return null;
 	}
