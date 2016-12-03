@@ -14,5 +14,8 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-db-mysql"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-desktop"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-red"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-transport-client-http"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

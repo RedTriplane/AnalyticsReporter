@@ -5,4 +5,6 @@ public interface ServersCheck {
 
 	boolean isComplete ();
 
+	public void print (String tag);
+
 }

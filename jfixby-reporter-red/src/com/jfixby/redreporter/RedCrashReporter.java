@@ -14,12 +14,16 @@ import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.FileFilter;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.log.LoggerComponent;
-import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.crash.CrashReporterComponent;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public abstract class RedCrashReporter extends AbstractReporter implements CrashReporterComponent {
+
+	@Override
+	public String toString () {
+		return "RedCrashReporter[" + this.serviceID + "]";
+	}
 
 	protected static final String CRASH_FILE_NAME_SUFFIX = ".crash.log";
 	private final ID serviceID = Names.newID("com.red-triplane.reporter.crash");
@@ -27,7 +31,6 @@ public abstract class RedCrashReporter extends AbstractReporter implements Crash
 	public RedCrashReporter (final ReporterTransport transport, final File logsCache) {
 		super(transport, logsCache);
 		L.d("serviceID", this.serviceID);
-		Sys.exit();
 	}
 
 	final RedReporterUncaughtExceptionHandler uncaughtExceptionHandler = new RedReporterUncaughtExceptionHandler(this);

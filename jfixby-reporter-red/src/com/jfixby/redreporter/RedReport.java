@@ -86,6 +86,7 @@ public class RedReport implements Report {
 			return;
 		}
 		try {
+			L.d("deleting", this.file);
 			this.file.delete();
 		} catch (final IOException e) {
 			e.printStackTrace();

@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
+import com.jfixby.cmns.api.log.L;
 import com.jfixby.redreporter.api.InstallationID;
 
 public class InstallationIDStorage {
@@ -46,6 +47,7 @@ public class InstallationIDStorage {
 			this.iid = new InstallationID(token);
 			final File iidFile = this.iidStorage.child(this.installationIDFileName);
 			try {
+				L.d("writing", iidFile);
 				iidFile.writeString(this.iid.token);
 				return true;
 			} catch (final IOException e) {
@@ -80,6 +82,8 @@ public class InstallationIDStorage {
 		}
 
 		try {
+
+			L.d("deleting", iidFile);
 			iidFile.delete();
 		} catch (final IOException e) {
 			e.printStackTrace();
@@ -112,6 +116,8 @@ public class InstallationIDStorage {
 
 		String token;
 		try {
+
+			L.d("reading", iidFile);
 			token = iidFile.readToString();
 		} catch (final IOException e) {
 			e.printStackTrace();

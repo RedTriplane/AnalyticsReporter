@@ -9,17 +9,20 @@ import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.FileFilter;
 import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterComponent;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public abstract class RedAnalyticsReporter extends AbstractReporter implements AnalyticsReporterComponent {
 
+	@Override
+	public String toString () {
+		return "RedAnalyticsReporter[" + this.serviceID + "]";
+	}
+
 	public RedAnalyticsReporter (final ReporterTransport transport, final File logsCache) {
 		super(transport, logsCache);
 		L.d("serviceID", this.serviceID);
-		Sys.exit();
 	}
 
 	protected static final String LOGS_FILE_NAME_SUFFIX = ".debug.log";

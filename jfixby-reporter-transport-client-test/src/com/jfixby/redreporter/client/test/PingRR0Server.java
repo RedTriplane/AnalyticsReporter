@@ -34,21 +34,31 @@ public class PingRR0Server {
 		{
 			final String url_string = "http://127.0.0.1:8080/";
 			final HttpURL url = Http.newURL(url_string);
-// transport_config.addAnalyticsServerUrl(url);
+			transport_config.addAnalyticsServerUrl(url);
 		}
 
 		{
 			final String url_string = "http://ec2-35-156-168-248.eu-central-1.compute.amazonaws.com/";
 			final HttpURL url = Http.newURL(url_string);
-// transport_config.addAnalyticsServerUrl(url);
+			transport_config.addAnalyticsServerUrl(url);
 		}
 
 		final File iidStorage = LocalFileSystem.ApplicationHome();
 		transport_config.setInstallationIDStorageFolder(iidStorage);
+		transport_config.setIIDFileName("ping.test.id");
 		final ReporterHttpClient transport = new ReporterHttpClient(transport_config);
 
 		final int PARALLEL_CONNECTIONS = 1;
 
+		final ServersCheckParams params = transport.newServersCheckParams();
+		params.setTimeOut(1500L);
+		final ServersCheck check = transport.checkServers(params);
+		final long clockStart = Sys.SystemTime().currentTimeMillis();
+		long clock = 0;
+		clock = Sys.SystemTime().currentTimeMillis() - clockStart;
+		check.print("" + clock);
+
+		Sys.exit();
 		for (int i = 0; i < PARALLEL_CONNECTIONS; i++) {
 			final Thread t = new Thread() {
 				@Override

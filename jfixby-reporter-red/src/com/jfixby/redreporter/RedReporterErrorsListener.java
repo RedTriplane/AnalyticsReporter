@@ -36,7 +36,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 		final Report report = this.master.newReport();
 // report.addWarning(message);
 // report.submit();
-// this.defaultErrorListener.reportWarning(message);
+		this.defaultErrorListener.reportWarning(message);
 	}
 
 	@Override
@@ -44,7 +44,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 // final Report report = this.master.newReport();
 // report.addError(message);
 // report.submit();
-// this.defaultErrorListener.reportError(message);
+		this.defaultErrorListener.reportError(message);
 
 	}
 
@@ -53,7 +53,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 // final Report report = this.master.newReport();
 // report.addError(e);
 // report.submit();
-// this.defaultErrorListener.reportError(e);
+		this.defaultErrorListener.reportError(e);
 
 	}
 
@@ -63,7 +63,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 // report.addError(message);
 // report.addError(e);
 // report.submit();
-// this.defaultErrorListener.reportError(message, e);
+		this.defaultErrorListener.reportError(message, e);
 
 	}
 
@@ -78,15 +78,19 @@ public class RedReporterErrorsListener implements ErrorComponent {
 // report.reportGCLeak(msg);
 //// report.addError(e);
 // report.submit();
-// this.defaultErrorListener.reportGCLeak(msg);
+		this.defaultErrorListener.reportGCLeak(msg, leakingObject);
 	}
 
 	@Override
 	public void reportError (final Thread t, final Throwable e) {
+		this.defaultErrorListener.reportError(t, e);
+
 	}
 
 	@Override
 	public void reportWarning (final String msg, final Throwable e) {
+		this.defaultErrorListener.reportWarning(msg, e);
+
 	}
 
 }

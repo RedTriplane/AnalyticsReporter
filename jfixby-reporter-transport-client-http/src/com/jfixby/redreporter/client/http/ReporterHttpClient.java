@@ -61,7 +61,7 @@ public class ReporterHttpClient implements ReporterTransport {
 	public Message exchange (final ServerHandlers servers, final Message request) {
 		final Message response = null;
 		this.checkToken(response);
-		Err.reportNotImplementedYet();
+		Err.reportWarning("exchange: not implemented yet");
 // for (final ServerHandler server : servers) {
 // final Message response = server.exchange(request);
 // if (response != null) {
@@ -70,8 +70,8 @@ public class ReporterHttpClient implements ReporterTransport {
 // L.d(" exchange failed", server);
 // }
 // }
-// return null;
-		return request;
+		return null;
+// return request;
 	}
 
 	@Override

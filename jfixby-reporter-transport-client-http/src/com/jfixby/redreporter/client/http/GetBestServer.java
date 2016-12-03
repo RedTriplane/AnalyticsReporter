@@ -7,10 +7,9 @@ import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.java.Int;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
-import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
 
-public class AllServersCheck implements ServersCheck, ServerRanker {
+public class GetBestServer implements BestServerCheck, ServerRanker {
 
 	private final Collection<ServerHandler> servers;
 	private final Int totalNumberOfparticipants;
@@ -19,7 +18,7 @@ public class AllServersCheck implements ServersCheck, ServerRanker {
 	private final long startTime;
 	private final long finishTime;
 
-	public AllServersCheck (final Collection<ServerHandler> servers, final ServersCheckParams params) {
+	public GetBestServer (final Collection<ServerHandler> servers, final ServersCheckParams params) {
 		this.servers = servers;
 		this.totalNumberOfparticipants = new Int(this.servers.size());
 		this.timeout = params.getTimeOut();
@@ -34,10 +33,11 @@ public class AllServersCheck implements ServersCheck, ServerRanker {
 
 		this.waitForRankingResults();
 		this.finishTime = Sys.SystemTime().currentTimeMillis();
+		L.d("done in", (this.finishTime - this.startTime) + " ms");
 	}
 
 	private synchronized void waitForRankingResults () {
-		while (this.totalNumberOfparticipants.value > 0) {
+		while (!this.isComplete()) {
 			Sys.wait(this);
 		}
 	}
@@ -59,30 +59,8 @@ public class AllServersCheck implements ServersCheck, ServerRanker {
 		this.notify();
 	}
 
-	@Override
-	public boolean isComplete () {
-		return this.totalNumberOfparticipants.value == 0;
-	}
-
-	@Override
-	public void print (final String tag) {
-		L.d("---ServersCheck[" + tag + "]------------------------------");
-		this.servers//
-			.print(" servers");
-		if (this.totalNumberOfparticipants.value > 0) {
-			L.d("checks running", this.totalNumberOfparticipants.value);
-		} else {
-			L.d("       done in", (this.finishTime - this.startTime) + " ms");
-			if (this.succeed.size() > 0) {
-				this.succeed//
-					.print("succeed");
-			}
-			if (this.failed.size() > 0) {
-				this.failed//
-					.print(" failed");
-			}
-		}
-
+	boolean isComplete () {
+		return (this.succeed.size() > 0 || this.totalNumberOfparticipants.value == 0);
 	}
 
 }

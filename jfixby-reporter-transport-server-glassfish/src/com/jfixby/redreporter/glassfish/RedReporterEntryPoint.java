@@ -26,6 +26,9 @@ import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
+import com.jfixby.cmns.api.err.Err;
+import com.jfixby.cmns.api.file.File;
+import com.jfixby.cmns.api.file.LocalFileSystem;
 import com.jfixby.cmns.api.floatn.Float2;
 import com.jfixby.cmns.api.geometry.Geometry;
 import com.jfixby.cmns.api.io.Buffer;
@@ -49,13 +52,23 @@ import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
+import com.jfixby.cmns.api.sys.settings.SystemSettings;
 import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
 import com.jfixby.cmns.ver.Version;
 import com.jfixby.red.desktop.DesktopSetup;
+import com.jfixby.redreporter.DesktopAnalyticsReporter;
+import com.jfixby.redreporter.DesktopAnalyticsReporterSpecs;
+import com.jfixby.redreporter.DesktopCrashReporter;
+import com.jfixby.redreporter.DesktopReporterConfig;
 import com.jfixby.redreporter.api.InstallationID;
+import com.jfixby.redreporter.api.analytics.AnalyticsReporter;
+import com.jfixby.redreporter.api.crash.CrashReporter;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
+import com.jfixby.redreporter.api.transport.ReporterTransport;
+import com.jfixby.redreporter.client.http.ReporterHttpClient;
+import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
 import com.jfixby.redreporter.server.core.RedReporterServer;
@@ -93,10 +106,16 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		average = FloatMath.newAverage(MAX_VALUES);
 		version = new Version();
 		version.major = "1";
-		version.minor = "15";
-		version.build = "2";
+		version.minor = "19";
+		version.build = "0";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 632;
+		version.versionCode = 700;
+
+		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
+		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
+		SystemSettings.setStringParameter(Version.Tags.VersionName, version.getPackageVersionString());
+		INSTALLATION_ID_FILE_NAME = version.packageName + ".iid";
+		deployAnalytics();
 
 		final MySQLConfig config = new MySQLConfig();
 
@@ -115,6 +134,55 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		instance_id = red_instance_id();
 		ReporterServer.installComponent(new RedReporterServer(server_config));
 
+	}
+	private static final String INSTALLATION_ID_FILE_NAME;
+
+	static public void deployAnalytics () {
+		{
+			L.d("INSTALLATION_ID_FILE_NAME", INSTALLATION_ID_FILE_NAME);
+			final File home = LocalFileSystem.ApplicationHome();
+			final File logs = home.child("logs");
+
+			final ReporterHttpClientConfig transport_config = new ReporterHttpClientConfig();
+
+			transport_config.setInstallationIDStorageFolder(home);
+			transport_config.setIIDFileName(INSTALLATION_ID_FILE_NAME);
+			{
+				final String url_string = "https://rr-0.red-triplane.com/";
+				final HttpURL url = Http.newURL(url_string);
+				transport_config.addAnalyticsServerUrl(url);
+			}
+			{
+				final String url_string = "https://rr-1.red-triplane.com/";
+				final HttpURL url = Http.newURL(url_string);
+				transport_config.addAnalyticsServerUrl(url);
+			}
+			{
+				final String url_string = "https://rr-2.red-triplane.com/";
+				final HttpURL url = Http.newURL(url_string);
+				transport_config.addAnalyticsServerUrl(url);
+			}
+			final ReporterTransport transport = new ReporterHttpClient(transport_config);
+			{
+
+				final DesktopReporterConfig crash_reporter_config = new DesktopReporterConfig();
+
+				crash_reporter_config.setLogsCache(logs);
+				crash_reporter_config.setTransport(transport);
+				CrashReporter.installComponent(new DesktopCrashReporter(crash_reporter_config));
+// CrashReporter.deployErrorsListener();
+// CrashReporter.deployLogsListener();
+// CrashReporter.deployUncaughtExceptionHandler();
+				CrashReporter.startService();
+			}
+			{
+				final DesktopAnalyticsReporterSpecs analytics_reporter_specs = new DesktopAnalyticsReporterSpecs();
+				analytics_reporter_specs.setTransport(transport);
+				analytics_reporter_specs.setLogsCache(logs);
+				AnalyticsReporter.installComponent(new DesktopAnalyticsReporter(analytics_reporter_specs));
+				AnalyticsReporter.startService();
+			}
+		}
 	}
 
 	public static String serviceState () {
@@ -136,6 +204,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			instance_id = JUtils.newString(data);
 		} catch (final Exception e) {
 			L.d(e);
+			Err.reportWarning("failed to get instance id", e);
 			instance_id = "no_instance_id-" + System.currentTimeMillis();
 		}
 		return instance_id;
@@ -229,7 +298,8 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 		} catch (final Throwable e) {
 			L.e("failed request", arg.requestID);
-			e.printStackTrace();
+			Err.reportWarning("failed request " + arg.requestID, e);
+
 		}
 		final long processed_in = System.currentTimeMillis() - arg.timestamp;
 		L.d("request", arg.requestID);
@@ -294,7 +364,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			os.close();
 		} catch (final Throwable e) {
 			L.e(e);
-			e.printStackTrace();
+			Err.reportWarning("failed request " + arg.requestID, e);
 		}
 // outputHeaders.print("outputHeaders");
 
