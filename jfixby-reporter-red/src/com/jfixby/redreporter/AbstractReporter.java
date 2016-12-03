@@ -52,12 +52,12 @@ public abstract class AbstractReporter {
 
 	final ReportsQueue queue = new ReportsQueue();
 
-	private void start () {
+	void start () {
 		L.d("doStart", this);
 		this.stopJob = false;
 	}
 
-	private final void push () {
+	final void push () {
 // L.d("push", this);
 		{
 			// --------------------------------
@@ -92,45 +92,12 @@ public abstract class AbstractReporter {
 
 	abstract void loadReportsFromCache ();
 
-	final Job loadCache = new Job() {
+	final LoadCacheJob loadCache = new LoadCacheJob(this);
+	final PushServiceJob pushService = new PushServiceJob(this);
 
-		@Override
-		public void doStart () throws Throwable {
-			AbstractReporter.this.loadReportsFromCache();
-		}
-
-		@Override
-		public void doPush () throws Throwable {
-		}
-
-		@Override
-		public boolean isDone () {
-			return true;
-		}
-	};
-	final Job pushService = new Job() {
-
-		@Override
-		public void doStart () throws Throwable {
-			AbstractReporter.this.start();
-		}
-
-		@Override
-		public void doPush () throws Throwable {
-			AbstractReporter.this.push();
-		}
-
-		@Override
-		public boolean isDone () {
-			if (AbstractReporter.this.stopJob) {
-				AbstractReporter.this.serviceIsStopping = false;
-			}
-			return AbstractReporter.this.stopJob;
-		}
-	};
 	final List<Job> serviceJob = Collections.newList(this.loadCache, this.pushService);
 
-	private boolean stopJob;
+	boolean stopJob;
 	boolean serviceIsStopping = false;
 
 	public void requestServiceStop (final boolean wait) {
