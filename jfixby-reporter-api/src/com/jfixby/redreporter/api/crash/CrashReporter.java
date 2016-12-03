@@ -20,36 +20,32 @@ public class CrashReporter {
 		return componentInstaller.getComponent();
 	}
 
-	public static void startService () {
-		invoke().startService();
+	public static void deploy () {
+		invoke().deploy();
 	}
 
-	public static void deployUncaughtExceptionHandler () {
-		invoke().deployUncaughtExceptionHandler();
+	public static void enableUncaughtExceptionHandler () {
+		invoke().enableUncaughtExceptionHandler();
 	}
 
-	public static void deployErrorsListener () {
-		invoke().deployErrorsListener();
+	public static void enableErrorsListener () {
+		invoke().enableErrorsListener();
 	}
 
-	public static void deployLogsListener () {
-		invoke().deployLogsListener();
+	public static void enableLogsListener () {
+		invoke().enableLogsListener();
 	}
 
-	public static void stopService (final boolean wait) {
-		invoke().stopService(wait);
+	public static void disableUncaughtExceptionHandler () {
+		invoke().disableUncaughtExceptionHandler();
 	}
 
-	public static void unDeployUncaughtExceptionHandler () {
-		invoke().unDeployUncaughtExceptionHandler();
+	public static void disableLogsListener () {
+		invoke().disableLogsListener();
 	}
 
-	public static void unDeployErrorsListener () {
-		invoke().unDeployErrorsListener();
-	}
-
-	public static void unDeployLogsListener () {
-		invoke().unDeployLogsListener();
+	public static void disableErrorsListener () {
+		invoke().disableErrorsListener();
 	}
 
 }

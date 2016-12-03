@@ -8,11 +8,11 @@ import com.jfixby.cmns.api.taskman.Task;
 import com.jfixby.cmns.api.taskman.TaskManager;
 import com.jfixby.cmns.api.taskman.TaskSpecs;
 
-public class DesktopCrashReporterService {
+public class DesktopReporterService {
 
 	final private Collection<Job> job;
 
-	public DesktopCrashReporterService (final Collection<Job> collection) {
+	public DesktopReporterService (final Collection<Job> collection) {
 		this.job = collection;
 	}
 

@@ -1,6 +1,7 @@
 
 package com.jfixby.redreporter;
 
+import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.err.ErrorComponent;
 import com.jfixby.cmns.api.err.NotImplementedYetException;
 import com.jfixby.red.err.RedError;
@@ -32,8 +33,8 @@ public class RedReporterErrorsListener implements ErrorComponent {
 
 	@Override
 	public void reportError (final String message) {
-// final Report report = this.master.newReport();
-// report.addError(message);
+		final RedReport report = this.master.newReport();
+		report.addMessage(message);
 // report.submit();
 		this.defaultErrorListener.reportError(message);
 
@@ -76,6 +77,35 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	public void reportError (final Thread t, final Throwable e) {
 		this.defaultErrorListener.reportError(t, e);
 
+	}
+
+	boolean enabled = false;
+
+	public void enable () {
+		if (this.enabled) {
+			return;
+		}
+		this.enabled = true;
+		final ErrorComponent oldErr = Err.component();
+		if (oldErr != null) {
+			Err.deInstallCurrentComponent();
+			this.setChildListener(oldErr);
+		}
+		this.deploy();
+		Err.installComponent(this);
+	}
+
+	public void disable () {
+		if (!this.enabled) {
+			return;
+		}
+		this.enabled = !true;
+		Err.deInstallCurrentComponent();
+		Err.installComponent(this.getChildListener());
+	}
+
+	public boolean isEnabled () {
+		return this.enabled;
 	}
 
 }

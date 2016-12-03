@@ -3,20 +3,24 @@ package com.jfixby.redreporter.api.crash;
 
 public interface CrashReporterComponent {
 
-	void startService ();
+	void enableUncaughtExceptionHandler ();
 
-	void stopService (boolean wait);
+	void enableErrorsListener ();
 
-	void deployUncaughtExceptionHandler ();
+	void enableLogsListener ();
 
-	void deployErrorsListener ();
+	void disableUncaughtExceptionHandler ();
 
-	void deployLogsListener ();
+	void disableErrorsListener ();
 
-	void unDeployUncaughtExceptionHandler ();
+	void disableLogsListener ();
 
-	void unDeployErrorsListener ();
+	void deploy ();
 
-	void unDeployLogsListener ();
+	boolean isUncaughtExceptionHandlerEnabled ();
+
+	boolean isErrorsListenerEnabled ();
+
+	boolean isLogsListenerEnabled ();
 
 }

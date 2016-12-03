@@ -27,4 +27,31 @@ public class RedReporterUncaughtExceptionHandler implements UncaughtExceptionHan
 		return this.child;
 	}
 
+	boolean enabled = false;
+
+	public void enable () {
+		if (this.enabled) {
+			return;
+		}
+		final UncaughtExceptionHandler oldHandler = Thread.getDefaultUncaughtExceptionHandler();
+		Thread.setDefaultUncaughtExceptionHandler(this);
+		if (oldHandler != null) {
+			this.setChildHandler(oldHandler);
+		}
+		this.enabled = true;
+	}
+
+	public void disable () {
+		if (!this.enabled) {
+			return;
+		}
+		final UncaughtExceptionHandler oldHandler = this.getOldHandler();
+		Thread.setDefaultUncaughtExceptionHandler(oldHandler);
+		this.enabled = !true;
+	}
+
+	public boolean isEnabled () {
+		return this.enabled;
+	}
+
 }

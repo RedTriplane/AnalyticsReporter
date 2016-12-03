@@ -163,16 +163,14 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			}
 			final ReporterTransport transport = new ReporterHttpClient(transport_config);
 			{
-
 				final DesktopReporterConfig crash_reporter_config = new DesktopReporterConfig();
-
 				crash_reporter_config.setLogsCache(logs);
 				crash_reporter_config.setTransport(transport);
 				CrashReporter.installComponent(new DesktopCrashReporter(crash_reporter_config));
-// CrashReporter.deployErrorsListener();
-// CrashReporter.deployLogsListener();
-// CrashReporter.deployUncaughtExceptionHandler();
-				CrashReporter.startService();
+				CrashReporter.enableErrorsListener();
+				CrashReporter.enableLogsListener();
+				CrashReporter.enableUncaughtExceptionHandler();
+				CrashReporter.deploy();
 			}
 			{
 				final DesktopAnalyticsReporterSpecs analytics_reporter_specs = new DesktopAnalyticsReporterSpecs();

@@ -5,9 +5,9 @@ import com.jfixby.cmns.api.taskman.Job;
 
 public class PushServiceJob implements Job {
 
-	private final AbstractReporter abstractReporter;
+	private final RedAnalyticsReporter abstractReporter;
 
-	public PushServiceJob (final AbstractReporter abstractReporter) {
+	public PushServiceJob (final RedAnalyticsReporter abstractReporter) {
 		this.abstractReporter = abstractReporter;
 	}
 

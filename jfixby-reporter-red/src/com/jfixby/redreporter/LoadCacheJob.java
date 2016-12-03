@@ -5,9 +5,9 @@ import com.jfixby.cmns.api.taskman.Job;
 
 public class LoadCacheJob implements Job {
 
-	private final AbstractReporter abstractReporter;
+	private final RedAnalyticsReporter abstractReporter;
 
-	public LoadCacheJob (final AbstractReporter abstractReporter) {
+	public LoadCacheJob (final RedAnalyticsReporter abstractReporter) {
 		this.abstractReporter = abstractReporter;
 	}
 

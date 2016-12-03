@@ -108,4 +108,7 @@ public class RedReport implements Report {
 		return null;
 	}
 
+	public void addMessage (final String message) {
+	}
+
 }

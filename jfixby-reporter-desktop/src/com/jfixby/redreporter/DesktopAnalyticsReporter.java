@@ -2,7 +2,7 @@
 package com.jfixby.redreporter;
 
 public class DesktopAnalyticsReporter extends RedAnalyticsReporter {
-	final DesktopCrashReporterService service = new DesktopCrashReporterService(this.getServiceJob());
+	final DesktopReporterService service = new DesktopReporterService(this.getServiceJob());
 
 	public DesktopAnalyticsReporter (final DesktopAnalyticsReporterSpecs analytics_reporter_specs) {
 		super(analytics_reporter_specs.getTransport(), analytics_reporter_specs.getLogsCache());
@@ -11,6 +11,7 @@ public class DesktopAnalyticsReporter extends RedAnalyticsReporter {
 	@Override
 	public void startService () {
 		this.service.start();
+
 	}
 
 	@Override
