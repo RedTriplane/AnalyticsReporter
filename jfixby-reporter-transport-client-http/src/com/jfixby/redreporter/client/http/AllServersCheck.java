@@ -1,17 +1,16 @@
 
 package com.jfixby.redreporter.client.http;
 
-import java.util.Vector;
-
 import com.jfixby.cmns.api.collections.Collection;
 import com.jfixby.cmns.api.collections.Collections;
+import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.java.Int;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
 
-public class AllServersCheck implements ServersCheck {
+public class AllServersCheck implements ServersCheck, ServerRanker {
 
 	private final Collection<ServerHandler> servers;
 	private final Int totalNumberOfparticipants;
@@ -28,41 +27,44 @@ public class AllServersCheck implements ServersCheck {
 		final long startTime = Sys.SystemTime().currentTimeMillis();
 		this.args.timeout = this.timeout;
 		for (final ServerHandler server : this.servers) {
-			server.check(this.ranker, this.args);
+			server.check(this, this.args);
 		}
 
-		while (this.totalNumberOfparticipants.value > 0) {
-// Sys.yeld();
-			Sys.sleep(1);
-		}
+		this.waitForRankingResults();
 		L.d("cheking servers done in", (System.currentTimeMillis() - startTime) + " ms");
 		if (this.totalNumberOfparticipants.value > 0) {
 			L.d("still running", this.totalNumberOfparticipants.value);
 		}
 		if (this.succeed.size() > 0) {
-			Collections.newList(this.succeed).print("succeed");
+			this.succeed.print("succeed");
 		}
 		if (this.failed.size() > 0) {
-			Collections.newList(this.failed).print(" failed");
+			this.failed.print(" failed");
 		}
 	}
 
-	final Vector<ServerPing> failed = new Vector<ServerPing>();
-	final Vector<ServerPing> succeed = new Vector<ServerPing>();
-	final ServerRanker ranker = new ServerRanker() {
-
-		@Override
-		public void onSuccess (final ServerHandler server, final ServerPing result) {
-			AllServersCheck.this.succeed.add(result);
-			AllServersCheck.this.totalNumberOfparticipants.value--;
+	private synchronized void waitForRankingResults () {
+		while (this.totalNumberOfparticipants.value > 0) {
+			Sys.wait(this);
 		}
+	}
 
-		@Override
-		public void onFail (final ServerHandler server, final ServerPing result) {
-			AllServersCheck.this.failed.add(result);
-			AllServersCheck.this.totalNumberOfparticipants.value--;
-		}
-	};
+	final List<ServerPing> failed = Collections.newList();
+	final List<ServerPing> succeed = Collections.newList();
+
+	@Override
+	public synchronized void onSuccess (final ServerHandler server, final ServerPing result) {
+		this.succeed.add(result);
+		this.totalNumberOfparticipants.value--;
+		this.notify();
+	}
+
+	@Override
+	public synchronized void onFail (final ServerHandler server, final ServerPing result) {
+		this.failed.add(result);
+		this.totalNumberOfparticipants.value--;
+		this.notify();
+	}
 
 	@Override
 	public boolean isComplete () {

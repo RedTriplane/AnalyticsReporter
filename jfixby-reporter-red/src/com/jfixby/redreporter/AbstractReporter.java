@@ -137,7 +137,7 @@ public abstract class AbstractReporter {
 		this.serviceIsStopping = true;
 		this.stopJob = true;
 		while (wait && this.serviceIsStopping) {
-			Sys.sleep(1);
+			Sys.sleep(30);
 		}
 	}
 
