@@ -1,9 +1,12 @@
 
 package com.jfixby.redreporter.client.http;
 
+import java.io.IOException;
+
 import com.jfixby.cmns.api.collections.Collection;
 import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
+import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.json.JsonString;
 import com.jfixby.cmns.api.log.L;
@@ -18,16 +21,26 @@ import com.jfixby.redreporter.api.transport.ServersCheckParams;
 public class ReporterHttpClient implements ReporterTransport {
 
 	final ServerHandlers servers = new ServerHandlers();
-	private final InstallationIDStorage storage;
+	private final InstallationIDStorage iidStorage;
+	private final File cacheFolder;
+	private final ReportsQueue queue;
 
 	public ReporterHttpClient (final ReporterHttpClientConfig config) {
 		Debug.checkNull("config", config);
+
+		this.cacheFolder = config.getCacheFolder();
+		try {
+			this.cacheFolder.checkIsFolder();
+		} catch (final IOException e) {
+			Err.reportError(e);
+		}
+		this.queue = new ReportsQueue(this.cacheFolder);
 
 		final Collection<HttpURL> urls = config.listServers();
 		final File iidStorage;
 		iidStorage = config.getInstallationIDStorageFolder();
 
-		this.storage = new InstallationIDStorage(iidStorage, config.getIIDFileName());
+		this.iidStorage = new InstallationIDStorage(iidStorage, config.getIIDFileName());
 
 		Debug.checkTrue("no analytics servers provided", urls.size() > 0);
 		for (final HttpURL url : urls) {
@@ -74,7 +87,6 @@ public class ReporterHttpClient implements ReporterTransport {
 // return request;
 	}
 
-	@Override
 	public boolean sendReport (final Report report, final Mapping<String, String> params) {
 		final Message message = new Message(REPORTER_PROTOCOL.REPORT);
 		this.packToMessage(report, params, message);
@@ -92,7 +104,7 @@ public class ReporterHttpClient implements ReporterTransport {
 	private void checkToken (final Message response) {
 		final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
 		if (token != null) {
-			this.storage.setID(token);
+			this.iidStorage.setID(token);
 		}
 	}
 
@@ -104,24 +116,26 @@ public class ReporterHttpClient implements ReporterTransport {
 		}
 	}
 
-	@Override
 	public ServersCheck checkServers (final ServersCheckParams params) {
 		return this.servers.checkAll(params);
 	}
 
-	@Override
 	public ServersCheckParams newServersCheckParams () {
 		return new RedServersCheckParams();
 	}
 
-	@Override
 	public ServersCheck checkServers () {
 		return this.checkServers(new RedServersCheckParams());
 	}
 
 	@Override
 	public boolean resetInstallationID () {
-		return this.storage.deleteID();
+		return this.iidStorage.deleteID();
+	}
+
+	@Override
+	public boolean submitReport (final Report report) {
+		return false;
 	}
 
 }

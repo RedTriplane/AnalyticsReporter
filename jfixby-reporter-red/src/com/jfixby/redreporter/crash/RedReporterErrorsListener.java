@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter;
+package com.jfixby.redreporter.crash;
 
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.err.ErrorComponent;
@@ -33,28 +33,18 @@ public class RedReporterErrorsListener implements ErrorComponent {
 
 	@Override
 	public void reportError (final String message) {
-		final RedReport report = this.master.newReport();
-		report.addMessage(message);
-// report.submit();
 		this.defaultErrorListener.reportError(message);
 
 	}
 
 	@Override
 	public void reportError (final Throwable e) {
-// final Report report = this.master.newReport();
-// report.addError(e);
-// report.submit();
 		this.defaultErrorListener.reportError(e);
 
 	}
 
 	@Override
 	public void reportError (final String message, final Throwable e) {
-// final Report report = this.master.newReport();
-// report.addError(message);
-// report.addError(e);
-// report.submit();
 		this.defaultErrorListener.reportError(message, e);
 
 	}
@@ -66,10 +56,6 @@ public class RedReporterErrorsListener implements ErrorComponent {
 
 	@Override
 	public void reportGCLeak (final String msg, final Object leakingObject) {
-// final Report report = this.master.newReport();
-// report.reportGCLeak(msg);
-//// report.addError(e);
-// report.submit();
 		this.defaultErrorListener.reportGCLeak(msg, leakingObject);
 	}
 

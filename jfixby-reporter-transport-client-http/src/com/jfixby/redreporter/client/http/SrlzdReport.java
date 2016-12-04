@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter;
+package com.jfixby.redreporter.client.http;
 
 import java.util.ArrayList;
 import java.util.LinkedHashMap;

@@ -15,8 +15,6 @@ public interface CrashReporterComponent {
 
 	void disableLogsListener ();
 
-	void deploy ();
-
 	boolean isUncaughtExceptionHandlerEnabled ();
 
 	boolean isErrorsListenerEnabled ();

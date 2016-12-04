@@ -57,10 +57,8 @@ import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
 import com.jfixby.cmns.ver.Version;
 import com.jfixby.red.desktop.DesktopSetup;
-import com.jfixby.redreporter.DesktopAnalyticsReporter;
-import com.jfixby.redreporter.DesktopAnalyticsReporterSpecs;
-import com.jfixby.redreporter.DesktopCrashReporter;
-import com.jfixby.redreporter.DesktopReporterConfig;
+import com.jfixby.red.filesystem.virtual.InMemoryFileSystem;
+import com.jfixby.redreporter.analytics.RedAnalyticsReporter;
 import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.analytics.AnalyticsReporter;
 import com.jfixby.redreporter.api.crash.CrashReporter;
@@ -68,6 +66,7 @@ import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
+import com.jfixby.redreporter.crash.RedCrashReporter;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
 import com.jfixby.redreporter.server.core.RedReporterServer;
@@ -140,11 +139,12 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		{
 			L.d("INSTALLATION_ID_FILE_NAME", INSTALLATION_ID_FILE_NAME);
 			final File home = LocalFileSystem.ApplicationHome();
-			final File logs = home.child("logs");
+			final File logs = setupLogFolder(home);
 
 			final ReporterHttpClientConfig transport_config = new ReporterHttpClientConfig();
 
 			transport_config.setInstallationIDStorageFolder(home);
+			transport_config.setCacheFolder(logs);
 			transport_config.setIIDFileName(INSTALLATION_ID_FILE_NAME);
 			{
 				final String url_string = "https://rr-0.red-triplane.com/";
@@ -163,23 +163,30 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			}
 			final ReporterTransport transport = new ReporterHttpClient(transport_config);
 			{
-				final DesktopReporterConfig crash_reporter_config = new DesktopReporterConfig();
-				crash_reporter_config.setLogsCache(logs);
-				crash_reporter_config.setTransport(transport);
-				CrashReporter.installComponent(new DesktopCrashReporter(crash_reporter_config));
+				CrashReporter.installComponent(new RedCrashReporter(transport));
 				CrashReporter.enableErrorsListener();
 				CrashReporter.enableLogsListener();
 				CrashReporter.enableUncaughtExceptionHandler();
-				CrashReporter.deploy();
 			}
 			{
-				final DesktopAnalyticsReporterSpecs analytics_reporter_specs = new DesktopAnalyticsReporterSpecs();
-				analytics_reporter_specs.setTransport(transport);
-				analytics_reporter_specs.setLogsCache(logs);
-				AnalyticsReporter.installComponent(new DesktopAnalyticsReporter(analytics_reporter_specs));
-				AnalyticsReporter.startService();
+				AnalyticsReporter.installComponent(new RedAnalyticsReporter(transport));
 			}
 		}
+	}
+
+	final private static File setupLogFolder (final File home) {
+		File logs = null;
+		try {
+			logs = home.child("logs");
+			logs.makeFolder();
+			if (logs.isFolder()) {
+				return logs;
+			}
+		} catch (final IOException e) {
+			L.e(e);
+		}
+		final InMemoryFileSystem imfs = new InMemoryFileSystem();
+		return imfs.ROOT();
 	}
 
 	public static String serviceState () {

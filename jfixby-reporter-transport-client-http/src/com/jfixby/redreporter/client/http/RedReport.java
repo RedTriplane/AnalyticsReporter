@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter;
+package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 
@@ -42,6 +42,10 @@ public class RedReport implements Report {
 	}
 
 	public boolean cache (final File cacheFolder, final String extention) {
+		if (cacheFolder == null) {
+			return false;
+		}
+
 		Debug.checkNull("cacheFolder", cacheFolder);
 		if (this.file != null) {
 			return true;

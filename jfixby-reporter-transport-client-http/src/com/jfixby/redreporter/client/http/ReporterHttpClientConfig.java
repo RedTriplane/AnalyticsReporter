@@ -11,6 +11,7 @@ public class ReporterHttpClientConfig {
 	final Set<HttpURL> servers = Collections.newSet();
 	private File iidStorage;
 	private String IIDFileName;
+	private File logs;
 
 	public void addAnalyticsServerUrl (final HttpURL url) {
 		this.servers.add(url);
@@ -35,6 +36,14 @@ public class ReporterHttpClientConfig {
 
 	public void setIIDFileName (final String installationIdFileName) {
 		this.IIDFileName = installationIdFileName;
+	}
+
+	public void setCacheFolder (final File logs) {
+		this.logs = logs;
+	}
+
+	public File getCacheFolder () {
+		return this.logs;
 	}
 
 }

@@ -1,19 +1,18 @@
 
-package com.jfixby.redreporter;
+package com.jfixby.redreporter.client.http;
 
 import com.jfixby.cmns.api.taskman.Job;
 
 public class LoadCacheJob implements Job {
 
-	private final RedAnalyticsReporter abstractReporter;
+	public LoadCacheJob () {
+	}
 
-	public LoadCacheJob (final RedAnalyticsReporter abstractReporter) {
-		this.abstractReporter = abstractReporter;
+	public LoadCacheJob (final BackgroundService backgroundService) {
 	}
 
 	@Override
 	public void doStart () throws Throwable {
-		this.abstractReporter.loadReportsFromCache();
 	}
 
 	@Override

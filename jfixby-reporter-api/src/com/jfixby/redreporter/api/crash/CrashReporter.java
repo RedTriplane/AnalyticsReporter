@@ -20,10 +20,6 @@ public class CrashReporter {
 		return componentInstaller.getComponent();
 	}
 
-	public static void deploy () {
-		invoke().deploy();
-	}
-
 	public static void enableUncaughtExceptionHandler () {
 		invoke().enableUncaughtExceptionHandler();
 	}

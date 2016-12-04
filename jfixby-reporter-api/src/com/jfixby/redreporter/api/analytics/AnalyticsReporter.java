@@ -20,12 +20,4 @@ public class AnalyticsReporter {
 		return componentInstaller.getComponent();
 	}
 
-	public static void startService () {
-		invoke().startService();
-	}
-
-	public static void stopService (final boolean wait) {
-		invoke().stopService(wait);
-	}
-
 }
