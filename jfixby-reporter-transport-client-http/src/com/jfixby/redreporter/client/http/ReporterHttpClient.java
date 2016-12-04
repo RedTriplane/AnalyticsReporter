@@ -8,7 +8,7 @@ import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.json.JsonString;
+import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
@@ -109,8 +109,8 @@ public class ReporterHttpClient implements ReporterTransport {
 	}
 
 	private void packToMessage (final Report report, final Mapping<String, String> params, final Message message) {
-		final JsonString reportString = report.toPackedString();
-		message.values.put(REPORTER_PROTOCOL.REPORT, reportString + "");
+		final ByteArray data = report.getPackedData();
+		message.attachments.put(REPORTER_PROTOCOL.REPORT, data.toArray());
 		if (params != null) {
 			message.values.putAll(params.toJavaMap());
 		}

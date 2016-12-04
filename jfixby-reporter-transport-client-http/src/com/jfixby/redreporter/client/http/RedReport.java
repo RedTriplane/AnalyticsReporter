@@ -3,108 +3,73 @@ package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.api.debug.Debug;
+import com.jfixby.cmns.api.collections.Collections;
+import com.jfixby.cmns.api.collections.Map;
+import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.io.IO;
 import com.jfixby.cmns.api.java.ByteArray;
-import com.jfixby.cmns.api.json.Json;
-import com.jfixby.cmns.api.json.JsonString;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.redreporter.api.analytics.Report;
 
 public class RedReport implements Report {
 
-	static long freeID = 1000000000;
-
-	private File file = null;
-
-	private String local_id = null;
-	private Long timestamp = null;
-
-	private JsonString packed = null;
-
-	boolean failedToCache = false;
-
-	public RedReport () {
-		this.local_id = newID();
-		this.timestamp = System.currentTimeMillis();
-	}
-
-	private RedReport (final File file, final JsonString data) {
+	private RedReport (final File file, final Map<String, String> parameters, final ByteArray data) {
 		this.file = file;
 		this.packed = data;
+		if (parameters != null) {
+			this.parameters.putAll(parameters);
+		}
 		this.failedToCache = false;
 	}
 
-	synchronized static private String newID () {
-		return "" + freeID++;
-	}
+	private final File file;
+	private final ByteArray packed;
+	private final Map<String, String> parameters = Collections.newMap();
+	boolean failedToCache = false;
 
-	public boolean cache (final File cacheFolder, final String extention) {
-		if (cacheFolder == null) {
-			return false;
-		}
-
-		Debug.checkNull("cacheFolder", cacheFolder);
-		if (this.file != null) {
-			return true;
-		}
-		if (this.failedToCache) {
-			return false;
-		}
-		Debug.checkNull("local_id", this.local_id);
-		this.file = cacheFolder.child(this.local_id + extention);
-		final JsonString stringData = this.toPackedString();
-		final ByteArray compressed = IO.compress(JUtils.newByteArray(stringData.toString().getBytes()));
-		try {
-			L.d("writing", this.file);
-			this.file.writeBytes(compressed);
-			return true;
-		} catch (final IOException e) {
-			this.file = null;
-			this.failedToCache = true;
-			L.e("failed to save report file " + this.file, e);
-			return false;
-		}
-
+	@Override
+	public Mapping<String, String> listParameters () {
+		return this.parameters;
 	}
 
 	@Override
-	public JsonString toPackedString () {
-		if (this.packed != null) {
-			return this.packed;
-		}
-
-		final SrlzdReport data = new SrlzdReport();
-		data.local_id = this.local_id;
-		data.timestamp = this.timestamp;
-		this.packed = Json.serializeToString(data);
+	public ByteArray getPackedData () {
 		return this.packed;
 	}
 
+	@Override
 	public void dispose () {
-		if (this.file == null) {
-			return;
-		}
 		try {
+			if (!this.file.exists()) {
+				return;
+			}
 			L.d("deleting", this.file);
 			this.file.delete();
 		} catch (final IOException e) {
 			L.e("failed to delete report file " + this.file, e);
 		}
-		this.file = null;
-
 	}
 
-	public static RedReport readFromCache (final File file) {
+	public static RedReport readFromFile (final File file) {
 		try {
 			L.d("reading", file);
-			final ByteArray bytes = file.readBytes();
-			final ByteArray unzip = IO.decompress(bytes);
-			final String raw_json_string = JUtils.newString(unzip);
-			final JsonString data = Json.newJsonString(raw_json_string);
-			final RedReport report = new RedReport(file, data);
+
+			final SrlzdReport reportData = file.readData(SrlzdReport.class);
+			Map<String, String> params = null;
+			if (reportData.sendParameters != null) {
+				params = Collections.newMap(reportData.sendParameters);
+			} else {
+				L.e("SrlzdReport.sendParameters == null", file);
+			}
+			ByteArray bytes = null;
+			if (reportData.serializedReport != null) {
+				bytes = JUtils.newByteArray(reportData.serializedReport);
+			} else {
+				L.e("SrlzdReport.serializedReport == null", file);
+			}
+
+			final RedReport report = new RedReport(file, params, bytes);
 			return report;
 		} catch (final IOException e) {
 			L.e("failed to read report file: " + file, e);
@@ -112,7 +77,18 @@ public class RedReport implements Report {
 		return null;
 	}
 
-	public void addMessage (final String message) {
+	public static final boolean writeToFile (final RedReport report, final File file) {
+		try {
+			L.d("writing", file);
+			final SrlzdReport reportData = new SrlzdReport();
+			reportData.sendParameters.putAll(report.listParameters().toJavaMap());
+			reportData.serializedReport = report.getPackedData().toArray();
+			file.writeData(reportData);
+			return true;
+		} catch (final IOException e) {
+			L.e("failed to save report file " + file, e);
+			return false;
+		}
 	}
 
 }

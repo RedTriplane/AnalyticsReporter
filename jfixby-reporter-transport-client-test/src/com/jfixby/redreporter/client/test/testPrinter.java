@@ -23,7 +23,7 @@ public class testPrinter {
 	private static void call (final int i) throws Exception {
 		try {
 			if (i == 3) {
-				Err.reportNotImplementedYet();
+				Err.throwNotImplementedYet();
 			}
 			call(i + 1);
 		} catch (final Throwable e) {

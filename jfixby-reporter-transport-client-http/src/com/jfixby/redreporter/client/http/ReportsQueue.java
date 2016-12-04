@@ -81,7 +81,7 @@ public class ReportsQueue {
 	}
 
 	private boolean loadCrashReport (final File file) {
-		final Report report = RedReport.readFromCache(file);
+		final Report report = RedReport.readFromFile(file);
 		if (report == null) {
 			return false;
 		}
@@ -112,7 +112,7 @@ public class ReportsQueue {
 	}
 
 	private boolean cache (final Report e, final File cache, final String extention) {
-		Err.reportNotImplementedYet();
+		Err.throwNotImplementedYet();
 		return false;
 	}
 

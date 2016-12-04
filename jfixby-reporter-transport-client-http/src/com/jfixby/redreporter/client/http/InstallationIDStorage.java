@@ -27,7 +27,6 @@ public class InstallationIDStorage {
 
 	public InstallationIDStorage (File iidStorage, final String installationIDFileName) {
 		Debug.checkNull("InstallationIDStorageFolder", iidStorage);
-
 		Debug.checkEmpty("installationIDFileName", installationIDFileName);
 		this.installationIDFileName = Debug.checkNull("installationIDFileName", installationIDFileName);
 
