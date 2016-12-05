@@ -172,6 +172,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			}
 			{
 				AnalyticsReporter.installComponent(new RedAnalyticsReporter(transport));
+				AnalyticsReporter.reportStart();
 			}
 		}
 	}

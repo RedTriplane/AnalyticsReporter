@@ -6,28 +6,36 @@ import java.io.IOException;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.collections.Mapping;
-import com.jfixby.cmns.api.err.Err;
+import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.util.JUtils;
-import com.jfixby.redreporter.api.analytics.Report;
+import com.jfixby.redreporter.api.report.Report;
 
 public class RedReport implements Report {
 
+	private final File file;
+	private ByteArray packedData;
+	private final Map<String, String> parameters = Collections.newMap();
+	private final RedReportWriter writer;
+	boolean isCached = false;
+
 	private RedReport (final File file, final Map<String, String> parameters, final ByteArray data) {
-		this.file = file;
-		this.packed = data;
-		if (parameters != null) {
-			this.parameters.putAll(parameters);
-		}
-		this.failedToCache = false;
+		this.writer = null;
+		this.file = Debug.checkNull("report file", file);
+		this.parameters.putAll(Debug.checkNull("parameters", parameters));
+		this.packedData = data;
+		this.isCached = true;
 	}
 
-	private final File file;
-	private final ByteArray packed;
-	private final Map<String, String> parameters = Collections.newMap();
-	boolean failedToCache = false;
+	private RedReport (final RedReportWriter writer) {
+		this.writer = Debug.checkNull("writer", writer);
+		this.file = Debug.checkNull("report file", writer.getFile());
+		this.parameters.putAll(Debug.checkNull("parameters", writer.getParameters()));
+		this.packedData = null;
+		this.isCached = false;
+	}
 
 	@Override
 	public Mapping<String, String> listParameters () {
@@ -36,7 +44,11 @@ public class RedReport implements Report {
 
 	@Override
 	public ByteArray getPackedData () {
-		return this.packed;
+		if (this.packedData != null) {
+			return this.packedData;
+		}
+		this.packedData = this.writer.serializeReport();
+		return this.packedData;
 	}
 
 	@Override
@@ -62,12 +74,14 @@ public class RedReport implements Report {
 				params = Collections.newMap(reportData.sendParameters);
 			} else {
 				L.e("SrlzdReport.sendParameters == null", file);
+				return null;
 			}
 			ByteArray bytes = null;
 			if (reportData.serializedReport != null) {
 				bytes = JUtils.newByteArray(reportData.serializedReport);
 			} else {
 				L.e("SrlzdReport.serializedReport == null", file);
+				return null;
 			}
 
 			final RedReport report = new RedReport(file, params, bytes);
@@ -78,24 +92,28 @@ public class RedReport implements Report {
 		return null;
 	}
 
-	public static final boolean writeToFile (final RedReport report, final File file) {
+	public static final boolean writeToFile (final RedReport report) {
 		try {
-			L.d("writing", file);
+			L.d("writing", report.file);
 			final SrlzdReport reportData = new SrlzdReport();
 			reportData.sendParameters.putAll(report.listParameters().toJavaMap());
 			reportData.serializedReport = report.getPackedData().toArray();
-			file.writeData(reportData);
+			report.file.writeData(reportData);
+			report.isCached = true;
 			return true;
 		} catch (final IOException e) {
-			L.e("failed to save report file " + file, e);
+			L.e("failed to save report file " + report.file, e);
 			return false;
 		}
 	}
 
 	@Override
 	public boolean ensureCached () {
-		Err.throwNotImplementedYet();
-		return false;
+		if (this.isCached) {
+			return true;
+		}
+		final boolean success = writeToFile(this);
+		return success;
 	}
 
 }

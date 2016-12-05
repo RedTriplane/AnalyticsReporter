@@ -2,7 +2,10 @@
 package com.jfixby.redreporter.client.http;
 
 import com.jfixby.cmns.api.collections.Collection;
+import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.Mapping;
+import com.jfixby.cmns.api.collections.Pool;
+import com.jfixby.cmns.api.collections.PoolElementsSpawner;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.java.ByteArray;
@@ -10,13 +13,14 @@ import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.taskman.TASK_TYPE;
-import com.jfixby.redreporter.api.analytics.Report;
+import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
+import com.jfixby.redreporter.api.transport.ReportWriter;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
 
-public class ReporterHttpClient implements ReporterTransport {
+public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawner<RedReportWriter> {
 
 	final ServerHandlers servers = new ServerHandlers();
 	private final InstallationIDStorage iidStorage;
@@ -127,13 +131,21 @@ public class ReporterHttpClient implements ReporterTransport {
 		return this.iidStorage.deleteID();
 	}
 
-	@Override
-	public boolean submitReport (final Report report) {
+	public boolean tryToSend (final Report report) {
 		return false;
 	}
 
-	public boolean tryToSend (final Report report) {
-		return false;
+	private final PoolElementsSpawner<RedReportWriter> reportWriterSpawner = this;
+	final Pool<RedReportWriter> writersPool = Collections.newPool(this.reportWriterSpawner);
+
+	@Override
+	public ReportWriter newReportWriter () {
+		return this.writersPool.obtain();
+	}
+
+	@Override
+	public RedReportWriter spawnNewInstance () {
+		return new RedReportWriter(this.writersPool);
 	}
 
 }

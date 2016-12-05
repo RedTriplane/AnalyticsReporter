@@ -3,6 +3,7 @@ package com.jfixby.redreporter.client.http;
 
 import com.jfixby.cmns.api.file.ChildrenList;
 import com.jfixby.cmns.api.file.File;
+import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.taskman.Job;
 
 public class LoadQueueJob implements Job {
@@ -25,7 +26,8 @@ public class LoadQueueJob implements Job {
 			if (report != null) {
 				this.reportsQueue.submit(report);
 			} else {
-
+				L.d("discarding broken report", file);
+				file.delete();
 			}
 		}
 	}

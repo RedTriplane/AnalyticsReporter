@@ -20,4 +20,8 @@ public class AnalyticsReporter {
 		return componentInstaller.getComponent();
 	}
 
+	public static void reportStart () {
+		invoke().reportStart();
+	}
+
 }

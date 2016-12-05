@@ -1,5 +1,5 @@
 
-package com.jfixby.redreporter.api.analytics;
+package com.jfixby.redreporter.api.report;
 
 import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.java.ByteArray;

@@ -1,14 +1,14 @@
 
 package com.jfixby.redreporter.analytics;
 
-import com.jfixby.cmns.api.assets.ID;
-import com.jfixby.cmns.api.assets.Names;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterComponent;
+import com.jfixby.redreporter.api.analytics.AnalyticsReporterEvents;
+import com.jfixby.redreporter.api.transport.ReportWriter;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 
 public class RedAnalyticsReporter implements AnalyticsReporterComponent {
-	private final ID serviceID = Names.newID("com.red-triplane.reporter.analytics");
+	private final String authorID = ("com.red-triplane.reporter.analytics");
 	private final ReporterTransport transport;
 
 	public RedAnalyticsReporter (final ReporterTransport transport) {
@@ -21,7 +21,15 @@ public class RedAnalyticsReporter implements AnalyticsReporterComponent {
 
 	@Override
 	public String toString () {
-		return "RedAnalyticsReporter[" + this.serviceID + "]";
+		return "RedAnalyticsReporter[" + this.authorID + "]";
+	}
+
+	@Override
+	public void reportStart () {
+		final ReportWriter writer = this.transport.newReportWriter();
+		writer.setAuthor(this.authorID);
+		writer.setSubject(AnalyticsReporterEvents.SERVICE_START);
+		writer.submitReport();
 	}
 
 }

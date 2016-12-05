@@ -17,7 +17,7 @@ import com.jfixby.cmns.api.taskman.TASK_TYPE;
 import com.jfixby.cmns.api.taskman.Task;
 import com.jfixby.cmns.api.taskman.TaskManager;
 import com.jfixby.cmns.api.taskman.TaskSpecs;
-import com.jfixby.redreporter.api.analytics.Report;
+import com.jfixby.redreporter.api.report.Report;
 
 public class ReportsQueue {
 
