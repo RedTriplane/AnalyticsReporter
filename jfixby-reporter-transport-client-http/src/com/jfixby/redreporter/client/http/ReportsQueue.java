@@ -26,15 +26,17 @@ public class ReportsQueue {
 	private final HashSet<Report> toRemove = new HashSet<Report>();
 
 	final CachedFilesFilter cashed_files_filter = new CachedFilesFilter();
-	final LoadQueueJob loadQueue = new LoadQueueJob(this);
-	final PushQueueJob pushQueue = new PushQueueJob(this);
+	final LoadQueueJob loadQueue;
+	final PushQueueJob pushQueue;
 	private final File logsCache;
 	private boolean cacheIsValid;
 	private Task task;
 	private final ReporterHttpClient master;
+	private final TASK_TYPE taskType;
 
-	public ReportsQueue (final ReporterHttpClient reporterHttpClient, final File logsCache) {
+	public ReportsQueue (final ReporterHttpClient reporterHttpClient, final File logsCache, final TASK_TYPE taskType) {
 		this.logsCache = Debug.checkNull("logsCache", logsCache);
+		this.taskType = Debug.checkNull("taskType", taskType);
 		try {
 			this.logsCache.makeFolder();
 			this.cacheIsValid = true;
@@ -44,6 +46,9 @@ public class ReportsQueue {
 			this.cacheIsValid = false;
 		}
 		this.master = reporterHttpClient;
+
+		this.loadQueue = new LoadQueueJob(this);
+		this.pushQueue = new PushQueueJob(this);
 
 	}
 
@@ -129,7 +134,7 @@ public class ReportsQueue {
 		}
 		final TaskSpecs taskSpec = TaskManager.newTaskSpecs();
 		taskSpec.setName("ReportsQueue::push");
-		taskSpec.setType(TASK_TYPE.BACKGROUND);
+		taskSpec.setType(this.taskType);
 // taskSpec.addJob(this.loadQueue);
 		taskSpec.addJob(this.pushQueue);
 		this.task = TaskManager.newTask(taskSpec);
@@ -145,7 +150,7 @@ public class ReportsQueue {
 		this.cacheLoaded = true;
 		final TaskSpecs taskSpec = TaskManager.newTaskSpecs();
 		taskSpec.setName("ReportsQueue::start");
-		taskSpec.setType(TASK_TYPE.BACKGROUND);
+		taskSpec.setType(this.taskType);
 		taskSpec.addJob(this.loadQueue);
 		taskSpec.addJob(this.pushQueue);
 		this.task = TaskManager.newTask(taskSpec);

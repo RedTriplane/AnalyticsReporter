@@ -9,6 +9,7 @@ import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.cmns.api.taskman.TASK_TYPE;
 import com.jfixby.redreporter.api.analytics.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
@@ -26,8 +27,8 @@ public class ReporterHttpClient implements ReporterTransport {
 		Debug.checkNull("config", config);
 
 		final File cacheFolder = config.getCacheFolder();
-
-		this.queue = new ReportsQueue(this, cacheFolder);
+		final TASK_TYPE taskType = config.getTaskType();
+		this.queue = new ReportsQueue(this, cacheFolder, taskType);
 		this.queue.loadFromCacheAndPush();
 		final Collection<HttpURL> urls = config.listServers();
 		final File iidStorage;

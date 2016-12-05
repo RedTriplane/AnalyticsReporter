@@ -52,6 +52,7 @@ import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.cmns.api.sys.settings.SystemSettings;
+import com.jfixby.cmns.api.taskman.TASK_TYPE;
 import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
@@ -146,6 +147,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			transport_config.setInstallationIDStorageFolder(home);
 			transport_config.setCacheFolder(logs);
 			transport_config.setIIDFileName(INSTALLATION_ID_FILE_NAME);
+			transport_config.setTaskType(TASK_TYPE.SEPARATED_THREAD);
 			{
 				final String url_string = "https://rr-0.red-triplane.com/";
 				final HttpURL url = Http.newURL(url_string);
