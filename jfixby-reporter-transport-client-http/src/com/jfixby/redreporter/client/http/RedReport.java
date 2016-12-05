@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.collections.Mapping;
+import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
@@ -89,6 +90,12 @@ public class RedReport implements Report {
 			L.e("failed to save report file " + file, e);
 			return false;
 		}
+	}
+
+	@Override
+	public boolean ensureCached () {
+		Err.throwNotImplementedYet();
+		return false;
 	}
 
 }

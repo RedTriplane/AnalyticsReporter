@@ -13,6 +13,10 @@ import com.jfixby.cmns.api.file.ChildrenList;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.FileFilter;
 import com.jfixby.cmns.api.log.L;
+import com.jfixby.cmns.api.taskman.TASK_TYPE;
+import com.jfixby.cmns.api.taskman.Task;
+import com.jfixby.cmns.api.taskman.TaskManager;
+import com.jfixby.cmns.api.taskman.TaskSpecs;
 import com.jfixby.redreporter.api.analytics.Report;
 
 public class ReportsQueue {
@@ -22,11 +26,14 @@ public class ReportsQueue {
 	private final HashSet<Report> toRemove = new HashSet<Report>();
 
 	final CachedFilesFilter cashed_files_filter = new CachedFilesFilter();
-
+	final LoadQueueJob loadQueue = new LoadQueueJob(this);
+	final PushQueueJob pushQueue = new PushQueueJob(this);
 	private final File logsCache;
 	private boolean cacheIsValid;
+	private Task task;
+	private final ReporterHttpClient master;
 
-	public ReportsQueue (final File logsCache) {
+	public ReportsQueue (final ReporterHttpClient reporterHttpClient, final File logsCache) {
 		this.logsCache = Debug.checkNull("logsCache", logsCache);
 		try {
 			this.logsCache.makeFolder();
@@ -36,6 +43,8 @@ public class ReportsQueue {
 			Err.reportError(e);
 			this.cacheIsValid = false;
 		}
+		this.master = reporterHttpClient;
+
 	}
 
 	File getCache () {
@@ -94,14 +103,14 @@ public class ReportsQueue {
 		this.loadReportsFromCache(this.cashed_files_filter);
 	}
 
-	void ensureCached (final String extention) {
+	void ensureCached () {
 		if (this.nonCached.size() == 0) {
 			return;
 		}
 		this.toRemove.clear();
 		for (final Iterator<Report> i = this.nonCached.iterator(); i.hasNext();) {
 			final Report e = i.next();
-			final boolean success = this.cache(e, this.getCache(), extention);
+			final boolean success = e.ensureCached();
 			if (success) {
 				this.toRemove.add(e);
 			}
@@ -111,13 +120,52 @@ public class ReportsQueue {
 
 	}
 
-	private boolean cache (final Report e, final File cache, final String extention) {
-		Err.throwNotImplementedYet();
-		return false;
-	}
-
 	public synchronized void submit (final Report report) {
+		Debug.checkNull("report", report);
 		this.all.add(report);
 		this.nonCached.add(report);
+		if (this.task != null) {
+			return;
+		}
+		final TaskSpecs taskSpec = TaskManager.newTaskSpecs();
+		taskSpec.setName("ReportsQueue::push");
+		taskSpec.setType(TASK_TYPE.BACKGROUND);
+// taskSpec.addJob(this.loadQueue);
+		taskSpec.addJob(this.pushQueue);
+		this.task = TaskManager.newTask(taskSpec);
+	}
+
+	boolean cacheLoaded = false;
+
+	public synchronized void loadFromCacheAndPush () {
+		if (this.cacheLoaded) {
+			Err.reportError("Cache is already loaded");
+			return;
+		}
+		this.cacheLoaded = true;
+		final TaskSpecs taskSpec = TaskManager.newTaskSpecs();
+		taskSpec.setName("ReportsQueue::start");
+		taskSpec.setType(TASK_TYPE.BACKGROUND);
+		taskSpec.addJob(this.loadQueue);
+		taskSpec.addJob(this.pushQueue);
+		this.task = TaskManager.newTask(taskSpec);
+	}
+
+	public synchronized boolean tryToProcess () {
+		while (this.size() > 0) {
+			final Report report = this.all.peek();
+			final boolean success = this.master.tryToSend(report);
+			if (success) {
+				this.all.removeFirst();
+				this.nonCached.remove(report);
+				report.dispose();
+			} else {
+				this.ensureCached();
+				return false;
+			}
+		}
+
+		this.task = null;
+		return true;
 	}
 }

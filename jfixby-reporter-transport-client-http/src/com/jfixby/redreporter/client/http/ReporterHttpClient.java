@@ -1,12 +1,9 @@
 
 package com.jfixby.redreporter.client.http;
 
-import java.io.IOException;
-
 import com.jfixby.cmns.api.collections.Collection;
 import com.jfixby.cmns.api.collections.Mapping;
 import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
@@ -22,20 +19,16 @@ public class ReporterHttpClient implements ReporterTransport {
 
 	final ServerHandlers servers = new ServerHandlers();
 	private final InstallationIDStorage iidStorage;
-	private final File cacheFolder;
+
 	private final ReportsQueue queue;
 
 	public ReporterHttpClient (final ReporterHttpClientConfig config) {
 		Debug.checkNull("config", config);
 
-		this.cacheFolder = config.getCacheFolder();
-		try {
-			this.cacheFolder.checkIsFolder();
-		} catch (final IOException e) {
-			Err.reportError(e);
-		}
-		this.queue = new ReportsQueue(this.cacheFolder);
+		final File cacheFolder = config.getCacheFolder();
 
+		this.queue = new ReportsQueue(this, cacheFolder);
+		this.queue.loadFromCacheAndPush();
 		final Collection<HttpURL> urls = config.listServers();
 		final File iidStorage;
 		iidStorage = config.getInstallationIDStorageFolder();
@@ -135,6 +128,10 @@ public class ReporterHttpClient implements ReporterTransport {
 
 	@Override
 	public boolean submitReport (final Report report) {
+		return false;
+	}
+
+	public boolean tryToSend (final Report report) {
 		return false;
 	}
 

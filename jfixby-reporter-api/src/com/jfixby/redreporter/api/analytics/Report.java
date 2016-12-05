@@ -12,4 +12,6 @@ public interface Report {
 
 	public void dispose ();
 
+	public boolean ensureCached ();
+
 }
