@@ -33,10 +33,9 @@ public class ServerHandler {
 	}
 
 	private ServerPing check (final RequestArgs args) {
-		final ServerHandler server = this;
 		final ServerPing ping = new ServerPing();
 		ping.code = -1;
-		ping.server = server;
+		ping.server = this;
 		ping.url = this.url;
 		ping.ping = Long.MAX_VALUE;
 		ping.status = ServerStatus.NO_RESPONSE;

@@ -12,6 +12,7 @@ import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.taskman.TASK_TYPE;
 import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
@@ -25,7 +26,7 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 	final ServerHandlers servers = new ServerHandlers();
 	private final InstallationIDStorage iidStorage;
 
-	private final ReportsQueue queue;
+	final ReportsQueue queue;
 
 	public ReporterHttpClient (final ReporterHttpClientConfig config) {
 		Debug.checkNull("config", config);
@@ -70,6 +71,8 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 // }
 
 	public Message exchange (final ServerHandlers servers, final Message request) {
+		final ServerHandler server = this.getBestServer();
+
 		final Message response = null;
 		this.checkToken(response);
 		L.e("exchange: not implemented yet");
@@ -85,7 +88,15 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 // return request;
 	}
 
-	public boolean sendReport (final Report report, final Mapping<String, String> params) {
+	RedServersCheckParams bestServerSearchParams = new RedServersCheckParams();
+
+	private ServerHandler getBestServer () {
+		this.bestServerSearchParams.setTimeOut(2000);
+		return this.servers.getBest(this.bestServerSearchParams);
+	}
+
+	public boolean tryToSend (final Report report) {
+		final Mapping<String, String> params = report.listParameters();
 		final Message message = new Message(REPORTER_PROTOCOL.REPORT);
 		this.packToMessage(report, params, message);
 		final Message response = this.exchange(this.servers, message);
@@ -112,6 +123,7 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 		if (params != null) {
 			message.values.putAll(params.toJavaMap());
 		}
+		message.values.put(REPORTER_PROTOCOL.REPORT_SENT, "" + Sys.SystemTime().currentTimeMillis());
 	}
 
 	public ServersCheck checkServers (final ServersCheckParams params) {
@@ -131,21 +143,17 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 		return this.iidStorage.deleteID();
 	}
 
-	public boolean tryToSend (final Report report) {
-		return false;
-	}
-
 	private final PoolElementsSpawner<RedReportWriter> reportWriterSpawner = this;
 	final Pool<RedReportWriter> writersPool = Collections.newPool(this.reportWriterSpawner);
 
 	@Override
 	public ReportWriter newReportWriter () {
-		return this.writersPool.obtain();
+		return this.writersPool.obtain().start();
 	}
 
 	@Override
 	public RedReportWriter spawnNewInstance () {
-		return new RedReportWriter(this.writersPool);
+		return new RedReportWriter(this.writersPool, this);
 	}
 
 }

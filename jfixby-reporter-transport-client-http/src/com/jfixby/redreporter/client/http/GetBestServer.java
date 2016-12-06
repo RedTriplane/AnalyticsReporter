@@ -63,4 +63,11 @@ public class GetBestServer implements BestServerCheck, ServerRanker {
 		return (this.succeed.size() > 0 || this.totalNumberOfparticipants.value == 0);
 	}
 
+	public ServerHandler getBest () {
+		if (this.succeed.size() == 0) {
+			return null;
+		}
+		return this.succeed.getElementAt(0).server;
+	}
+
 }

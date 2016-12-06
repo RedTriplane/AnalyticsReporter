@@ -16,5 +16,8 @@ public class REPORTER_PROTOCOL {
 	public static final String SERVER_CODE_VERSION = "RedReporter.SERVER_CODE_VERSION";
 	public static final String REQUEST_ID = "RedReporter.REQUEST_ID";
 	public static final String REPORT_RECEIVED_OK = "RedReporter.REPORT_RECEIVED_OK";
+	public static final String REPORT_VERSION = "RedReporter.REPORT_VERSION";
+	public static final String REPORT_WRITTEN = "RedReporter.REPORT_WRITTEN";
+	public static final String REPORT_SENT = "RedReporter.REPORT_SENT";
 
 }

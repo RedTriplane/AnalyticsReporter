@@ -71,4 +71,9 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 		return check;
 
 	}
+
+	public ServerHandler getBest (final RedServersCheckParams bestServerSearchParams) {
+		final GetBestServer check = new GetBestServer(this.servers, bestServerSearchParams);
+		return check.getBest();
+	}
 }

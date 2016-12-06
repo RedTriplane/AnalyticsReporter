@@ -29,7 +29,7 @@ public class RedReport implements Report {
 		this.isCached = true;
 	}
 
-	private RedReport (final RedReportWriter writer) {
+	RedReport (final RedReportWriter writer) {
 		this.writer = Debug.checkNull("writer", writer);
 		this.file = Debug.checkNull("report file", writer.getFile());
 		this.parameters.putAll(Debug.checkNull("parameters", writer.getParameters()));
@@ -62,6 +62,10 @@ public class RedReport implements Report {
 		} catch (final IOException e) {
 			L.e("failed to delete report file " + this.file, e);
 		}
+		if (this.writer == null) {
+			return;
+		}
+		this.writer.dispose();
 	}
 
 	public static RedReport readFromFile (final File file) {
