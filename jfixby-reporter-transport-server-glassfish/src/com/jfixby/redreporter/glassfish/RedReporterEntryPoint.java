@@ -61,6 +61,7 @@ import com.jfixby.cmns.ver.Version;
 import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.red.filesystem.virtual.InMemoryFileSystem;
 import com.jfixby.redreporter.api.InstallationID;
+import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
 import com.jfixby.redreporter.server.api.ReporterServer;
@@ -123,6 +124,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		}
 
 	};
+	private static ServerStatus lastServiceState;
 
 	static {
 		DesktopSetup.deploy();
@@ -130,10 +132,10 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		average = FloatMath.newAverage(MAX_VALUES);
 		version = new Version();
 		version.major = "1";
-		version.minor = "23";
-		version.build = "2";
+		version.minor = "24";
+		version.build = "0";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 711;
+		version.versionCode = 713;
 
 		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
 		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
@@ -222,7 +224,8 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	}
 
 	public static final String serviceState () {
-		return "[" + ReporterServer.getStatus() + "]";
+		lastServiceState = ReporterServer.getStatus();
+		return "[" + lastServiceState + "]";
 	}
 
 	static private final String red_instance_id () {
@@ -277,7 +280,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 				return;
 			}
 			if (reqUrl.toLowerCase().endsWith("health")) {
-				return;
+				arg.isHeathCheck = true;
 			}
 
 			arg.timestamp = System.currentTimeMillis();
@@ -355,6 +358,10 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	static void processRequest (final RedReporterEntryPointArguments arg) {
 		try {
 			final String len = getHeader("content-length", arg.inputHeaders);
+			if (arg.isHeathCheck) {
+				sayHello(arg);
+				return;
+			}
 			if (len == null) {
 				sayHello(arg);
 				return;
@@ -430,7 +437,8 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			return registerInstallation(arg);
 		}
 		if (REPORTER_PROTOCOL.PING.equals(arg.message.header)) {
-			arg.message.attachments.put(REPORTER_PROTOCOL.SERVER_STATUS, ReporterServer.getStatus());
+			lastServiceState = ReporterServer.getStatus();
+			arg.message.attachments.put(REPORTER_PROTOCOL.SERVER_STATUS, lastServiceState);
 			return arg.message;
 		}
 		return unknownHeader(arg);
@@ -482,7 +490,12 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 	static private void sayHello (final RedReporterEntryPointArguments arg) throws IOException {
 		final StringBuilder msg = new StringBuilder();
-		msg.append("Service is operating: " + serviceState()).append(SEPARATOR);
+		if (arg.isHeathCheck) {
+			msg.append("        Health check: " + lastServiceState).append(SEPARATOR);
+		} else {
+			msg.append("Service is operating: " + serviceState()).append(SEPARATOR);
+		}
+
 		final double val = measureProcessingTime(arg);
 		final Float2 value = Geometry.newFloat2();
 		final Int size = new Int();

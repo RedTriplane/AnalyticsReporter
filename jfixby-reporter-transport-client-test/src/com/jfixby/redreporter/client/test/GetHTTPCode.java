@@ -13,6 +13,7 @@ public class GetHTTPCode {
 
 	public static void main (final String[] args) throws IOException {
 		DesktopSetup.deploy();
+// final HttpURL url = Http.newURL("http://localhost:8080/health");
 		final HttpURL url = Http.newURL("http://localhost:8080/health");
 		final HttpConnection connect = Http.newConnection(url);
 		connect.open();

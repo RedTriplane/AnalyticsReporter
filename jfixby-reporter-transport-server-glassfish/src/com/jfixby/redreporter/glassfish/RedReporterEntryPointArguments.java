@@ -19,6 +19,7 @@ public class RedReporterEntryPointArguments {
 	public long timestamp;
 	public Map<String, List<String>> inputHeaders;
 	public ServletInputStream client_to_server_stream;
+	public boolean isHeathCheck = false;
 
 	public void print () {
 		L.d("---[" + this.request_number + "]-----------------------------------");
