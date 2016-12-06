@@ -4,7 +4,6 @@ package com.jfixby.redreporter.server.api;
 import com.jfixby.cmns.api.ComponentInstaller;
 import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Map;
-import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.ServerStatus;
 
 public class ReporterServer {
@@ -23,7 +22,7 @@ public class ReporterServer {
 		return componentInstaller.getComponent();
 	}
 
-	public static InstallationID registerInstallation (final ID token) {
+	public static String registerInstallation (final ID token) {
 		return invoke().registerInstallation(token);
 	}
 

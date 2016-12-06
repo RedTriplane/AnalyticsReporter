@@ -92,4 +92,20 @@ public class RedReportWriter implements ReportWriter {
 		return this.parameters;
 	}
 
+	@Override
+	public void addStringValues (final Mapping<String, ?> stringValues) {
+		for (final String key : stringValues.keys()) {
+			this.addStringValue(key, stringValues.get(key));
+		}
+	}
+
+	@Override
+	public void addStringValue (final String key, final Object value) {
+		if (value != null) {
+			this.data.strings.put(key, value.toString());
+		} else {
+			this.data.strings.put(key, "");
+		}
+	}
+
 }

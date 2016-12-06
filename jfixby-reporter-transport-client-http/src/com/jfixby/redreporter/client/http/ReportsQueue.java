@@ -26,6 +26,7 @@ public class ReportsQueue {
 	private final HashSet<Report> toRemove = new HashSet<Report>();
 
 	final CachedFilesFilter cashed_files_filter = new CachedFilesFilter();
+	final ObtainTokenJob obtainToken;
 	final LoadQueueJob loadQueue;
 	final PushQueueJob pushQueue;
 	private final File logsCache;
@@ -33,6 +34,10 @@ public class ReportsQueue {
 	private Task task;
 	private final ReporterHttpClient master;
 	private final TASK_TYPE taskType;
+
+	public ReporterHttpClient getTransport () {
+		return this.master;
+	}
 
 	public ReportsQueue (final ReporterHttpClient reporterHttpClient, final File logsCache, final TASK_TYPE taskType) {
 		this.logsCache = Debug.checkNull("logsCache", logsCache);
@@ -49,6 +54,7 @@ public class ReportsQueue {
 
 		this.loadQueue = new LoadQueueJob(this);
 		this.pushQueue = new PushQueueJob(this);
+		this.obtainToken = new ObtainTokenJob(this);
 
 	}
 
@@ -136,6 +142,7 @@ public class ReportsQueue {
 		taskSpec.setName("ReportsQueue::push");
 		taskSpec.setType(this.taskType);
 // taskSpec.addJob(this.loadQueue);
+		taskSpec.addJob(this.obtainToken);
 		taskSpec.addJob(this.pushQueue);
 		this.task = TaskManager.newTask(taskSpec);
 	}
@@ -151,6 +158,7 @@ public class ReportsQueue {
 		final TaskSpecs taskSpec = TaskManager.newTaskSpecs();
 		taskSpec.setName("ReportsQueue::start");
 		taskSpec.setType(this.taskType);
+		taskSpec.addJob(this.obtainToken);
 		taskSpec.addJob(this.loadQueue);
 		taskSpec.addJob(this.pushQueue);
 		this.task = TaskManager.newTask(taskSpec);
@@ -173,4 +181,5 @@ public class ReportsQueue {
 		this.task = null;
 		return true;
 	}
+
 }

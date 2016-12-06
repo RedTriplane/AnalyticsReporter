@@ -13,7 +13,6 @@ import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLEntry;
 import com.jfixby.cmns.db.mysql.MySQLTable;
 import com.jfixby.cmns.db.mysql.MySQLTableSchema;
-import com.jfixby.redreporter.api.InstallationID;
 
 public class RedReporterDataBank {
 
@@ -52,7 +51,7 @@ public class RedReporterDataBank {
 
 	}
 
-	public InstallationID registerInstallation (final ID token) throws IOException {
+	public String registerInstallation (final ID token) throws IOException {
 		final MySQLTable table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
 
 		final MySQLEntry entry = table.newMySQLEntry();
@@ -64,7 +63,7 @@ public class RedReporterDataBank {
 
 		table.addEntry(entry);
 
-		final InstallationID reg = new InstallationID(token.toString());
+		final String reg = token.toString();
 		return reg;
 	}
 

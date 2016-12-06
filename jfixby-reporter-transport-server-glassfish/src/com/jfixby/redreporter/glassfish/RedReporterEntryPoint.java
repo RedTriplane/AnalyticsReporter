@@ -20,7 +20,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import com.jfixby.cmns.adopted.gdx.json.RedJson;
-import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.assets.Names;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
@@ -44,7 +43,6 @@ import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.math.Average;
 import com.jfixby.cmns.api.math.FloatMath;
-import com.jfixby.cmns.api.math.IntegerMath;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
@@ -60,7 +58,6 @@ import com.jfixby.cmns.db.mysql.MySQLConfig;
 import com.jfixby.cmns.ver.Version;
 import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.red.filesystem.virtual.InMemoryFileSystem;
-import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
@@ -132,10 +129,10 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		average = FloatMath.newAverage(MAX_VALUES);
 		version = new Version();
 		version.major = "1";
-		version.minor = "24";
-		version.build = "1";
+		version.minor = "30";
+		version.build = "0";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 714;
+		version.versionCode = 715;
 
 		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
 		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
@@ -154,6 +151,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			config.setConnectionParametersProvider(connectionParamatesProvider);
 			config.setDBName(CONFIG.DB_NAME);
 			config.setUseSSL(false);
+			config.setMaxReconnects(1);
 
 			mySQL = new MySQL(config);
 
@@ -357,7 +355,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 	static void processRequest (final RedReporterEntryPointArguments arg) {
 		try {
-			final String len = getHeader("content-length", arg.inputHeaders);
+			final String len = MessageProcessor.getHeader("content-length", arg.inputHeaders);
 			if (arg.isHeathCheck) {
 				sayHello(arg);
 				return;
@@ -391,7 +389,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			arg.message = IO.deserialize(Message.class, data);
 			is.close();
 
-			Message answer = processMessage(arg);
+			Message answer = MessageProcessor.process(arg);
 			if (answer == null) {
 				answer = new Message(REPORTER_PROTOCOL.ERR);
 			}
@@ -414,76 +412,9 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		addValueToAverage(measureProcessingTime(arg), null, null);
 	}
 
-	static private String getHeader (final String string, final Map<String, List<String>> inputHeaders) {
-		final List<String> list = inputHeaders.get(string);
-		if (list == null) {
-			return null;
-		}
-		if (list.size() == 0) {
-			return null;
-		}
-		return list.getElementAt(0);
-	}
-
 	private static synchronized long request_number () {
 		request++;
 		return request;
-	}
-
-	static private Message
-
-		processMessage (final RedReporterEntryPointArguments arg) throws IOException {
-		if (REPORTER_PROTOCOL.REGISTER_INSTALLATION.equals(arg.message.header)) {
-			return registerInstallation(arg);
-		}
-		if (REPORTER_PROTOCOL.PING.equals(arg.message.header)) {
-			lastServiceState = ReporterServer.getStatus();
-			arg.message.attachments.put(REPORTER_PROTOCOL.SERVER_STATUS, lastServiceState);
-			return arg.message;
-		}
-		return unknownHeader(arg);
-	}
-
-	static private Message unknownHeader (final RedReporterEntryPointArguments arg) {
-		L.d("unknown header");
-		arg.message.print();
-		return new Message(REPORTER_PROTOCOL.UNKNOWN_HEADER);
-	}
-
-	public static final int MAX_PARAMETERS = 1000;
-
-	static private Message registerInstallation (final RedReporterEntryPointArguments arg) {
-		final Message result = new Message(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
-
-		final ID token = ReporterServer.newToken(arg.requestID);
-
-		if (token == null) {
-			return new Message(REPORTER_PROTOCOL.IO_FAILED);
-		}
-
-		final InstallationID id = ReporterServer.registerInstallation(token);
-
-		if (id == null) {
-			return new Message(REPORTER_PROTOCOL.IO_FAILED);
-		}
-
-		arg.message.values.put(SystemInfoTags.Net.client_ip, getHeader(SystemInfoTags.Net.client_ip, arg.inputHeaders));
-
-		final Map<String, String> params = Collections.newMap();
-		Collections.scanCollection(Collections.newList(arg.message.values.keySet()), 0,
-			IntegerMath.min(MAX_PARAMETERS, arg.message.values.size()), (k, i) -> {
-				params.put(k, arg.message.values.get(k));
-			});
-
-		final boolean success = ReporterServer.updateSystemInfo(token, params);
-
-		if (!success) {
-			return new Message(REPORTER_PROTOCOL.IO_FAILED);
-		}
-
-		L.d("register install", id.token);
-		result.values.put(REPORTER_PROTOCOL.INSTALLATION_TOKEN, id.token);
-		return result;
 	}
 
 	public final static String SEPARATOR = System.getProperty("line.separator");

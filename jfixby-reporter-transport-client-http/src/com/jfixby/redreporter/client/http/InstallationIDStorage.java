@@ -7,17 +7,16 @@ import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.log.L;
-import com.jfixby.redreporter.api.InstallationID;
 
 public class InstallationIDStorage {
 	public static final boolean CACHE_FOLDER_SUCCESSFULLY_CREATED = true;
 	public static final boolean CACHE_FOLDER_IS_TEMPORARY = false;
 
 	private final File iidStorage;
-	private InstallationID iid;
+	private String iid;
 	private final String installationIDFileName;
 
-	public synchronized InstallationID getID () {
+	public synchronized String getID () {
 		if (this.iid != null) {
 			return this.iid;
 		}
@@ -42,12 +41,12 @@ public class InstallationIDStorage {
 	}
 
 	public synchronized boolean setID (final String token) {
-		if (this.iid == null || !this.iid.token.equals(token)) {
-			this.iid = new InstallationID(token);
+		if (this.iid == null || !this.iid.equals(token)) {
+			this.iid = token;
 			final File iidFile = this.iidStorage.child(this.installationIDFileName);
 			try {
 				L.d("writing", iidFile);
-				iidFile.writeString(this.iid.token);
+				iidFile.writeString(this.iid);
 				return true;
 			} catch (final IOException e) {
 				e.printStackTrace();
@@ -91,7 +90,7 @@ public class InstallationIDStorage {
 		return true;
 	}
 
-	private InstallationID readID () {
+	private String readID () {
 		if (this.iidStorage == null) {
 			return null;
 		}
@@ -130,8 +129,7 @@ public class InstallationIDStorage {
 			return null;
 		}
 
-		final InstallationID iid = new InstallationID(token);
-		return iid;
+		return token;
 	}
 
 }

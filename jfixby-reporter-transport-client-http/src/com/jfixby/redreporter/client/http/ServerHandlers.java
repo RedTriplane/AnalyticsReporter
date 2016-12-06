@@ -72,7 +72,7 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 
 	}
 
-	public ServerHandler getBest (final RedServersCheckParams bestServerSearchParams) {
+	public ServerPing getBest (final RedServersCheckParams bestServerSearchParams) {
 		final GetBestServer check = new GetBestServer(this.servers, bestServerSearchParams);
 		return check.getBest();
 	}

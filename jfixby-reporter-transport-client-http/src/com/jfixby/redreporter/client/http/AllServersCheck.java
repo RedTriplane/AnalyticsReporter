@@ -24,7 +24,7 @@ public class AllServersCheck implements ServersCheck, ServerRanker {
 		this.totalNumberOfparticipants = new Int(this.servers.size());
 		this.timeout = params.getTimeOut();
 
-		this.servers.print("cheking servers");
+		this.servers.print("AllServersCheck");
 
 		this.startTime = Sys.SystemTime().currentTimeMillis();
 		this.args.timeout = this.timeout;

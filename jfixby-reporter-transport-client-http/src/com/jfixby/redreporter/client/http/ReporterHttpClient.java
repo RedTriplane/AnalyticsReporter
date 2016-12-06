@@ -9,10 +9,10 @@ import com.jfixby.cmns.api.collections.PoolElementsSpawner;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.java.ByteArray;
-import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.Sys;
+import com.jfixby.cmns.api.sys.SystemInfo;
 import com.jfixby.cmns.api.taskman.TASK_TYPE;
 import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
@@ -48,54 +48,55 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 		}
 	}
 
-// public InstallationID registerInstallation (final SystemInfo systemInfo) {
-//
-// final Mapping<String, String> params = systemInfo.listParameters();
-//
-// final Message request = new Message(REPORTER_PROTOCOL.REGISTER_INSTALLATION);
-// request.values.putAll(params.toJavaMap());
-//
-// final Message response = exchange(this.servers, request);
-// if (response == null) {
-// return null;
-// }
-//
-//// response.print();
-//
-// final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
-// if (token == null) {
-// return null;
-// }
-// final InstallationID reg = new InstallationID(token);
-// return reg;
-// }
+	boolean registerInstallation () {
 
-	public Message exchange (final ServerHandlers servers, final Message request) {
-		final ServerHandler server = this.getBestServer();
+		final SystemInfo systemInfo = Sys.getSystemInfo();
+		final Mapping<String, String> params = systemInfo.listParameters();
 
-		final Message response = null;
-		this.checkToken(response);
-		L.e("exchange: not implemented yet");
-// for (final ServerHandler server : servers) {
-// final Message response = server.exchange(request);
-// if (response != null) {
-// return response;
-// } else {
-// L.d(" exchange failed", server);
-// }
-// }
-		return null;
-// return request;
+		final Message request = new Message(REPORTER_PROTOCOL.REGISTER_INSTALLATION);
+		request.values.putAll(params.toJavaMap());
+
+		final Message response = this.exchange(this.servers, request);
+		if (response == null) {
+			return false;
+		}
+
+		final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
+		if (token == null) {
+			return false;
+		}
+		this.iidStorage.setID(token);
+		return true;
+	}
+
+	private Message exchange (final ServerHandlers servers, final Message request) {
+		final ServerPing serverPing = this.getBestServer();
+		final ServerHandler server = serverPing.server;
+
+// L.d("exchange", serverPing);
+		final Message response = server.exchange(request);
+		if (response == null) {
+			return null;
+		}
+// this.checkToken(response);
+		return response;
 	}
 
 	RedServersCheckParams bestServerSearchParams = new RedServersCheckParams();
 
-	private ServerHandler getBestServer () {
+	private ServerPing getBestServer () {
 		this.bestServerSearchParams.setTimeOut(2000);
 		return this.servers.getBest(this.bestServerSearchParams);
 	}
 
 	public boolean tryToSend (final Report report) {
+		if (this.iidStorage.getID() == null) {
+			final boolean reg = this.registerInstallation();
+			if (!reg) {
+				return false;
+			}
+		}
+
 		final Mapping<String, String> params = report.listParameters();
 		final Message message = new Message(REPORTER_PROTOCOL.REPORT);
 		this.packToMessage(report, params, message);
@@ -103,18 +104,19 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 		if (response == null) {
 			return false;
 		}
+		if (REPORTER_PROTOCOL.INSTALLATION_TOKEN.equals(response.header)) {
+			final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
+			if (token != null) {
+				this.iidStorage.setID(token);
+			}
+			return false;
+		}
 		if (!REPORTER_PROTOCOL.REPORT_RECEIVED_OK.equals(response.header)) {
+// response.print();
 			return false;
 		}
 
 		return true;
-	}
-
-	private void checkToken (final Message response) {
-		final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
-		if (token != null) {
-			this.iidStorage.setID(token);
-		}
 	}
 
 	private void packToMessage (final Report report, final Mapping<String, String> params, final Message message) {
@@ -124,6 +126,7 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 			message.values.putAll(params.toJavaMap());
 		}
 		message.values.put(REPORTER_PROTOCOL.REPORT_SENT, "" + Sys.SystemTime().currentTimeMillis());
+		message.values.put(REPORTER_PROTOCOL.INSTALLATION_TOKEN, this.iidStorage.getID());
 	}
 
 	public ServersCheck checkServers (final ServersCheckParams params) {
@@ -154,6 +157,10 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 	@Override
 	public RedReportWriter spawnNewInstance () {
 		return new RedReportWriter(this.writersPool, this);
+	}
+
+	public String getInstallationID () {
+		return this.iidStorage.getID();
 	}
 
 }

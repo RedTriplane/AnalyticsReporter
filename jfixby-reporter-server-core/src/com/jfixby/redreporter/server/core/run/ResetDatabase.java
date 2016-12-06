@@ -12,7 +12,7 @@ import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
 import com.jfixby.redreporter.server.credentials.CONFIG;
 
-public class ClearDatabase {
+public class ResetDatabase {
 
 	public static void main (final String[] args) throws IOException, SQLException {
 		DesktopSetup.deploy();
@@ -25,6 +25,7 @@ public class ClearDatabase {
 		config.setPassword(CONFIG.DB_PASSWORD);
 		config.setDBName(CONFIG.DB_NAME);
 		config.setUseSSL(!true);
+		config.setPort(3308);
 
 		final MySQL mySQL = new MySQL(config);
 

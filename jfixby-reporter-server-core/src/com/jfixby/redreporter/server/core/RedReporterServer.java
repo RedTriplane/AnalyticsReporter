@@ -7,7 +7,6 @@ import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.log.L;
-import com.jfixby.redreporter.api.InstallationID;
 import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.server.api.ReporterServerComponent;
 
@@ -44,10 +43,10 @@ public class RedReporterServer implements ReporterServerComponent {
 	}
 
 	@Override
-	public InstallationID registerInstallation (final ID token) {
+	public String registerInstallation (final ID token) {
 		try {
 			L.d("register installation", token);
-			InstallationID reg;
+			String reg;
 			reg = this.bank.registerInstallation(token);
 			return reg;
 		} catch (final IOException e) {

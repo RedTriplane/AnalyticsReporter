@@ -124,7 +124,7 @@ public class ServerHandler {
 		return this.url;
 	}
 
-	public Message exchange (final Message message, final RequestArgs args) {
+	private Message exchange (final Message message, final RequestArgs args) {
 		try {
 			return exchange(message, null, this.url, args);
 		} catch (final IOException e) {
@@ -132,7 +132,7 @@ public class ServerHandler {
 		return null;
 	}
 
-	public Message exchange (final Message message) {
+	Message exchange (final Message message) {
 		return this.exchange(message, null);
 	}
 
