@@ -133,9 +133,9 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		version = new Version();
 		version.major = "1";
 		version.minor = "24";
-		version.build = "0";
+		version.build = "1";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 713;
+		version.versionCode = 714;
 
 		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
 		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
@@ -491,7 +491,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	static private void sayHello (final RedReporterEntryPointArguments arg) throws IOException {
 		final StringBuilder msg = new StringBuilder();
 		if (arg.isHeathCheck) {
-			msg.append("        Health check: " + lastServiceState).append(SEPARATOR);
+			msg.append("        Health check: " + "[" + lastServiceState + "]").append(SEPARATOR);
 		} else {
 			msg.append("Service is operating: " + serviceState()).append(SEPARATOR);
 		}
