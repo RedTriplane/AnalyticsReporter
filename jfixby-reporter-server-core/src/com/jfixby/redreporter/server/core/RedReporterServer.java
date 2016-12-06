@@ -14,43 +14,28 @@ import com.jfixby.redreporter.server.api.ReporterServerComponent;
 public class RedReporterServer implements ReporterServerComponent {
 
 	private final RedReporterDataBank bank;
-	private InstallationIDGenerator idgen;
+	private final InstallationIDGenerator idgen;
 
 	public RedReporterServer (final RedReporterServerConfig cfg) {
 		this.bank = cfg.getRedReporterDataBank();
 		Debug.checkNull("bank", this.bank);
+		this.idgen = new InstallationIDGenerator(this.bank);
 	}
 
 	@Override
 	public ServerStatus getStatus () {
 		try {
-			this.checkStarted();
 			this.bank.readSettings();
 			return ServerStatus.OK;
 		} catch (final IOException e) {
 			e.printStackTrace();
-			if (this.idgen != null) {
-				return ServerStatus.ERROR;
-			} else {
-				return ServerStatus.STARTING;
-			}
+			return ServerStatus.ERROR;
 		}
-	}
-
-	synchronized private boolean checkStarted () throws IOException {
-		if (this.idgen != null) {
-			return true;
-		}
-		final ServerSettings serverSettings = this.bank.readSettings();
-		final String salt0 = serverSettings.getSalat0();
-		this.idgen = new InstallationIDGenerator(salt0);
-		return false;
 	}
 
 	@Override
 	public ID newToken (final ID prefix) {
 		try {
-			this.checkStarted();
 			return this.idgen.newInstallationID(prefix);
 		} catch (final IOException e) {
 			e.printStackTrace();
@@ -61,7 +46,6 @@ public class RedReporterServer implements ReporterServerComponent {
 	@Override
 	public InstallationID registerInstallation (final ID token) {
 		try {
-			this.checkStarted();
 			L.d("register installation", token);
 			InstallationID reg;
 			reg = this.bank.registerInstallation(token);
@@ -75,7 +59,6 @@ public class RedReporterServer implements ReporterServerComponent {
 	@Override
 	public boolean updateSystemInfo (final ID token, final Map<String, String> values) {
 		try {
-			this.checkStarted();
 			this.bank.updateSystemInfo(token, values);
 			return true;
 		} catch (final IOException e) {

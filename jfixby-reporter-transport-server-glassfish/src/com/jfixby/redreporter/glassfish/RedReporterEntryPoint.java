@@ -54,20 +54,15 @@ import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.cmns.api.sys.settings.SystemSettings;
 import com.jfixby.cmns.api.taskman.TASK_TYPE;
 import com.jfixby.cmns.api.util.JUtils;
+import com.jfixby.cmns.db.mysql.ConnectionParametersProvider;
 import com.jfixby.cmns.db.mysql.MySQL;
 import com.jfixby.cmns.db.mysql.MySQLConfig;
 import com.jfixby.cmns.ver.Version;
 import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.red.filesystem.virtual.InMemoryFileSystem;
-import com.jfixby.redreporter.analytics.RedAnalyticsReporter;
 import com.jfixby.redreporter.api.InstallationID;
-import com.jfixby.redreporter.api.analytics.AnalyticsReporter;
-import com.jfixby.redreporter.api.crash.CrashReporter;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
-import com.jfixby.redreporter.api.transport.ReporterTransport;
-import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
-import com.jfixby.redreporter.crash.RedCrashReporter;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
 import com.jfixby.redreporter.server.core.RedReporterServer;
@@ -85,8 +80,8 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	private static MySQL mySQL;
 	public static Version version;
 	private static RedReporterDataBank bank;
-	public static final String instance_id;
-	static int MAX_VALUES = 75;
+	public static String instance_id;
+	static int MAX_VALUES = 500;
 	static final Average average;
 
 	final static synchronized private void addValueToAverage (final double val, final Float2 value, final Int size) {
@@ -99,40 +94,74 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		}
 	}
 
+	static ConnectionParametersProvider connectionParamatesProvider = new ConnectionParametersProvider() {
+		@Override
+		public String getHost () {
+			return System.getenv("RDS_HOSTNAME");
+		}
+
+		@Override
+		public int getPort () {
+			final String port = System.getenv("RDS_PORT");
+			if (port == null) {
+				return -1;
+			}
+			if ("".equals(port)) {
+				return -1;
+			}
+			return Integer.parseInt(port);
+		}
+
+		@Override
+		public String getLogin () {
+			return System.getenv("RDS_USERNAME");
+		}
+
+		@Override
+		public String getPassword () {
+			return System.getenv("RDS_PASSWORD");
+		}
+
+	};
+
 	static {
 		DesktopSetup.deploy();
 		Json.installComponent(new RedJson());
 		average = FloatMath.newAverage(MAX_VALUES);
 		version = new Version();
 		version.major = "1";
-		version.minor = "19";
-		version.build = "0";
+		version.minor = "23";
+		version.build = "2";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 700;
+		version.versionCode = 711;
 
 		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
 		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
 		SystemSettings.setStringParameter(Version.Tags.VersionName, version.getPackageVersionString());
 		INSTALLATION_ID_FILE_NAME = version.packageName + ".iid";
-		deployAnalytics();
+// deployAnalytics();
 
 		final MySQLConfig config = new MySQLConfig();
 
-		config.setServerName(CONFIG.DB_SERVER);
-		config.setLogin(CONFIG.DB_LOGIN);
-		config.setPassword(CONFIG.DB_PASSWORD);
-		config.setDBName(CONFIG.DB_NAME);
-		config.setUseSSL(false);
+		{
+// config.setServerName(hostname);
+// config.setLogin(userName);
+// config.setPort(port);
+// config.setPassword(password);
 
-		mySQL = new MySQL(config);
+			config.setConnectionParametersProvider(connectionParamatesProvider);
+			config.setDBName(CONFIG.DB_NAME);
+			config.setUseSSL(false);
 
-		bank = new RedReporterDataBank(mySQL);
+			mySQL = new MySQL(config);
 
-		final RedReporterServerConfig server_config = new RedReporterServerConfig();
-		server_config.setRedReporterDataBank(bank);
-		instance_id = red_instance_id();
-		ReporterServer.installComponent(new RedReporterServer(server_config));
+			bank = new RedReporterDataBank(mySQL);
 
+			final RedReporterServerConfig server_config = new RedReporterServerConfig();
+			server_config.setRedReporterDataBank(bank);
+			instance_id = red_instance_id();
+			ReporterServer.installComponent(new RedReporterServer(server_config));
+		}
 	}
 	private static final String INSTALLATION_ID_FILE_NAME;
 
@@ -163,16 +192,16 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 				final HttpURL url = Http.newURL(url_string);
 				transport_config.addAnalyticsServerUrl(url);
 			}
-			final ReporterTransport transport = new ReporterHttpClient(transport_config);
+// final ReporterTransport transport = new ReporterHttpClient(transport_config);
 			{
-				CrashReporter.installComponent(new RedCrashReporter(transport));
-				CrashReporter.enableErrorsListener();
-				CrashReporter.enableLogsListener();
-				CrashReporter.enableUncaughtExceptionHandler();
+// CrashReporter.installComponent(new RedCrashReporter(transport));
+// CrashReporter.enableErrorsListener();
+// CrashReporter.enableLogsListener();
+// CrashReporter.enableUncaughtExceptionHandler();
 			}
 			{
-				AnalyticsReporter.installComponent(new RedAnalyticsReporter(transport));
-				AnalyticsReporter.reportStart();
+// AnalyticsReporter.installComponent(new RedAnalyticsReporter(transport));
+// AnalyticsReporter.reportStart();
 			}
 		}
 	}
@@ -192,11 +221,11 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		return imfs.ROOT();
 	}
 
-	public static String serviceState () {
+	public static final String serviceState () {
 		return "[" + ReporterServer.getStatus() + "]";
 	}
 
-	static private String red_instance_id () {
+	static private final String red_instance_id () {
 		String instance_id;
 		try {
 			final String url_string = "http://169.254.169.254/latest/meta-data/instance-id";
@@ -244,7 +273,10 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			}
 
 			final String reqUrl = request.getRequestURL() + "";
-			if (reqUrl.endsWith("favicon.ico")) {
+			if (reqUrl.toLowerCase().endsWith("favicon.ico")) {
+				return;
+			}
+			if (reqUrl.toLowerCase().endsWith("health")) {
 				return;
 			}
 
