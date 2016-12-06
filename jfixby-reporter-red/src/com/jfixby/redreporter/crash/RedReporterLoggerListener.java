@@ -29,7 +29,7 @@ public class RedReporterLoggerListener extends SimpleLogger implements LoggerCom
 
 	public void deploy () {
 		if (this.defaultLogger == null) {
-			this.defaultLogger = new SimpleLogger();
+			this.defaultLogger = this;
 		}
 	}
 

@@ -3,7 +3,6 @@ package com.jfixby.redreporter.crash;
 
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.err.ErrorComponent;
-import com.jfixby.cmns.api.err.NotImplementedYetException;
 import com.jfixby.red.err.RedError;
 
 public class RedReporterErrorsListener implements ErrorComponent {
@@ -51,7 +50,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 
 	@Override
 	public void reportNotImplementedYet () {
-		this.reportError(new NotImplementedYetException());
+		this.defaultErrorListener.reportNotImplementedYet();
 	}
 
 	@Override
@@ -62,7 +61,6 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	@Override
 	public void reportError (final Thread t, final Throwable e) {
 		this.defaultErrorListener.reportError(t, e);
-
 	}
 
 	boolean enabled = false;
