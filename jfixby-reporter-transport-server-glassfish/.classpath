@@ -6,16 +6,9 @@
 	<classpathentry kind="lib" path="/libs/glassfish/javax.servlet-api.jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-db-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-api-desktop"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red-desktop"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red-gdx"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-transport-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-db-mysql"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-red"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-transport-client-http"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-amazon-aws"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-aws-api"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

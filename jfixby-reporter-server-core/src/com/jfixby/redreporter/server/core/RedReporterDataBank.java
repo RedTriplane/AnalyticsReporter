@@ -10,17 +10,18 @@ import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.util.path.RelativePath;
-import com.jfixby.cmns.db.mysql.MySQL;
-import com.jfixby.cmns.db.mysql.MySQLEntry;
-import com.jfixby.cmns.db.mysql.MySQLTable;
-import com.jfixby.cmns.db.mysql.MySQLTableSchema;
+import com.jfixby.cmns.db.api.DataBase;
+import com.jfixby.cmns.db.api.Entry;
+import com.jfixby.cmns.db.api.Table;
+import com.jfixby.cmns.db.api.TableSchema;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.ReporterDataBank;
 
-public class RedReporterDataBank {
+public class RedReporterDataBank implements ReporterDataBank {
 
-	private final MySQL mySQL;
+	private final DataBase mySQL;
 
-	public RedReporterDataBank (final MySQL mySQL) {
+	public RedReporterDataBank (final DataBase mySQL) {
 		this.mySQL = mySQL;
 	}
 
@@ -31,14 +32,14 @@ public class RedReporterDataBank {
 	}
 
 	public ServerSettings readSettings () throws IOException {
-		final MySQLTable settingsTable;
+		final Table settingsTable;
 		final ServerSettings result = new ServerSettings();
 
 		settingsTable = this.mySQL.getTable(ServerSettings.TABLE_NAME);
 
-		final List<MySQLEntry> settingslist = settingsTable.listAll();
+		final List<Entry> settingslist = settingsTable.listAll();
 		final Map<String, String> settings = Collections.newMap();
-		for (final MySQLEntry entry : settingslist) {
+		for (final Entry entry : settingslist) {
 			final String parameter_name = entry.getValue(ServerSettings.PARAMETER_NAME);
 			final String parameter_value = entry.getValue(ServerSettings.PARAMETER_VALUE);
 			settings.put(parameter_name, parameter_value);
@@ -54,11 +55,11 @@ public class RedReporterDataBank {
 	}
 
 	public String registerInstallation (final String token) throws IOException {
-		final MySQLTable table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
+		final Table table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
 
-		final MySQLEntry entry = table.newMySQLEntry();
+		final Entry entry = table.newEntry();
 
-		final MySQLTableSchema schema = table.getSchema();
+		final TableSchema schema = table.getSchema();
 
 		entry.set(schema, schema.indexOf(BankSchema.INSTALLS.timestamp), System.currentTimeMillis() + "");
 		entry.set(schema, schema.indexOf(BankSchema.INSTALLS.token), token + "");
@@ -74,12 +75,12 @@ public class RedReporterDataBank {
 		if (install_id == null) {
 			throw new IOException("Token not found " + token);
 		}
-		final MySQLTable table = this.mySQL.getTable(BankSchema.SYSTEM_INFO.TableName);
+		final Table table = this.mySQL.getTable(BankSchema.SYSTEM_INFO.TableName);
 
-		final MySQLTableSchema schema = table.getSchema();
-		final List<MySQLEntry> batch = Collections.newList();
+		final TableSchema schema = table.getSchema();
+		final List<Entry> batch = Collections.newList();
 		for (final String key : values.keys()) {
-			final MySQLEntry entry = table.newMySQLEntry();
+			final Entry entry = table.newEntry();
 			final String value = values.get(key);
 
 			entry.set(schema, schema.indexOf(BankSchema.SYSTEM_INFO.install_id), install_id + "");
@@ -93,9 +94,9 @@ public class RedReporterDataBank {
 	}
 
 	public Long findIDForToken (final String token) throws IOException {
-		final MySQLTable table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
+		final Table table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
 
-		final Collection<MySQLEntry> list = table.findEntries(BankSchema.INSTALLS.token, token);
+		final Collection<Entry> list = table.findEntries(BankSchema.INSTALLS.token, token);
 		if (list.size() == 0) {
 			L.e("Token not found");
 			return null;
@@ -115,20 +116,20 @@ public class RedReporterDataBank {
 
 	public void resetTables () throws IOException {
 		{
-			final MySQLTable table = this.mySQL.getTable(BankSchema.SYSTEM_INFO.TableName);
+			final Table table = this.mySQL.getTable(BankSchema.SYSTEM_INFO.TableName);
 
 			table.clear();
 		}
 		{
-			final MySQLTable table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
+			final Table table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
 			table.clear();
 		}
 	}
 
 	public void storeReport (final ReportStoreArguments store_args, final File logFile) throws IOException {
-		final MySQLTable table = this.mySQL.getTable(BankSchema.SERIALIZED_REPORTS.TableName);
-		final MySQLEntry entry = table.newMySQLEntry();
-		final MySQLTableSchema schema = table.getSchema();
+		final Table table = this.mySQL.getTable(BankSchema.SERIALIZED_REPORTS.TableName);
+		final Entry entry = table.newEntry();
+		final TableSchema schema = table.getSchema();
 
 		final Long installID = store_args.getInstallID();
 		final String fileID = store_args.getFileID();

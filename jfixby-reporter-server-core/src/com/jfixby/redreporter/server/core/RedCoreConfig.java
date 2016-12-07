@@ -3,7 +3,7 @@ package com.jfixby.redreporter.server.core;
 
 import com.jfixby.redreporter.server.core.file.FileStorage;
 
-public class RedReporterServerConfig {
+public class RedCoreConfig {
 
 	private RedReporterDataBank bank;
 	private FileStorage fileStorage;

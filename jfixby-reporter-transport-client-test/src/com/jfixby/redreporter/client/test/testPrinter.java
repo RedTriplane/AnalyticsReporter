@@ -1,9 +1,9 @@
 
 package com.jfixby.redreporter.client.test;
 
+import com.jfixby.cmns.api.desktop.DesktopSetup;
 import com.jfixby.cmns.api.err.Err;
 import com.jfixby.cmns.api.log.L;
-import com.jfixby.red.desktop.DesktopSetup;
 
 public class testPrinter {
 

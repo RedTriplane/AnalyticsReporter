@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
 
-import com.jfixby.cmns.adopted.gdx.json.RedJson;
+import com.jfixby.cmns.api.desktop.DesktopSetup;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.LocalFileSystem;
 import com.jfixby.cmns.api.json.Json;
@@ -13,7 +13,6 @@ import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.net.http.Http;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.sys.Sys;
-import com.jfixby.red.desktop.DesktopSetup;
 import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
@@ -23,7 +22,7 @@ public class AttackServer {
 
 	public static void main (final String[] args) throws MalformedURLException, IOException {
 		DesktopSetup.deploy();
-		Json.installComponent(new RedJson());
+		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
 
 		final ReporterHttpClientConfig transport_config = new ReporterHttpClientConfig();
 		{

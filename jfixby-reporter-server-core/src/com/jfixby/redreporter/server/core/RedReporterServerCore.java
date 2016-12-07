@@ -8,20 +8,41 @@ import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.log.L;
+import com.jfixby.cmns.aws.api.s3.S3CredentialsProvider;
+import com.jfixby.cmns.db.api.DataBase;
 import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
-import com.jfixby.redreporter.server.api.ReporterServerComponent;
+import com.jfixby.redreporter.server.api.ServerCoreConfig;
 import com.jfixby.redreporter.server.core.file.FileStorage;
+import com.jfixby.redreporter.server.core.file.FileStorageConfig;
 
-public class RedReporterServer implements ReporterServerComponent {
+public class RedReporterServerCore implements ServerCore {
 
 	private final RedReporterDataBank bank;
 	private final InstallationIDGenerator idgen;
 	private final FileStorage fileStorage;
 
-	public RedReporterServer (final RedReporterServerConfig cfg) {
-		this.bank = cfg.getRedReporterDataBank();
-		this.fileStorage = cfg.getReportsFileStorage();
+	final S3CredentialsProvider s3CredentialsProvider = new S3CredentialsProvider() {
+		@Override
+		public String getAccessKeyID () {
+			return System.getenv("S3_ACCESS_KEY_ID");
+		}
+
+		@Override
+		public String getSecretKeyID () {
+			return System.getenv("S3_SECRET_KEY_ID");
+		}
+	};
+
+	public RedReporterServerCore (final ServerCoreConfig cfg) {
+		final DataBase dataBase = Debug.checkNull("getDataBase()", cfg.getDataBase());
+		this.bank = new RedReporterDataBank(dataBase);
+		final FileStorageConfig fsConfig = new FileStorageConfig();
+
+		final String buckeName = Debug.checkNull("getBucketName()", cfg.getBucketName());
+		fsConfig.setBucketName(buckeName);
+		fsConfig.setS3CredentialsProvider(this.s3CredentialsProvider);
+		this.fileStorage = new FileStorage(fsConfig);
 		Debug.checkNull("bank", this.bank);
 		Debug.checkNull("fileStorage", this.fileStorage);
 		this.idgen = new InstallationIDGenerator(this.bank);

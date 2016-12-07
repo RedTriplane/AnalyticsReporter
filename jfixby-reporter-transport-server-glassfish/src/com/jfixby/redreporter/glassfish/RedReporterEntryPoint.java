@@ -19,15 +19,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import com.jfixby.amazon.aws.s3.S3CredentialsProvider;
-import com.jfixby.cmns.adopted.gdx.json.RedJson;
 import com.jfixby.cmns.api.assets.Names;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.file.LocalFileSystem;
+import com.jfixby.cmns.api.desktop.DesktopSetup;
 import com.jfixby.cmns.api.floatn.Float2;
 import com.jfixby.cmns.api.geometry.Geometry;
 import com.jfixby.cmns.api.io.Buffer;
@@ -51,36 +48,34 @@ import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.cmns.api.sys.settings.SystemSettings;
-import com.jfixby.cmns.api.taskman.TASK_TYPE;
 import com.jfixby.cmns.api.util.JUtils;
-import com.jfixby.cmns.db.mysql.ConnectionParametersProvider;
-import com.jfixby.cmns.db.mysql.MySQL;
-import com.jfixby.cmns.db.mysql.MySQLConfig;
+import com.jfixby.cmns.aws.api.AWS;
+import com.jfixby.cmns.db.api.ConnectionParametersProvider;
+import com.jfixby.cmns.db.api.DB;
+import com.jfixby.cmns.db.api.DBConfig;
+import com.jfixby.cmns.db.api.DataBase;
 import com.jfixby.cmns.ver.Version;
-import com.jfixby.red.desktop.DesktopSetup;
-import com.jfixby.red.filesystem.virtual.InMemoryFileSystem;
 import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
-import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
 import com.jfixby.redreporter.server.api.ReporterServer;
-import com.jfixby.redreporter.server.core.RedReporterDataBank;
-import com.jfixby.redreporter.server.core.RedReporterServer;
-import com.jfixby.redreporter.server.core.RedReporterServerConfig;
-import com.jfixby.redreporter.server.core.file.FileStorage;
-import com.jfixby.redreporter.server.core.file.FileStorageConfig;
-import com.jfixby.redreporter.server.credentials.CONFIG;
+import com.jfixby.redreporter.server.api.ServerCoreConfig;
 
 public abstract class RedReporterEntryPoint extends HttpServlet {
-
-	/**
-	 *
-	 */
+	public static Version version;
+	static {
+		version = new Version();
+		version.major = "1";
+		version.minor = "6";
+		version.build = "0";
+		version.packageName = "com.jfixby.redreporter.glassfish";
+		version.versionCode = 800;
+	}
 
 	private static final long serialVersionUID = -1649148797847741708L;
 	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
-	private static MySQL mySQL;
-	public static Version version;
-	private static RedReporterDataBank bank;
+// private static DataBase mySQL;
+
+// private static ReporterDataBank bank;
 	public static String instance_id;
 	static int MAX_VALUES = 500;
 	static final Average average;
@@ -123,126 +118,45 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			return System.getenv("RDS_PASSWORD");
 		}
 
-	};
-
-	static S3CredentialsProvider s3CredentialsProvider = new S3CredentialsProvider() {
 		@Override
-		public String getAccessKeyID () {
-			return System.getenv("S3_ACCESS_KEY_ID");
+		public String getDBName () {
+			return System.getenv("RDS_DB_NAME");
 		}
 
-		@Override
-		public String getSecretKeyID () {
-			return System.getenv("S3_SECRET_KEY_ID");
-		}
 	};
 
 	private static ServerStatus lastServiceState;
-	private static FileStorage fileStorage;
 
 	static {
 		DesktopSetup.deploy();
-		Json.installComponent(new RedJson());
+		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
+		DB.installComponent("com.jfixby.cmns.db.mysql.MySQLDB");
+		AWS.installComponent("com.jfixby.amazon.aws.RedAWS");
+
 		average = FloatMath.newAverage(MAX_VALUES);
-		version = new Version();
-		version.major = "1";
-		version.minor = "30";
-		version.build = "0";
-		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 715;
 
 		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
 		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
 		SystemSettings.setStringParameter(Version.Tags.VersionName, version.getPackageVersionString());
-		INSTALLATION_ID_FILE_NAME = version.packageName + ".iid";
-// deployAnalytics();
 
-		final MySQLConfig config = new MySQLConfig();
+		final DBConfig config = DB.newDBConfig();
 
 		{
-// config.setServerName(hostname);
-// config.setLogin(userName);
-// config.setPort(port);
-// config.setPassword(password);
+
+			ReporterServer.installComponent("com.jfixby.redreporter.server.RedReporterServer");
 
 			config.setConnectionParametersProvider(connectionParamatesProvider);
-			config.setDBName(CONFIG.DB_NAME);
 			config.setUseSSL(false);
 			config.setMaxReconnects(1);
 
-			mySQL = new MySQL(config);
+			final DataBase mySQL = DB.newDB(config);
 
-			bank = new RedReporterDataBank(mySQL);
+			final ServerCoreConfig coreConfig = ReporterServer.newReporterServerConfig();
+			coreConfig.setDataBase(mySQL);
+			coreConfig.setS3BucketName(System.getenv("S3_BUCKET_NAME"));
+			ReporterServer.deployCore(coreConfig);
 
-			final FileStorageConfig fsConfig = new FileStorageConfig();
-			fsConfig.setS3CredentialsProvider(s3CredentialsProvider);
-			fsConfig.setBucketName(CONFIG.S3_BUCKET_NAME);
-
-			fileStorage = new FileStorage(fsConfig);
-
-			final RedReporterServerConfig server_config = new RedReporterServerConfig();
-			server_config.setReportsFileStorage(fileStorage);
-			server_config.setRedReporterDataBank(bank);
-			instance_id = red_instance_id();
-			ReporterServer.installComponent(new RedReporterServer(server_config));
 		}
-	}
-	private static final String INSTALLATION_ID_FILE_NAME;
-
-	static public void deployAnalytics () {
-		{
-			L.d("INSTALLATION_ID_FILE_NAME", INSTALLATION_ID_FILE_NAME);
-			final File home = LocalFileSystem.ApplicationHome();
-			final File logs = setupLogFolder(home);
-
-			final ReporterHttpClientConfig transport_config = new ReporterHttpClientConfig();
-
-			transport_config.setInstallationIDStorageFolder(home);
-			transport_config.setCacheFolder(logs);
-			transport_config.setIIDFileName(INSTALLATION_ID_FILE_NAME);
-			transport_config.setTaskType(TASK_TYPE.SEPARATED_THREAD);
-			{
-				final String url_string = "https://rr-0.red-triplane.com/";
-				final HttpURL url = Http.newURL(url_string);
-				transport_config.addAnalyticsServerUrl(url);
-			}
-			{
-				final String url_string = "https://rr-1.red-triplane.com/";
-				final HttpURL url = Http.newURL(url_string);
-				transport_config.addAnalyticsServerUrl(url);
-			}
-			{
-				final String url_string = "https://rr-2.red-triplane.com/";
-				final HttpURL url = Http.newURL(url_string);
-				transport_config.addAnalyticsServerUrl(url);
-			}
-// final ReporterTransport transport = new ReporterHttpClient(transport_config);
-			{
-// CrashReporter.installComponent(new RedCrashReporter(transport));
-// CrashReporter.enableErrorsListener();
-// CrashReporter.enableLogsListener();
-// CrashReporter.enableUncaughtExceptionHandler();
-			}
-			{
-// AnalyticsReporter.installComponent(new RedAnalyticsReporter(transport));
-// AnalyticsReporter.reportStart();
-			}
-		}
-	}
-
-	final private static File setupLogFolder (final File home) {
-		File logs = null;
-		try {
-			logs = home.child("logs");
-			logs.makeFolder();
-			if (logs.isFolder()) {
-				return logs;
-			}
-		} catch (final IOException e) {
-			L.e(e);
-		}
-		final InMemoryFileSystem imfs = new InMemoryFileSystem();
-		return imfs.ROOT();
 	}
 
 	public static final String serviceState () {

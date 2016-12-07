@@ -5,12 +5,13 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.jfixby.amazon.aws.s3.AWSS3FileSystem;
-import com.jfixby.amazon.aws.s3.AWSS3FileSystemConfig;
-import com.jfixby.amazon.aws.s3.S3CredentialsProvider;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.log.L;
+import com.jfixby.cmns.aws.api.AWS;
+import com.jfixby.cmns.aws.api.S3FileSystem;
+import com.jfixby.cmns.aws.api.S3FileSystemConfig;
+import com.jfixby.cmns.aws.api.s3.S3CredentialsProvider;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
 
 public class FileStorage {
@@ -24,23 +25,24 @@ public class FileStorage {
 		this.bucketName = Debug.checkNull("getBucketName()", fsConfig.getBucketName());
 	}
 
-	boolean deploy () throws IOException {
+	void deploy () throws IOException {
 		final String accessKeyID = this.credentialsProvider.getAccessKeyID();
 		final String secretKeyID = this.credentialsProvider.getSecretKeyID();
 		if (accessKeyID == null || secretKeyID == null) {
-			return false;
+			throw new IOException("Missing accessKeyID.secretKeyID for S3 Bucket");
 		}
 
-		final AWSS3FileSystemConfig specs = new AWSS3FileSystemConfig();
-		specs.setAccessKeyID(accessKeyID);
-		specs.setSecretKeyID(secretKeyID);
-		specs.setBucketName(this.bucketName);//
-		final AWSS3FileSystem S3 = new AWSS3FileSystem(specs);
-
-		S3.ROOT().listDirectChildren();
+		final S3FileSystemConfig aws_specs = AWS.getS3().newFileSystemConfig();
+		aws_specs.setAccessKeyID(accessKeyID);
+		aws_specs.setSecretKeyID(secretKeyID);
+		aws_specs.setBucketName(this.bucketName);//
+		final S3FileSystem S3 = AWS.getS3().newFileSystem(aws_specs);
+		try {
+			S3.ROOT().listDirectChildren();
+		} catch (final Throwable e) {
+			throw new IOException(e);
+		}
 		this.root = S3.ROOT();
-		return true;
-
 	}
 
 	public File storeReport (final ReportStoreArguments store_args) throws IOException {

@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.server.core.file;
 
-import com.jfixby.amazon.aws.s3.S3CredentialsProvider;
+import com.jfixby.cmns.aws.api.s3.S3CredentialsProvider;
 
 public class FileStorageConfig {
 	S3CredentialsProvider s3CredentialsProvider;

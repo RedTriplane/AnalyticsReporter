@@ -4,43 +4,43 @@ package com.jfixby.redreporter.server.core.run;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.jfixby.cmns.adopted.gdx.json.RedJson;
 import com.jfixby.cmns.api.assets.Names;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.collections.Mapping;
+import com.jfixby.cmns.api.desktop.DesktopSetup;
 import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.sys.Sys;
-import com.jfixby.cmns.db.mysql.MySQL;
-import com.jfixby.cmns.db.mysql.MySQLConfig;
-import com.jfixby.red.desktop.DesktopSetup;
+import com.jfixby.cmns.db.api.DB;
+import com.jfixby.cmns.db.api.DBConfig;
+import com.jfixby.cmns.db.api.DataBase;
 import com.jfixby.redreporter.server.core.BankSchema;
+import com.jfixby.redreporter.server.core.RedCoreConfig;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
-import com.jfixby.redreporter.server.core.RedReporterServer;
-import com.jfixby.redreporter.server.core.RedReporterServerConfig;
+import com.jfixby.redreporter.server.core.RedReporterServerCore;
 import com.jfixby.redreporter.server.credentials.CONFIG;
 
 public class RunRedReporterServerDesktop {
 
 	public static void main (final String[] args) throws IOException, SQLException {
 		DesktopSetup.deploy();
-		Json.installComponent(new RedJson());
+		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
 
-		final MySQLConfig config = new MySQLConfig();
+		final DBConfig config = DB.newDBConfig();
 
 		config.setServerName(CONFIG.DB_SERVER);
 		config.setLogin(CONFIG.DB_LOGIN);
 		config.setPassword(CONFIG.DB_PASSWORD);
 		config.setDBName(CONFIG.DB_NAME);
 		config.setUseSSL(!true);
-		final MySQL mySQL = new MySQL(config);
+		final DataBase mySQL = DB.newDB(config);
 
 		final RedReporterDataBank bank = new RedReporterDataBank(mySQL);
 
-		final RedReporterServerConfig serveConfig = new RedReporterServerConfig();
+		final RedCoreConfig serveConfig = new RedCoreConfig();
 		serveConfig.setRedReporterDataBank(bank);
-		final RedReporterServer server = new RedReporterServer(serveConfig);
+		final RedReporterServerCore server = null;
 
 		final String id = Names.newID("test-token-" + System.currentTimeMillis()).toString();
 		L.d("id", id);

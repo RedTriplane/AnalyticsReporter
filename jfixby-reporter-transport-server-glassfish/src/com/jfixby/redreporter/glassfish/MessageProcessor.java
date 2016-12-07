@@ -44,19 +44,37 @@ public class MessageProcessor {
 
 		final Long installID = ReporterServer.findInstallationID(token);
 
+		final ReportStoreArguments store_args = ReporterServer.newReportStoreArguments();
+
+		store_args.setReceivedTimeStamp(receivedTimestamp);
+
 		if (installID == null) {
 			return new Message(REPORTER_PROTOCOL.INVALID_TOKEN);
 		}
-		final String fileName = arg.requestID.child("log") + "";
-		final ReportStoreArguments store_args = ReporterServer.newReportStoreArguments();
-		store_args.setReceivedTimeStamp(receivedTimestamp);
-		store_args.setSentTimestamp(sentTimestamp);
-		store_args.setWrittenTimestamp(writtenTimestamp);
-		store_args.setVersionString(versionString);
 		store_args.setInstallID(installID);
+
+		if (writtenTimestamp == null) {
+			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+		}
+		store_args.setWrittenTimestamp(writtenTimestamp);
+
+		if (sentTimestamp == null) {
+			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+		}
+		store_args.setSentTimestamp(sentTimestamp);
+
+		if (versionString == null) {
+			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+		}
+		store_args.setVersionString(versionString);
+
+		final String fileName = arg.requestID.child("log") + "";
 		store_args.setFileID(fileName);
 
 		final byte[] resializedBody = (byte[])arg.message.attachments.get(REPORTER_PROTOCOL.REPORT);
+		if (resializedBody == null) {
+			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+		}
 		store_args.setReportData(resializedBody);
 
 		final boolean success = ReporterServer.storeReport(store_args);
