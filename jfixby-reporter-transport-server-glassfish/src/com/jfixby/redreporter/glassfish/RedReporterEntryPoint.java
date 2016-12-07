@@ -24,6 +24,7 @@ import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
+import com.jfixby.cmns.api.desktop.DesktopSetup;
 import com.jfixby.cmns.api.floatn.Float2;
 import com.jfixby.cmns.api.geometry.Geometry;
 import com.jfixby.cmns.api.io.Buffer;
@@ -36,6 +37,7 @@ import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.java.Int;
 import com.jfixby.cmns.api.java.gc.GCFisher;
 import com.jfixby.cmns.api.java.gc.MemoryStatistics;
+import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.math.Average;
 import com.jfixby.cmns.api.math.FloatMath;
@@ -45,12 +47,20 @@ import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
+import com.jfixby.cmns.api.sys.settings.SystemSettings;
 import com.jfixby.cmns.api.util.JUtils;
+import com.jfixby.cmns.aws.api.AWS;
+import com.jfixby.cmns.db.api.ConnectionParametersProvider;
+import com.jfixby.cmns.db.api.DB;
+import com.jfixby.cmns.db.api.DBConfig;
+import com.jfixby.cmns.db.api.DataBase;
 import com.jfixby.cmns.ver.Version;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.server.api.DB_STATE;
+import com.jfixby.redreporter.server.api.HealthReportType;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
+import com.jfixby.redreporter.server.api.ServerCoreConfig;
 
 public abstract class RedReporterEntryPoint extends HttpServlet {
 	public static Version version;
@@ -68,35 +78,73 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 // private static ReporterDataBank bank;
 	public static String instance_id;
-	static int MAX_VALUES = 500;
-	static Average average;
-
-	final static synchronized private void addValueToAverage (final double val, final Float2 value, final Int size) {
-		average.addValue(val);
-		if (size != null) {
-			size.value = average.size();
+	static ConnectionParametersProvider connectionParamatesProvider = new ConnectionParametersProvider() {
+		@Override
+		public String getHost () {
+			return System.getenv("RDS_HOSTNAME");
 		}
-		if (value != null) {
-			value.setX(average.getAverage());
+
+		@Override
+		public int getPort () {
+			final String port = System.getenv("RDS_PORT");
+			if (port == null) {
+				return -1;
+			}
+			if ("".equals(port)) {
+				return -1;
+			}
+			return Integer.parseInt(port);
 		}
-	}
 
-	static boolean deployed = false;
-	private static DB_STATE lastDBState;
-	private static STORAGE_STATE lastStorageState;
-
-	static void checkDeployed () {
-		if (deployed) {
-			return;
+		@Override
+		public String getLogin () {
+			return System.getenv("RDS_USERNAME");
 		}
-		deployed = true;
-		ServerDeployer.deploy(version);
-		average = FloatMath.newAverage(MAX_VALUES);
-	}
 
-	public static final void readServiceState () {
-		lastDBState = ReporterServer.getDBState();
-		lastStorageState = ReporterServer.getStorageState();
+		@Override
+		public String getPassword () {
+			return System.getenv("RDS_PASSWORD");
+		}
+
+		@Override
+		public String getDBName () {
+			return System.getenv("RDS_DB_NAME");
+		}
+
+	};
+	static {
+		DesktopSetup.deploy();
+		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
+		DB.installComponent("com.jfixby.cmns.db.mysql.MySQLDB");
+		AWS.installComponent("com.jfixby.amazon.aws.RedAWS");
+
+		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
+		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
+		SystemSettings.setStringParameter(Version.Tags.VersionName, version.getPackageVersionString());
+		RedReporterEntryPoint.average = FloatMath.newAverage(500);
+		final DBConfig config = DB.newDBConfig();
+
+		{
+
+			ReporterServer.installComponent("com.jfixby.redreporter.server.RedReporterServer");
+
+			config.setConnectionParametersProvider(connectionParamatesProvider);
+			config.setUseSSL(false);
+			config.setMaxReconnects(1);
+
+			final DataBase mySQL = DB.newDB(config);
+
+			final ServerCoreConfig coreConfig = ReporterServer.newReporterServerConfig();
+			coreConfig.setDataBase(mySQL);
+			coreConfig.setS3BucketName(System.getenv("S3_BUCKET_NAME"));
+			if (coreConfig.getBucketName() == null) {
+				coreConfig.setS3BucketName("com.red-triplane.rr-1");
+			}
+
+			ReporterServer.deployCore(coreConfig);
+
+		}
+
 	}
 
 	static private final String red_instance_id () {
@@ -127,7 +175,6 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	 * @throws IOException if an I/O error occurs */
 
 	protected void processRequest (final HttpServletRequest request, final HttpServletResponse response) {
-		checkDeployed();
 		final RedReporterEntryPointArguments arg = new RedReporterEntryPointArguments();
 		String client_ip_addr = "unknown";
 		try {
@@ -286,17 +333,12 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		addValueToAverage(measureProcessingTime(arg), null, null);
 	}
 
-	private static synchronized long request_number () {
-		request++;
-		return request;
-	}
-
 	public final static String SEPARATOR = System.getProperty("line.separator");
 
-	static private void sayHello (final RedReporterEntryPointArguments arg) throws IOException {
+	static public String getHealthReport (final HealthReportType type, final RedReporterEntryPointArguments arg) {
+
 		final StringBuilder msg = new StringBuilder();
-		if (arg.isHeathCheck) {
-		} else {
+		if (type == HealthReportType.LATEST) {
 			readServiceState();
 		}
 		msg.append("             <Service Health>").append(SEPARATOR);
@@ -313,14 +355,51 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		msg.append(SEPARATOR);
 		msg.append("        memory usage: " + memoryStats).append(SEPARATOR);
 		msg.append(SEPARATOR);
-		msg.append("           client ip: " + arg.inputHeaders.get(SystemInfoTags.Net.client_ip)).append(SEPARATOR);
+		if (arg.inputHeaders != null) {
+			msg.append("           client ip: " + arg.inputHeaders.get(SystemInfoTags.Net.client_ip)).append(SEPARATOR);
+		}
 		msg.append("          request id: " + arg.requestID).append(SEPARATOR);
 		msg.append(SEPARATOR);
 		msg.append("request processed in: " + sec + " sec").append(SEPARATOR);
 		msg.append("average for the last: " + size.value + " requests").append(SEPARATOR);
 		msg.append("                  is: " + FloatMath.roundToDigit(value.getX(), 3) + " sec").append(SEPARATOR);
 
-		arg.server_to_client_stream.write(msg.toString().getBytes());
+		return msg.toString();
+	}
+
+	private static DB_STATE lastDBState;
+	private static STORAGE_STATE lastStorageState;
+
+	public static final void readServiceState () {
+		lastDBState = ReporterServer.getDBState();
+		lastStorageState = ReporterServer.getStorageState();
+	}
+
+	static Average average;
+
+	final static synchronized private void addValueToAverage (final double val, final Float2 value, final Int size) {
+		average.addValue(val);
+		if (size != null) {
+			size.value = average.size();
+		}
+		if (value != null) {
+			value.setX(average.getAverage());
+		}
+	}
+
+	private static synchronized long request_number () {
+		request++;
+		return request;
+	}
+
+	static private void sayHello (final RedReporterEntryPointArguments arg) throws IOException {
+		String report;
+		if (arg.isHeathCheck) {
+			report = getHealthReport(HealthReportType.ON_LAST_CALL, arg);
+		} else {
+			report = getHealthReport(HealthReportType.LATEST, arg);
+		}
+		arg.server_to_client_stream.write(report.getBytes());
 	}
 
 	static private double measureProcessingTime (final RedReporterEntryPointArguments arg) {

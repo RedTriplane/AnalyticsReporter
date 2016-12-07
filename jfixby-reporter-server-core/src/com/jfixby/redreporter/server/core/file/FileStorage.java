@@ -72,6 +72,13 @@ public class FileStorage {
 	}
 
 	public STORAGE_STATE getState () {
+
+		try {
+			this.deploy();
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+
 		if (this.root == null) {
 			return STORAGE_STATE.ERROR;
 		}

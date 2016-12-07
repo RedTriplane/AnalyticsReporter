@@ -138,7 +138,6 @@ public class RedReporterServerCore implements ServerCore {
 	@Override
 	public STORAGE_STATE getSorageState () {
 		return this.fileStorage.getState();
-
 	}
 
 }
