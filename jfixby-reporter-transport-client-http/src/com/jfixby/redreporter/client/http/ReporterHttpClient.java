@@ -96,7 +96,6 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 				return false;
 			}
 		}
-
 		final Mapping<String, String> params = report.listParameters();
 		final Message message = new Message(REPORTER_PROTOCOL.REPORT);
 		this.packToMessage(report, params, message);
@@ -104,15 +103,11 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 		if (response == null) {
 			return false;
 		}
-		if (REPORTER_PROTOCOL.INSTALLATION_TOKEN.equals(response.header)) {
-			final String token = response.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
-			if (token != null) {
-				this.iidStorage.setID(token);
-			}
+		if (REPORTER_PROTOCOL.INVALID_TOKEN.equals(response.header)) {
+			this.iidStorage.deleteID();
 			return false;
 		}
 		if (!REPORTER_PROTOCOL.REPORT_RECEIVED_OK.equals(response.header)) {
-// response.print();
 			return false;
 		}
 
