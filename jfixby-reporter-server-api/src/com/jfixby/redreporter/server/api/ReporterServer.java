@@ -22,11 +22,11 @@ public class ReporterServer {
 		return componentInstaller.getComponent();
 	}
 
-	public static String registerInstallation (final ID token) {
+	public static String registerInstallation (final String token) {
 		return invoke().registerInstallation(token);
 	}
 
-	public static boolean updateSystemInfo (final ID token, final Map<String, String> values) {
+	public static boolean updateSystemInfo (final String token, final Map<String, String> values) {
 		return invoke().updateSystemInfo(token, values);
 	}
 
@@ -34,7 +34,19 @@ public class ReporterServer {
 		return invoke().getStatus();
 	}
 
-	public static ID newToken (final ID requestID) {
+	public static String newToken (final ID requestID) {
 		return invoke().newToken(requestID);
+	}
+
+	public static ReportStoreArguments newReportStoreArguments () {
+		return invoke().newReportStoreArguments();
+	}
+
+	public static Long findInstallationID (final String token) {
+		return invoke().findInstallation(token);
+	}
+
+	public static boolean storeReport (final ReportStoreArguments store_args) {
+		return invoke().storeReport(store_args);
 	}
 }

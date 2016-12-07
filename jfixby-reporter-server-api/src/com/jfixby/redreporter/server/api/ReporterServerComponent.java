@@ -7,11 +7,17 @@ import com.jfixby.redreporter.api.ServerStatus;
 
 public interface ReporterServerComponent {
 
-	ID newToken (ID prefix);
+	String newToken (ID prefix);
 
-	String registerInstallation (ID token);
+	String registerInstallation (String token);
 
-	boolean updateSystemInfo (final ID token, Map<String, String> values);
+	boolean updateSystemInfo (final String token, Map<String, String> values);
 
 	ServerStatus getStatus ();
+
+	ReportStoreArguments newReportStoreArguments ();
+
+	Long findInstallation (String token);
+
+	boolean storeReport (ReportStoreArguments store_args);
 }

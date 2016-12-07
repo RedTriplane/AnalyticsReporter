@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.sql.SQLException;
 
 import com.jfixby.cmns.adopted.gdx.json.RedJson;
-import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.assets.Names;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.Map;
@@ -43,7 +42,7 @@ public class RunRedReporterServerDesktop {
 		serveConfig.setRedReporterDataBank(bank);
 		final RedReporterServer server = new RedReporterServer(serveConfig);
 
-		final ID id = Names.newID("test-token-" + System.currentTimeMillis());
+		final String id = Names.newID("test-token-" + System.currentTimeMillis()).toString();
 		L.d("id", id);
 		server.registerInstallation(id);
 

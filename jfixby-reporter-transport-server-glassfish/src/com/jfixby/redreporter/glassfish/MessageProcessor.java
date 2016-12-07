@@ -4,7 +4,6 @@ package com.jfixby.redreporter.glassfish;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
@@ -13,6 +12,7 @@ import com.jfixby.cmns.api.math.IntegerMath;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
+import com.jfixby.redreporter.server.api.ReportStoreArguments;
 import com.jfixby.redreporter.server.api.ReporterServer;
 
 public class MessageProcessor {
@@ -34,14 +34,37 @@ public class MessageProcessor {
 	}
 
 	private static Message registerReport (final RedReporterEntryPointArguments arg) {
-		final String token = arg.message.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
+		final Long receivedTimestamp = arg.timestamp;
+
 		final String sentTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_SENT);
 		final String writtenTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_WRITTEN);
 		final String versionString = arg.message.values.get(REPORTER_PROTOCOL.REPORT_VERSION);
-		final byte[] resializedBody = (byte[])arg.message.attachments.get(REPORTER_PROTOCOL.REPORT);
-		final Message result = new Message(REPORTER_PROTOCOL.REPORT_RECEIVED_OK);
 
-// ReporterServer.re
+		final String token = arg.message.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
+
+		final Long installID = ReporterServer.findInstallationID(token);
+
+		if (installID == null) {
+			return new Message(REPORTER_PROTOCOL.INVALID_TOKEN);
+		}
+		final String fileName = arg.requestID.child("log") + "";
+		final ReportStoreArguments store_args = ReporterServer.newReportStoreArguments();
+		store_args.setReceivedTimeStamp(receivedTimestamp);
+		store_args.setSentTimestamp(sentTimestamp);
+		store_args.setWrittenTimestamp(writtenTimestamp);
+		store_args.setVersionString(versionString);
+		store_args.setInstallID(installID);
+		store_args.setFileID(fileName);
+
+		final byte[] resializedBody = (byte[])arg.message.attachments.get(REPORTER_PROTOCOL.REPORT);
+		store_args.setReportData(resializedBody);
+
+		final boolean success = ReporterServer.storeReport(store_args);
+		if (!success) {
+			return new Message(REPORTER_PROTOCOL.FAILED_TO_STORE_REPORT);
+		}
+
+		final Message result = new Message(REPORTER_PROTOCOL.REPORT_RECEIVED_OK);
 
 		return result;
 	}
@@ -55,28 +78,28 @@ public class MessageProcessor {
 	static private Message registerInstallation (final RedReporterEntryPointArguments arg) {
 		final Message result = new Message(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
 
-		final ID token = ReporterServer.newToken(arg.requestID);
+		final String token = ReporterServer.newToken(arg.requestID);
 
 		if (token == null) {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
 
-		final String id = ReporterServer.registerInstallation(token);
+		final String token_string = ReporterServer.registerInstallation(token);
 
-		if (id == null) {
+		if (token_string == null) {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
 
 		arg.message.values.put(SystemInfoTags.Net.client_ip, getHeader(SystemInfoTags.Net.client_ip, arg.inputHeaders));
 
-		final boolean success = ReporterServer.updateSystemInfo(token, params(arg.message.values));
+		final boolean success = ReporterServer.updateSystemInfo(token_string, params(arg.message.values));
 
 		if (!success) {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
 
-		L.d("register install", id);
-		result.values.put(REPORTER_PROTOCOL.INSTALLATION_TOKEN, id);
+		L.d("register install", token_string);
+		result.values.put(REPORTER_PROTOCOL.INSTALLATION_TOKEN, token_string);
 		return result;
 	}
 

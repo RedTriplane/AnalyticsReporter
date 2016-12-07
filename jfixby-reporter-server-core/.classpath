@@ -12,5 +12,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-db-mysql"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-amazon-aws"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

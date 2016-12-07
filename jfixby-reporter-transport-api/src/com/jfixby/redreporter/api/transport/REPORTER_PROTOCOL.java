@@ -20,5 +20,6 @@ public class REPORTER_PROTOCOL {
 	public static final String REPORT_WRITTEN = "RedReporter.REPORT_WRITTEN";
 	public static final String REPORT_SENT = "RedReporter.REPORT_SENT";
 	public static final String INVALID_TOKEN = "RedReporter.INVALID_TOKEN";
+	public static final String FAILED_TO_STORE_REPORT = "RedReporter.FAILED_TO_STORE_REPORT";
 
 }

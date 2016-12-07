@@ -19,6 +19,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.jfixby.amazon.aws.s3.S3CredentialsProvider;
 import com.jfixby.cmns.adopted.gdx.json.RedJson;
 import com.jfixby.cmns.api.assets.Names;
 import com.jfixby.cmns.api.collections.Collections;
@@ -65,6 +66,8 @@ import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
 import com.jfixby.redreporter.server.core.RedReporterServer;
 import com.jfixby.redreporter.server.core.RedReporterServerConfig;
+import com.jfixby.redreporter.server.core.file.FileStorage;
+import com.jfixby.redreporter.server.core.file.FileStorageConfig;
 import com.jfixby.redreporter.server.credentials.CONFIG;
 
 public abstract class RedReporterEntryPoint extends HttpServlet {
@@ -121,7 +124,21 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		}
 
 	};
+
+	static S3CredentialsProvider s3CredentialsProvider = new S3CredentialsProvider() {
+		@Override
+		public String getAccessKeyID () {
+			return System.getenv("S3_ACCESS_KEY_ID");
+		}
+
+		@Override
+		public String getSecretKeyID () {
+			return System.getenv("S3_SECRET_KEY_ID");
+		}
+	};
+
 	private static ServerStatus lastServiceState;
+	private static FileStorage fileStorage;
 
 	static {
 		DesktopSetup.deploy();
@@ -157,7 +174,14 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 			bank = new RedReporterDataBank(mySQL);
 
+			final FileStorageConfig fsConfig = new FileStorageConfig();
+			fsConfig.setS3CredentialsProvider(s3CredentialsProvider);
+			fsConfig.setBucketName(CONFIG.S3_BUCKET_NAME);
+
+			fileStorage = new FileStorage(fsConfig);
+
 			final RedReporterServerConfig server_config = new RedReporterServerConfig();
+			server_config.setReportsFileStorage(fileStorage);
 			server_config.setRedReporterDataBank(bank);
 			instance_id = red_instance_id();
 			ReporterServer.installComponent(new RedReporterServer(server_config));

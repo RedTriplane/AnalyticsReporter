@@ -18,11 +18,11 @@ public class InstallationIDGenerator {
 		this.bank = bank;
 	}
 
-	public ID newInstallationID (ID prefix) throws IOException {
+	public String newInstallationID (ID prefix) throws IOException {
 		prefix = prefix.child("ts-" + (System.currentTimeMillis() - TIMESTAMP_OFFSET));
 		prefix = prefix.child("sl-0");
 		final ID id = prefix.child(applySalt(prefix.toString(), this.salt0()));
-		return id;
+		return id + "";
 	}
 
 	private String salt0 () throws IOException {
