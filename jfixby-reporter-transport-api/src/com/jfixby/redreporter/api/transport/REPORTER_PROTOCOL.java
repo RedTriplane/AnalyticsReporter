@@ -12,7 +12,6 @@ public class REPORTER_PROTOCOL {
 	public static final String IO_FAILED = "RedReporter.IO_FAILED";
 	public static final String ERR = "RedReporter.ERR";
 	public static final String SERVER_RESPONDED_IN = "RedReporter.SERVER_RESPONDED_IN";
-	public static final String SERVER_STATUS = "RedReporter.SERVER_STATUS";
 	public static final String SERVER_CODE_VERSION = "RedReporter.SERVER_CODE_VERSION";
 	public static final String REQUEST_ID = "RedReporter.REQUEST_ID";
 	public static final String REPORT_RECEIVED_OK = "RedReporter.REPORT_RECEIVED_OK";
@@ -21,5 +20,6 @@ public class REPORTER_PROTOCOL {
 	public static final String REPORT_SENT = "RedReporter.REPORT_SENT";
 	public static final String INVALID_TOKEN = "RedReporter.INVALID_TOKEN";
 	public static final String FAILED_TO_STORE_REPORT = "RedReporter.FAILED_TO_STORE_REPORT";
+	public static final String SERVER_STATUS = "RedReporter.SERVER_STATUS";
 
 }

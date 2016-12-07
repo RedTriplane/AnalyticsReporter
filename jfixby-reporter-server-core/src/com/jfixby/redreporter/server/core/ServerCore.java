@@ -3,12 +3,15 @@ package com.jfixby.redreporter.server.core;
 
 import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Map;
-import com.jfixby.redreporter.api.ServerStatus;
+import com.jfixby.redreporter.server.api.DB_STATE;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.STORAGE_STATE;
 
 public interface ServerCore {
 
-	ServerStatus getStatus ();
+	DB_STATE getDBState ();
+
+	STORAGE_STATE getSorageState ();
 
 	String newToken (ID prefix);
 

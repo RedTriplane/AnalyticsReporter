@@ -11,9 +11,12 @@ import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.math.IntegerMath;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
+import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
+import com.jfixby.redreporter.server.api.DB_STATE;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
 import com.jfixby.redreporter.server.api.ReporterServer;
+import com.jfixby.redreporter.server.api.STORAGE_STATE;
 
 public class MessageProcessor {
 
@@ -24,7 +27,16 @@ public class MessageProcessor {
 			return registerInstallation(arg);
 		}
 		if (REPORTER_PROTOCOL.PING.equals(arg.message.header)) {
-			arg.message.attachments.put(REPORTER_PROTOCOL.SERVER_STATUS, ReporterServer.getStatus());
+			final DB_STATE db = ReporterServer.getDBState();
+			final STORAGE_STATE st = ReporterServer.getStorageState();
+			arg.message.attachments.put(REPORTER_PROTOCOL.SERVER_STATUS, ServerStatus.OK);
+			if (db != DB_STATE.OK) {
+				arg.message.attachments.put(REPORTER_PROTOCOL.SERVER_STATUS, ServerStatus.ERROR);
+			}
+			if (st != STORAGE_STATE.OK) {
+				arg.message.attachments.put(REPORTER_PROTOCOL.SERVER_STATUS, ServerStatus.ERROR);
+			}
+
 			return arg.message;
 		}
 		if (REPORTER_PROTOCOL.REPORT.equals(arg.message.header)) {

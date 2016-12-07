@@ -3,15 +3,12 @@ package com.jfixby.redreporter.server.api;
 
 import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Map;
-import com.jfixby.redreporter.api.ServerStatus;
 
 public interface ReporterServerComponent {
 
 	ServerCoreConfig newReporterServerConfig ();
 
 	void deployCore (ServerCoreConfig coreConfig);
-
-	ServerStatus getStatus ();
 
 	Long findInstallationID (String token);
 
@@ -24,5 +21,9 @@ public interface ReporterServerComponent {
 	String newToken (ID requestID);
 
 	boolean updateSystemInfo (String token_string, Map<String, String> params);
+
+	DB_STATE getDBState ();
+
+	STORAGE_STATE getSorageState ();
 
 }

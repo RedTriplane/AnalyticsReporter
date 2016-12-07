@@ -71,6 +71,9 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 
 	private Message exchange (final ServerHandlers servers, final Message request) {
 		final ServerPing serverPing = this.getBestServer();
+		if (serverPing == null) {
+			return null;
+		}
 		final ServerHandler server = serverPing.server;
 
 // L.d("exchange", serverPing);

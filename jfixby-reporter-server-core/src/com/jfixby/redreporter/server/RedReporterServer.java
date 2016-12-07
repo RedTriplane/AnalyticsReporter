@@ -4,9 +4,10 @@ package com.jfixby.redreporter.server;
 import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.err.Err;
-import com.jfixby.redreporter.api.ServerStatus;
+import com.jfixby.redreporter.server.api.DB_STATE;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
 import com.jfixby.redreporter.server.api.ReporterServerComponent;
+import com.jfixby.redreporter.server.api.STORAGE_STATE;
 import com.jfixby.redreporter.server.api.ServerCoreConfig;
 import com.jfixby.redreporter.server.core.RedReporterServerCore;
 
@@ -26,11 +27,6 @@ public class RedReporterServer implements ReporterServerComponent {
 		}
 
 		this.core = new RedReporterServerCore(coreConfig);
-	}
-
-	@Override
-	public ServerStatus getStatus () {
-		return this.core.getStatus();
 	}
 
 	@Override
@@ -61,6 +57,16 @@ public class RedReporterServer implements ReporterServerComponent {
 	@Override
 	public boolean updateSystemInfo (final String token_string, final Map<String, String> params) {
 		return this.core.updateSystemInfo(token_string, params);
+	}
+
+	@Override
+	public DB_STATE getDBState () {
+		return this.core.getDBState();
+	}
+
+	@Override
+	public STORAGE_STATE getSorageState () {
+		return this.core.getSorageState();
 	}
 
 }

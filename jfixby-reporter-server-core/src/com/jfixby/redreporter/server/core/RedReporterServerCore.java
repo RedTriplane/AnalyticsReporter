@@ -10,8 +10,9 @@ import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.aws.api.s3.S3CredentialsProvider;
 import com.jfixby.cmns.db.api.DataBase;
-import com.jfixby.redreporter.api.ServerStatus;
+import com.jfixby.redreporter.server.api.DB_STATE;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.STORAGE_STATE;
 import com.jfixby.redreporter.server.api.ServerCoreConfig;
 import com.jfixby.redreporter.server.core.file.FileStorage;
 import com.jfixby.redreporter.server.core.file.FileStorageConfig;
@@ -46,17 +47,6 @@ public class RedReporterServerCore implements ServerCore {
 		Debug.checkNull("bank", this.bank);
 		Debug.checkNull("fileStorage", this.fileStorage);
 		this.idgen = new InstallationIDGenerator(this.bank);
-	}
-
-	@Override
-	public ServerStatus getStatus () {
-		try {
-			this.bank.readSettings();
-			return ServerStatus.OK;
-		} catch (final IOException e) {
-			e.printStackTrace();
-			return ServerStatus.ERROR;
-		}
 	}
 
 	@Override
@@ -131,6 +121,24 @@ public class RedReporterServerCore implements ServerCore {
 			return false;
 		}
 		return true;
+	}
+
+	@Override
+	public DB_STATE getDBState () {
+		try {
+			this.bank.readSettings();
+			return DB_STATE.OK;
+		} catch (final IOException e) {
+			e.printStackTrace();
+			return DB_STATE.ERROR;
+		}
+
+	}
+
+	@Override
+	public STORAGE_STATE getSorageState () {
+		return this.fileStorage.getState();
+
 	}
 
 }

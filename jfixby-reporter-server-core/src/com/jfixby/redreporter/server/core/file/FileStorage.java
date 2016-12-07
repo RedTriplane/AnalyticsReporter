@@ -13,6 +13,7 @@ import com.jfixby.cmns.aws.api.S3FileSystem;
 import com.jfixby.cmns.aws.api.S3FileSystemConfig;
 import com.jfixby.cmns.aws.api.s3.S3CredentialsProvider;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.STORAGE_STATE;
 
 public class FileStorage {
 
@@ -68,6 +69,13 @@ public class FileStorage {
 
 		return logFile;
 
+	}
+
+	public STORAGE_STATE getState () {
+		if (this.root == null) {
+			return STORAGE_STATE.ERROR;
+		}
+		return STORAGE_STATE.OK;
 	}
 
 }

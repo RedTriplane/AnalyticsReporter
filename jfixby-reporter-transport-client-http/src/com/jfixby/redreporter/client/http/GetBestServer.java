@@ -64,6 +64,9 @@ public class GetBestServer implements BestServerCheck, ServerRanker {
 
 	public ServerPing getBest () {
 		if (this.succeed.size() == 0) {
+			if (this.totalNumberOfparticipants.value == 0) {
+// this.failed.print("failed servers");
+			}
 			return null;
 		}
 		return this.succeed.getElementAt(0);

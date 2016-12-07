@@ -24,7 +24,6 @@ import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.desktop.DesktopSetup;
 import com.jfixby.cmns.api.floatn.Float2;
 import com.jfixby.cmns.api.geometry.Geometry;
 import com.jfixby.cmns.api.io.Buffer;
@@ -37,7 +36,6 @@ import com.jfixby.cmns.api.java.ByteArray;
 import com.jfixby.cmns.api.java.Int;
 import com.jfixby.cmns.api.java.gc.GCFisher;
 import com.jfixby.cmns.api.java.gc.MemoryStatistics;
-import com.jfixby.cmns.api.json.Json;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.api.math.Average;
 import com.jfixby.cmns.api.math.FloatMath;
@@ -47,18 +45,12 @@ import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
-import com.jfixby.cmns.api.sys.settings.SystemSettings;
 import com.jfixby.cmns.api.util.JUtils;
-import com.jfixby.cmns.aws.api.AWS;
-import com.jfixby.cmns.db.api.ConnectionParametersProvider;
-import com.jfixby.cmns.db.api.DB;
-import com.jfixby.cmns.db.api.DBConfig;
-import com.jfixby.cmns.db.api.DataBase;
 import com.jfixby.cmns.ver.Version;
-import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
+import com.jfixby.redreporter.server.api.DB_STATE;
 import com.jfixby.redreporter.server.api.ReporterServer;
-import com.jfixby.redreporter.server.api.ServerCoreConfig;
+import com.jfixby.redreporter.server.api.STORAGE_STATE;
 
 public abstract class RedReporterEntryPoint extends HttpServlet {
 	public static Version version;
@@ -70,7 +62,6 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		version.packageName = "com.jfixby.redreporter.glassfish";
 		version.versionCode = 800;
 	}
-
 	private static final long serialVersionUID = -1649148797847741708L;
 	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
 // private static DataBase mySQL;
@@ -78,7 +69,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 // private static ReporterDataBank bank;
 	public static String instance_id;
 	static int MAX_VALUES = 500;
-	static final Average average;
+	static Average average;
 
 	final static synchronized private void addValueToAverage (final double val, final Float2 value, final Int size) {
 		average.addValue(val);
@@ -90,78 +81,22 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		}
 	}
 
-	static ConnectionParametersProvider connectionParamatesProvider = new ConnectionParametersProvider() {
-		@Override
-		public String getHost () {
-			return System.getenv("RDS_HOSTNAME");
+	static boolean deployed = false;
+	private static DB_STATE lastDBState;
+	private static STORAGE_STATE lastStorageState;
+
+	static void checkDeployed () {
+		if (deployed) {
+			return;
 		}
-
-		@Override
-		public int getPort () {
-			final String port = System.getenv("RDS_PORT");
-			if (port == null) {
-				return -1;
-			}
-			if ("".equals(port)) {
-				return -1;
-			}
-			return Integer.parseInt(port);
-		}
-
-		@Override
-		public String getLogin () {
-			return System.getenv("RDS_USERNAME");
-		}
-
-		@Override
-		public String getPassword () {
-			return System.getenv("RDS_PASSWORD");
-		}
-
-		@Override
-		public String getDBName () {
-			return System.getenv("RDS_DB_NAME");
-		}
-
-	};
-
-	private static ServerStatus lastServiceState;
-
-	static {
-		DesktopSetup.deploy();
-		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
-		DB.installComponent("com.jfixby.cmns.db.mysql.MySQLDB");
-		AWS.installComponent("com.jfixby.amazon.aws.RedAWS");
-
+		deployed = true;
+		ServerDeployer.deploy(version);
 		average = FloatMath.newAverage(MAX_VALUES);
-
-		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
-		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
-		SystemSettings.setStringParameter(Version.Tags.VersionName, version.getPackageVersionString());
-
-		final DBConfig config = DB.newDBConfig();
-
-		{
-
-			ReporterServer.installComponent("com.jfixby.redreporter.server.RedReporterServer");
-
-			config.setConnectionParametersProvider(connectionParamatesProvider);
-			config.setUseSSL(false);
-			config.setMaxReconnects(1);
-
-			final DataBase mySQL = DB.newDB(config);
-
-			final ServerCoreConfig coreConfig = ReporterServer.newReporterServerConfig();
-			coreConfig.setDataBase(mySQL);
-			coreConfig.setS3BucketName(System.getenv("S3_BUCKET_NAME"));
-			ReporterServer.deployCore(coreConfig);
-
-		}
 	}
 
-	public static final String serviceState () {
-		lastServiceState = ReporterServer.getStatus();
-		return "[" + lastServiceState + "]";
+	public static final void readServiceState () {
+		lastDBState = ReporterServer.getDBState();
+		lastStorageState = ReporterServer.getStorageState();
 	}
 
 	static private final String red_instance_id () {
@@ -192,6 +127,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	 * @throws IOException if an I/O error occurs */
 
 	protected void processRequest (final HttpServletRequest request, final HttpServletResponse response) {
+		checkDeployed();
 		final RedReporterEntryPointArguments arg = new RedReporterEntryPointArguments();
 		String client_ip_addr = "unknown";
 		try {
@@ -360,11 +296,12 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	static private void sayHello (final RedReporterEntryPointArguments arg) throws IOException {
 		final StringBuilder msg = new StringBuilder();
 		if (arg.isHeathCheck) {
-			msg.append("        Health check: " + "[" + lastServiceState + "]").append(SEPARATOR);
 		} else {
-			msg.append("Service is operating: " + serviceState()).append(SEPARATOR);
+			readServiceState();
 		}
-
+		msg.append("             <Service Health>").append(SEPARATOR);
+		msg.append("                  DB: " + lastDBState).append(SEPARATOR);
+		msg.append("             Storage: " + lastStorageState).append(SEPARATOR);
 		final double val = measureProcessingTime(arg);
 		final Float2 value = Geometry.newFloat2();
 		final Int size = new Int();

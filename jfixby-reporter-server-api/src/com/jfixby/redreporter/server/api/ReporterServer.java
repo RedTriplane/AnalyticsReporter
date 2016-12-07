@@ -4,7 +4,6 @@ package com.jfixby.redreporter.server.api;
 import com.jfixby.cmns.api.ComponentInstaller;
 import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.collections.Map;
-import com.jfixby.redreporter.api.ServerStatus;
 
 public class ReporterServer {
 
@@ -34,8 +33,12 @@ public class ReporterServer {
 		invoke().deployCore(coreConfig);
 	}
 
-	public static ServerStatus getStatus () {
-		return invoke().getStatus();
+	public static DB_STATE getDBState () {
+		return invoke().getDBState();
+	}
+
+	public static STORAGE_STATE getStorageState () {
+		return invoke().getSorageState();
 	}
 
 	public static Long findInstallationID (final String token) {
