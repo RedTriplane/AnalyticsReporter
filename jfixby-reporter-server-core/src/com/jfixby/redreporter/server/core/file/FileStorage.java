@@ -60,7 +60,7 @@ public class FileStorage {
 		final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");// //2013/10/15 16:16:39
 		final String dateText = dateFormat.format(date);
 		final File dayFolder = installFolder.child(dateText);
-
+// dayFolder.makeFolder();
 		final SimpleDateFormat dateFormat2 = new SimpleDateFormat("HH-mm-ss");
 		final String logFileName = dateFormat2.format(date) + "-" + store_args.getFileID();
 		final File logFile = dayFolder.child(logFileName);

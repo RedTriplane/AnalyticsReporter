@@ -147,6 +147,8 @@ public class RedReporterDataBank implements ReporterDataBank {
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.file_id), fileID);
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.file_path), file_path);
 
+		L.d("writing DB", entry);
+
 		table.addEntry(entry);
 
 	}

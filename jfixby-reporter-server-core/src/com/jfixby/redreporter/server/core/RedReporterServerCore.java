@@ -119,10 +119,12 @@ public class RedReporterServerCore implements ServerCore {
 		File logFile = null;
 		try {
 			logFile = this.fileStorage.storeReport(store_args);
+			L.d("report file ok", logFile);
 		} catch (final IOException e) {
 			L.e(e);
 			return false;
 		}
+
 		try {
 			this.bank.storeReport(store_args, logFile);
 		} catch (final IOException e) {

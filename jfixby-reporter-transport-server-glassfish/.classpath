@@ -9,7 +9,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-aws-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-db-mysql"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-aws-red"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-api-desktop"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red"/>
@@ -21,5 +20,6 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/rana-asset-red"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-jar-loader"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-db-mysql"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

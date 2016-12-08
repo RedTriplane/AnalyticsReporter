@@ -26,6 +26,7 @@ import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
+import com.jfixby.cmns.api.debug.DebugTimer;
 import com.jfixby.cmns.api.desktop.DesktopSetup;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.file.LocalFileSystem;
@@ -50,7 +51,6 @@ import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
-import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.cmns.api.sys.settings.SystemSettings;
 import com.jfixby.cmns.api.util.JUtils;
@@ -81,17 +81,17 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		version = new Version();
 		version.major = "1";
 		version.minor = "6";
-		version.build = "0";
+		version.build = "1";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 800;
+		version.versionCode = 813;
 	}
-
 	static {
 		DesktopSetup.deploy();
 		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
 		DB.installComponent("com.jfixby.cmns.db.mysql.MySQLDB");
-// AWS.installComponent("com.jfixby.amazon.aws.RedAWS");
-		AWS.installComponent(new com.jfixby.amazon.aws.RedAWS());
+
+		AWS.installComponent("com.jfixby.amazon.aws.RedAWS");
+// AWS.installComponent(new com.jfixby.amazon.aws.RedAWS());
 
 		instance_id = read_instance_id();
 		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
@@ -162,12 +162,35 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	}
 
 	private static void loadMissingJars () {
+		try {
+			final Class klass = com.fasterxml.jackson.databind.ObjectMapper.class;
+			final java.net.URL location = klass.getResource('/' + klass.getName().replace('.', '/') + ".class");
+			L.d("XXX klass: " + klass, "loaded from " + location + " by " + klass.getClassLoader());
+		} catch (final Throwable e) {
+			e.printStackTrace();
+			L.d("klass: ", "not found");
+		}
+
 		final List<ID> dependencies = Collections.newList();
 		dependencies.add(Names.newID("com.mysql.jdbc.jdbc2.optional.MysqlDataSource"));
 		dependencies.add(Names.newID("com.amazonaws.services.s3.AmazonS3Client"));
+		dependencies.add(Names.newID("org.apache.commons.logging.LogFactory"));
+		dependencies.add(Names.newID("org.apache.http.protocol.HttpRequestExecutor"));
+		dependencies.add(Names.newID("org.apache.http.client.HttpClient"));
+		dependencies.add(Names.newID("org.joda.time.DateTimeZone"));
+		dependencies.add(Names.newID("com.amazonaws.partitions.PartitionsLoader"));
+		dependencies.add(Names.newID("com.fasterxml.jackson.databind.ObjectMapper"));
 
 		AssetsManager.autoResolveAssets(dependencies, PackageReaderListener.DEFAULT);
-		Sys.exit();
+
+		try {
+			final Class klass = com.fasterxml.jackson.databind.ObjectMapper.class;
+			final java.net.URL location = klass.getResource('/' + klass.getName().replace('.', '/') + ".class");
+			L.d("XXX klass: " + klass, "loaded from " + location + " by " + klass.getClassLoader());
+		} catch (final Throwable e) {
+			e.printStackTrace();
+			L.d("klass: ", "not found");
+		}
 	}
 
 	private static ConnectionParametersProvider connectionParamatesProvider () {
@@ -236,7 +259,9 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 			ResourcesManager.installComponent("com.jfixby.red.triplane.resources.fsbased.RedResourcesManager");
 			AssetsManager.installComponent("com.jfixby.red.engine.core.resources.RedAssetsManager");
-			ResourcesManager.registerPackageReader(new RanaJarLoader());
+
+			final ClassLoader classLoader = RedReporterEntryPoint.class.getClassLoader();
+			ResourcesManager.registerPackageReader(new RanaJarLoader(classLoader));
 
 			final ResourcesManagerComponent res_manager = ResourcesManager.invoke();
 
@@ -470,8 +495,13 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	private static STORAGE_STATE lastStorageState;
 
 	public static final void readServiceState () {
+		final DebugTimer timer = Debug.newTimer();
+		timer.reset();
 		lastDBState = ReporterServer.getDBState();
+		timer.printTime("cheking DB state");
+		timer.reset();
 		lastStorageState = ReporterServer.getStorageState();
+		timer.printTime("cheking S3 state");
 	}
 
 	static Average average;
