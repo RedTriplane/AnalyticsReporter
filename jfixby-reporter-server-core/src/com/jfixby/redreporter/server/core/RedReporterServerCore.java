@@ -16,6 +16,7 @@ import com.jfixby.redreporter.server.api.STORAGE_STATE;
 import com.jfixby.redreporter.server.api.ServerCoreConfig;
 import com.jfixby.redreporter.server.core.file.FileStorage;
 import com.jfixby.redreporter.server.core.file.FileStorageConfig;
+import com.jfixby.redreporter.server.credentials.CONFIG;
 
 public class RedReporterServerCore implements ServerCore {
 
@@ -26,12 +27,20 @@ public class RedReporterServerCore implements ServerCore {
 	final S3CredentialsProvider s3CredentialsProvider = new S3CredentialsProvider() {
 		@Override
 		public String getAccessKeyID () {
-			return System.getenv("S3_ACCESS_KEY_ID");
+			final String key = System.getenv("S3_ACCESS_KEY_ID");
+			if (key == null) {
+				return CONFIG.S3_RR1_ACCESS_KEY;
+			}
+			return key;
 		}
 
 		@Override
 		public String getSecretKeyID () {
-			return System.getenv("S3_SECRET_KEY_ID");
+			final String key = System.getenv("S3_SECRET_KEY_ID");
+			if (key == null) {
+				return CONFIG.S3_RR1_SECRET_KEY;
+			}
+			return key;
 		}
 	};
 

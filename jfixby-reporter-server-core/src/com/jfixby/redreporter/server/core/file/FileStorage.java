@@ -9,6 +9,7 @@ import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.file.File;
 import com.jfixby.cmns.api.log.L;
 import com.jfixby.cmns.aws.api.AWS;
+import com.jfixby.cmns.aws.api.S3;
 import com.jfixby.cmns.aws.api.S3FileSystem;
 import com.jfixby.cmns.aws.api.S3FileSystemConfig;
 import com.jfixby.cmns.aws.api.s3.S3CredentialsProvider;
@@ -33,17 +34,18 @@ public class FileStorage {
 			throw new IOException("Missing accessKeyID.secretKeyID for S3 Bucket");
 		}
 
-		final S3FileSystemConfig aws_specs = AWS.getS3().newFileSystemConfig();
+		final S3 S3 = AWS.getS3();
+		final S3FileSystemConfig aws_specs = S3.newFileSystemConfig();
 		aws_specs.setAccessKeyID(accessKeyID);
 		aws_specs.setSecretKeyID(secretKeyID);
 		aws_specs.setBucketName(this.bucketName);//
-		final S3FileSystem S3 = AWS.getS3().newFileSystem(aws_specs);
+		final S3FileSystem fileSystem = AWS.getS3().newFileSystem(aws_specs);
 		try {
-			S3.ROOT().listDirectChildren();
+			fileSystem.ROOT().listDirectChildren();
 		} catch (final Throwable e) {
 			throw new IOException(e);
 		}
-		this.root = S3.ROOT();
+		this.root = fileSystem.ROOT();
 	}
 
 	public File storeReport (final ReportStoreArguments store_args) throws IOException {

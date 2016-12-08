@@ -17,5 +17,9 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red-gdx"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-red"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-core"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/rana-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/rana-asset-red"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-jar-loader"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

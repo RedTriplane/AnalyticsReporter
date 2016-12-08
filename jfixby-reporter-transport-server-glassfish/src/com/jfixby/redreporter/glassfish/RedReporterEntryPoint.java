@@ -19,12 +19,16 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
+import com.jfixby.cmns.api.assets.ID;
 import com.jfixby.cmns.api.assets.Names;
+import com.jfixby.cmns.api.collections.Collection;
 import com.jfixby.cmns.api.collections.Collections;
 import com.jfixby.cmns.api.collections.List;
 import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.cmns.api.desktop.DesktopSetup;
+import com.jfixby.cmns.api.file.File;
+import com.jfixby.cmns.api.file.LocalFileSystem;
 import com.jfixby.cmns.api.floatn.Float2;
 import com.jfixby.cmns.api.geometry.Geometry;
 import com.jfixby.cmns.api.io.Buffer;
@@ -46,6 +50,7 @@ import com.jfixby.cmns.api.net.http.HttpConnection;
 import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
 import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.cmns.api.sys.settings.SystemSettings;
 import com.jfixby.cmns.api.util.JUtils;
@@ -55,12 +60,20 @@ import com.jfixby.cmns.db.api.DB;
 import com.jfixby.cmns.db.api.DBConfig;
 import com.jfixby.cmns.db.api.DataBase;
 import com.jfixby.cmns.ver.Version;
+import com.jfixby.jar.loader.RanaJarLoader;
+import com.jfixby.rana.api.asset.AssetsManager;
+import com.jfixby.rana.api.asset.AssetsManagerFlags;
+import com.jfixby.rana.api.pkg.PackageReaderListener;
+import com.jfixby.rana.api.pkg.ResourcesGroup;
+import com.jfixby.rana.api.pkg.ResourcesManager;
+import com.jfixby.rana.api.pkg.ResourcesManagerComponent;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.server.api.DB_STATE;
 import com.jfixby.redreporter.server.api.HealthReportType;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
 import com.jfixby.redreporter.server.api.ServerCoreConfig;
+import com.jfixby.redreporter.server.credentials.CONFIG;
 
 public abstract class RedReporterEntryPoint extends HttpServlet {
 	public static Version version;
@@ -72,63 +85,37 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		version.packageName = "com.jfixby.redreporter.glassfish";
 		version.versionCode = 800;
 	}
-	private static final long serialVersionUID = -1649148797847741708L;
-	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
-// private static DataBase mySQL;
 
-// private static ReporterDataBank bank;
-	public static String instance_id;
-	static ConnectionParametersProvider connectionParamatesProvider = new ConnectionParametersProvider() {
-		@Override
-		public String getHost () {
-			return System.getenv("RDS_HOSTNAME");
-		}
-
-		@Override
-		public int getPort () {
-			final String port = System.getenv("RDS_PORT");
-			if (port == null) {
-				return -1;
-			}
-			if ("".equals(port)) {
-				return -1;
-			}
-			return Integer.parseInt(port);
-		}
-
-		@Override
-		public String getLogin () {
-			return System.getenv("RDS_USERNAME");
-		}
-
-		@Override
-		public String getPassword () {
-			return System.getenv("RDS_PASSWORD");
-		}
-
-		@Override
-		public String getDBName () {
-			return System.getenv("RDS_DB_NAME");
-		}
-
-	};
 	static {
 		DesktopSetup.deploy();
 		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
 		DB.installComponent("com.jfixby.cmns.db.mysql.MySQLDB");
-		AWS.installComponent("com.jfixby.amazon.aws.RedAWS");
+// AWS.installComponent("com.jfixby.amazon.aws.RedAWS");
+		AWS.installComponent(new com.jfixby.amazon.aws.RedAWS());
 
+		instance_id = read_instance_id();
 		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
 		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
 		SystemSettings.setStringParameter(Version.Tags.VersionName, version.getPackageVersionString());
+
+		SystemSettings.setFlag(AssetsManager.UseAssetSandBox, false);
+		SystemSettings.setFlag(AssetsManager.ReportUnusedAssets, false);
+		SystemSettings.setFlag(AssetsManagerFlags.AutoresolveDependencies, true);
+
 		RedReporterEntryPoint.average = FloatMath.newAverage(500);
+
+		final File root = LocalFileSystem.ApplicationHome();
+		L.d("lapp-root", root);
+		deployResources(root);
+		loadMissingJars();
+
 		final DBConfig config = DB.newDBConfig();
 
 		{
 
 			ReporterServer.installComponent("com.jfixby.redreporter.server.RedReporterServer");
 
-			config.setConnectionParametersProvider(connectionParamatesProvider);
+			config.setConnectionParametersProvider(connectionParamatesProvider());
 			config.setUseSSL(false);
 			config.setMaxReconnects(1);
 
@@ -147,7 +134,14 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 	}
 
-	static private final String red_instance_id () {
+	private static final long serialVersionUID = -1649148797847741708L;
+	private static PROTOCOL_POLICY http_mode = PROTOCOL_POLICY.ALLOW_BOTH;
+// private static DataBase mySQL;
+
+// private static ReporterDataBank bank;
+	public static String instance_id;
+
+	static private final String read_instance_id () {
 		String instance_id;
 		try {
 			final String url_string = "http://169.254.169.254/latest/meta-data/instance-id";
@@ -161,10 +155,115 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 			connect.close();
 			instance_id = JUtils.newString(data);
 		} catch (final Exception e) {
-			L.e("failed to get instance id", e);
+			L.e("failed to get instance id", e + "");
 			instance_id = "no_instance_id-" + System.currentTimeMillis();
 		}
 		return instance_id;
+	}
+
+	private static void loadMissingJars () {
+		final List<ID> dependencies = Collections.newList();
+		dependencies.add(Names.newID("com.mysql.jdbc.jdbc2.optional.MysqlDataSource"));
+		dependencies.add(Names.newID("com.amazonaws.services.s3.AmazonS3Client"));
+
+		AssetsManager.autoResolveAssets(dependencies, PackageReaderListener.DEFAULT);
+		Sys.exit();
+	}
+
+	private static ConnectionParametersProvider connectionParamatesProvider () {
+		return new ConnectionParametersProvider() {
+			@Override
+			public String getHost () {
+				final String host = System.getenv("RDS_HOSTNAME");
+				if (host == null) {
+					return CONFIG.DB_SERVER;
+				}
+				return host;
+			}
+
+			@Override
+			public int getPort () {
+				final String port = System.getenv("RDS_PORT");
+				if (port == null) {
+					return 3306;
+				}
+				if ("".equals(port)) {
+					return -1;
+				}
+				return Integer.parseInt(port);
+			}
+
+			@Override
+			public String getLogin () {
+				final String login = System.getenv("RDS_USERNAME");
+				if (login == null) {
+					return CONFIG.DB_LOGIN;
+				}
+				return login;
+			}
+
+			@Override
+			public String getPassword () {
+				final String pwd = System.getenv("RDS_PASSWORD");
+				if (pwd == null) {
+					return CONFIG.DB_PASSWORD;
+				}
+				return pwd;
+			}
+
+			@Override
+			public String getDBName () {
+				final String dbName = System.getenv("RDS_DB_NAME");
+				if (dbName == null) {
+					return CONFIG.DB_NAME;
+				}
+				return dbName;
+			}
+
+		};
+	}
+
+	private static void deployResources (final File root) {
+		final File cache = root.child("cache");
+		try {
+// root.listAllChildren().print("all");
+//
+// cache.makeFolder();
+// final File key = cache.child("jfixby.txt");
+// key.writeString("fuck you");
+// root.listAllChildren().print("all");
+// LocalFileSystem.ROOT().listDirectChildren().print("ROOT");
+
+			ResourcesManager.installComponent("com.jfixby.red.triplane.resources.fsbased.RedResourcesManager");
+			AssetsManager.installComponent("com.jfixby.red.engine.core.resources.RedAssetsManager");
+			ResourcesManager.registerPackageReader(new RanaJarLoader());
+
+			final ResourcesManagerComponent res_manager = ResourcesManager.invoke();
+
+			final File home = LocalFileSystem.ApplicationHome();
+			final File assets_folder = home.child("assets");
+
+			if (assets_folder.exists() && assets_folder.isFolder()) {
+				final Collection<ResourcesGroup> locals = res_manager.findAndInstallResources(assets_folder);
+				locals.print("locals");
+				for (final ResourcesGroup local : locals) {
+					local.rebuildAllIndexes(null);
+				}
+
+			}
+
+			final File assets_cache_folder = home.child("assets-cache");
+			{
+				final List<String> tanks = Collections.newList("tank-0");
+				final HttpURL bankURL = Http.newURL("https://s3.eu-central-1.amazonaws.com/com.red-triplane.assets/bank-lib");
+				final ResourcesGroup bank = res_manager.installRemoteBank(bankURL, assets_cache_folder, tanks);
+				bank.rebuildAllIndexes(null);
+			}
+
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	/** Processes requests for both HTTP <code>GET</code> and <code>POST</code> methods.
