@@ -2,7 +2,8 @@
 package com.jfixby.redreporter.server;
 
 import com.jfixby.redreporter.server.api.DB_STATE;
-import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.ReportFileStoreArguments;
+import com.jfixby.redreporter.server.api.ReportRegistration;
 import com.jfixby.redreporter.server.api.ReporterServerComponent;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
 import com.jfixby.redreporter.server.api.ServerCoreConfig;
@@ -35,13 +36,13 @@ public class RedReporterServer implements ReporterServerComponent {
 	}
 
 	@Override
-	public ReportStoreArguments newReportStoreArguments () {
-		return this.core.newReportStoreArguments();
+	public ReportFileStoreArguments newReportFileStoreArguments () {
+		return this.core.newReportFileStoreArguments();
 	}
 
 	@Override
-	public boolean storeReport (final ReportStoreArguments store_args) {
-		return this.core.storeReport(store_args);
+	public boolean storeReportFile (final ReportFileStoreArguments store_args) {
+		return this.core.storeReportFile(store_args);
 	}
 
 	@Override
@@ -67,6 +68,21 @@ public class RedReporterServer implements ReporterServerComponent {
 	@Override
 	public STORAGE_STATE getSorageState () {
 		return this.core.getSorageState();
+	}
+
+	@Override
+	public void reportDeserializationtionProblem (final Throwable e) {
+		this.core.reportDeserializationtionProblem(e);
+	}
+
+	@Override
+	public boolean registerReport (final ReportRegistration reg) {
+		return this.core.registerReport(reg);
+	}
+
+	@Override
+	public ReportRegistration newReportRegistration () {
+		return this.core.newReportRegistration();
 	}
 
 }

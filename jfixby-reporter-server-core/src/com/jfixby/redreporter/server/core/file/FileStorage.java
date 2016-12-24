@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.ReportFileStoreArguments;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
 import com.jfixby.scarabei.api.debug.Debug;
 import com.jfixby.scarabei.api.file.File;
@@ -48,7 +48,7 @@ public class FileStorage {
 		this.root = fileSystem.ROOT();
 	}
 
-	public File storeReport (final ReportStoreArguments store_args) throws IOException {
+	public File storeReport (final ReportFileStoreArguments store_args) throws IOException {
 		if (this.root == null) {
 			this.deploy();
 		}
@@ -85,6 +85,10 @@ public class FileStorage {
 			return STORAGE_STATE.ERROR;
 		}
 		return STORAGE_STATE.OK;
+	}
+
+	public void storeError (final Throwable e) {
+		L.e(e);
 	}
 
 }

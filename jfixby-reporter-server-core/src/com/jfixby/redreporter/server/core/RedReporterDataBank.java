@@ -3,7 +3,8 @@ package com.jfixby.redreporter.server.core;
 
 import java.io.IOException;
 
-import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.ReportFileStoreArguments;
+import com.jfixby.redreporter.server.api.ReportRegistration;
 import com.jfixby.redreporter.server.api.ReporterDataBank;
 import com.jfixby.scarabei.api.collections.Collection;
 import com.jfixby.scarabei.api.collections.Collections;
@@ -70,6 +71,10 @@ public class RedReporterDataBank implements ReporterDataBank {
 		return reg;
 	}
 
+	public boolean registerReport (final ReportRegistration reg) {
+		return false;
+	}
+
 	public void updateSystemInfo (final String token, final Map<String, String> values) throws IOException {
 		final Long install_id = this.findIDForToken(token.toString());
 		if (install_id == null) {
@@ -126,7 +131,7 @@ public class RedReporterDataBank implements ReporterDataBank {
 		}
 	}
 
-	public void storeReport (final ReportStoreArguments store_args, final File logFile) throws IOException {
+	public void storeReport (final ReportFileStoreArguments store_args, final File logFile) throws IOException {
 		final Table table = this.mySQL.getTable(BankSchema.SERIALIZED_REPORTS.TableName);
 		final Entry entry = table.newEntry();
 		final TableSchema schema = table.getSchema();

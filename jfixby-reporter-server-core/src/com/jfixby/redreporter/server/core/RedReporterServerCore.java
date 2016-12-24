@@ -4,7 +4,8 @@ package com.jfixby.redreporter.server.core;
 import java.io.IOException;
 
 import com.jfixby.redreporter.server.api.DB_STATE;
-import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.ReportFileStoreArguments;
+import com.jfixby.redreporter.server.api.ReportRegistration;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
 import com.jfixby.redreporter.server.api.ServerCoreConfig;
 import com.jfixby.redreporter.server.core.file.FileStorage;
@@ -93,8 +94,8 @@ public class RedReporterServerCore implements ServerCore {
 	}
 
 	@Override
-	public ReportStoreArguments newReportStoreArguments () {
-		return new RedReportStoreArguments();
+	public ReportFileStoreArguments newReportFileStoreArguments () {
+		return new RedReportFileStoreArguments();
 	}
 
 	@Override
@@ -108,7 +109,7 @@ public class RedReporterServerCore implements ServerCore {
 	}
 
 	@Override
-	public boolean storeReport (final ReportStoreArguments store_args) {
+	public boolean storeReportFile (final ReportFileStoreArguments store_args) {
 		Debug.checkNull("receivedTimestamp", store_args.getReceivedTimeStamp());
 		Debug.checkNull("sentTimestamp", store_args.getSentTimestamp());
 		Debug.checkNull("writtenTimestamp", store_args.getWrittenTimestamp());
@@ -149,6 +150,18 @@ public class RedReporterServerCore implements ServerCore {
 	@Override
 	public STORAGE_STATE getSorageState () {
 		return this.fileStorage.getState();
+	}
+
+	public void reportDeserializationtionProblem (final Throwable e) {
+		this.fileStorage.storeError(e);
+	}
+
+	public ReportRegistration newReportRegistration () {
+		return new RedReportRegistration();
+	}
+
+	public boolean registerReport (final ReportRegistration reg) {
+		return this.bank.registerReport(reg);
 	}
 
 }

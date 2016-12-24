@@ -1,9 +1,9 @@
 
 package com.jfixby.redreporter.server.core;
 
-import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.ReportFileStoreArguments;
 
-public class RedReportStoreArguments implements ReportStoreArguments {
+public class RedReportFileStoreArguments implements ReportFileStoreArguments {
 
 	private String fileID;
 	private byte[] data;

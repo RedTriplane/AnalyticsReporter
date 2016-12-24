@@ -2,7 +2,7 @@
 package com.jfixby.redreporter.server.core;
 
 import com.jfixby.redreporter.server.api.DB_STATE;
-import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.ReportFileStoreArguments;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
 import com.jfixby.scarabei.api.assets.ID;
 import com.jfixby.scarabei.api.collections.Map;
@@ -19,10 +19,10 @@ public interface ServerCore {
 
 	boolean updateSystemInfo (String token, Map<String, String> values);
 
-	ReportStoreArguments newReportStoreArguments ();
+	ReportFileStoreArguments newReportFileStoreArguments ();
 
 	Long findInstallation (String token);
 
-	boolean storeReport (ReportStoreArguments store_args);
+	boolean storeReportFile (ReportFileStoreArguments store_args);
 
 }

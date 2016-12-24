@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.server.api;
 
-public interface ReportStoreArguments {
+public interface ReportFileStoreArguments {
 
 	void setReceivedTimeStamp (Long receivedTimestamp);
 

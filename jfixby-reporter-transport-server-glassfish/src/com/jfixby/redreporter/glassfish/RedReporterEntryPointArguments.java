@@ -20,6 +20,13 @@ public class RedReporterEntryPointArguments {
 	public Map<String, List<String>> inputHeaders;
 	public ServletInputStream client_to_server_stream;
 	public boolean isHeathCheck = false;
+	public long receivedTimestamp;
+	public String sentTimestamp;
+	public String versionString;
+	public String writtenTimestamp;
+	public String token;
+	public Long installID;
+	public byte[] resializedBody;
 
 	public void print () {
 		L.d("---[" + this.request_number + "]-----------------------------------");

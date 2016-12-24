@@ -6,13 +6,16 @@ import java.util.LinkedHashMap;
 
 import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
+import com.jfixby.redreporter.api.transport.ReportData;
 import com.jfixby.redreporter.server.api.DB_STATE;
-import com.jfixby.redreporter.server.api.ReportStoreArguments;
+import com.jfixby.redreporter.server.api.ReportFileStoreArguments;
+import com.jfixby.redreporter.server.api.ReportRegistration;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.List;
 import com.jfixby.scarabei.api.collections.Map;
+import com.jfixby.scarabei.api.io.IO;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.math.IntegerMath;
 import com.jfixby.scarabei.api.net.message.Message;
@@ -46,57 +49,75 @@ public class MessageProcessor {
 	}
 
 	private static Message registerReport (final RedReporterEntryPointArguments arg) {
-		final Long receivedTimestamp = arg.timestamp;
+		arg.receivedTimestamp = arg.timestamp;
+		arg.sentTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_SENT);
+		arg.writtenTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_WRITTEN);
+		arg.versionString = arg.message.values.get(REPORTER_PROTOCOL.REPORT_VERSION);
+		arg.token = arg.message.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
+		arg.installID = ReporterServer.findInstallationID(arg.token);
+		arg.resializedBody = (byte[])arg.message.attachments.get(REPORTER_PROTOCOL.REPORT);
 
-		final String sentTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_SENT);
-		final String writtenTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_WRITTEN);
-		final String versionString = arg.message.values.get(REPORTER_PROTOCOL.REPORT_VERSION);
-
-		final String token = arg.message.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
-
-		final Long installID = ReporterServer.findInstallationID(token);
-
-		final ReportStoreArguments store_args = ReporterServer.newReportStoreArguments();
-
-		store_args.setReceivedTimeStamp(receivedTimestamp);
-
-		if (installID == null) {
+		if (arg.installID == null) {
 			return new Message(REPORTER_PROTOCOL.INVALID_TOKEN);
 		}
-		store_args.setInstallID(installID);
-
-		if (writtenTimestamp == null) {
+		if (arg.writtenTimestamp == null) {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
-		store_args.setWrittenTimestamp(writtenTimestamp);
-
-		if (sentTimestamp == null) {
+		if (arg.sentTimestamp == null) {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
-		store_args.setSentTimestamp(sentTimestamp);
-
-		if (versionString == null) {
+		if (arg.versionString == null) {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
-		store_args.setVersionString(versionString);
-
-		final String fileName = arg.requestID.child("log") + "";
-		store_args.setFileID(fileName);
-
-		final byte[] resializedBody = (byte[])arg.message.attachments.get(REPORTER_PROTOCOL.REPORT);
-		if (resializedBody == null) {
+		if (arg.resializedBody == null) {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
-		store_args.setReportData(resializedBody);
 
-		final boolean success = ReporterServer.storeReport(store_args);
+		final boolean success = saveReport(arg);
 		if (!success) {
 			return new Message(REPORTER_PROTOCOL.FAILED_TO_STORE_REPORT);
 		}
-
 		final Message result = new Message(REPORTER_PROTOCOL.REPORT_RECEIVED_OK);
-
 		return result;
+
+	}
+
+	private static boolean saveReport (final RedReporterEntryPointArguments arg) {
+		final byte[] reportData = arg.resializedBody;
+		final ReportData report;
+		try {
+			report = IO.deserialize(ReportData.class, reportData);
+		} catch (final Throwable e) {
+			ReporterServer.reportDeserializationtionProblem(e);
+
+			final String storeBadInFile = System.getenv("STORE_BAD_REPORT_IN_FILE");
+			if (!"true".equalsIgnoreCase(storeBadInFile)) {
+				return false;
+			}
+			return saveBadReport(arg);
+		}
+
+		final ReportRegistration reg = ReporterServer.newReportRegistration();
+		packReport(report, reg);
+		final boolean success = ReporterServer.registerReport(reg);
+		return success;
+	}
+
+	private static void packReport (final ReportData report, final ReportRegistration reg) {
+	}
+
+	private static boolean saveBadReport (final RedReporterEntryPointArguments arg) {
+		final ReportFileStoreArguments store_args = ReporterServer.newReportFileStoreArguments();
+		store_args.setReceivedTimeStamp(arg.receivedTimestamp);
+		store_args.setInstallID(arg.installID);
+		store_args.setWrittenTimestamp(arg.writtenTimestamp);
+		store_args.setSentTimestamp(arg.sentTimestamp);
+		store_args.setVersionString(arg.versionString);
+		final String fileName = arg.requestID.child("log") + "";
+		store_args.setFileID(fileName);
+		store_args.setReportData(arg.resializedBody);
+		final boolean success = ReporterServer.storeReportFile(store_args);
+		return success;
 	}
 
 	static private Message unknownHeader (final RedReporterEntryPointArguments arg) {

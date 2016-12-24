@@ -12,9 +12,9 @@ public interface ReporterServerComponent {
 
 	Long findInstallationID (String token);
 
-	ReportStoreArguments newReportStoreArguments ();
+	ReportFileStoreArguments newReportFileStoreArguments ();
 
-	boolean storeReport (ReportStoreArguments store_args);
+	boolean storeReportFile (ReportFileStoreArguments store_args);
 
 	String registerInstallation (String token);
 
@@ -25,5 +25,11 @@ public interface ReporterServerComponent {
 	DB_STATE getDBState ();
 
 	STORAGE_STATE getSorageState ();
+
+	void reportDeserializationtionProblem (Throwable e);
+
+	boolean registerReport (ReportRegistration reg);
+
+	ReportRegistration newReportRegistration ();
 
 }

@@ -45,12 +45,12 @@ public class ReporterServer {
 		return invoke().findInstallationID(token);
 	}
 
-	public static ReportStoreArguments newReportStoreArguments () {
-		return invoke().newReportStoreArguments();
+	public static ReportFileStoreArguments newReportFileStoreArguments () {
+		return invoke().newReportFileStoreArguments();
 	}
 
-	public static boolean storeReport (final ReportStoreArguments store_args) {
-		return invoke().storeReport(store_args);
+	public static boolean storeReportFile (final ReportFileStoreArguments store_args) {
+		return invoke().storeReportFile(store_args);
 	}
 
 	public static String registerInstallation (final String token) {
@@ -63,6 +63,18 @@ public class ReporterServer {
 
 	public static boolean updateSystemInfo (final String token_string, final Map<String, String> params) {
 		return invoke().updateSystemInfo(token_string, params);
+	}
+
+	public static void reportDeserializationtionProblem (final Throwable e) {
+		invoke().reportDeserializationtionProblem(e);
+	}
+
+	public static boolean registerReport (final ReportRegistration reg) {
+		return invoke().registerReport(reg);
+	}
+
+	public static ReportRegistration newReportRegistration () {
+		return invoke().newReportRegistration();
 	}
 
 }
