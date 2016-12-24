@@ -4,19 +4,19 @@ package com.jfixby.redreporter.glassfish;
 import java.io.IOException;
 import java.util.LinkedHashMap;
 
-import com.jfixby.cmns.api.collections.Collections;
-import com.jfixby.cmns.api.collections.List;
-import com.jfixby.cmns.api.collections.Map;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.math.IntegerMath;
-import com.jfixby.cmns.api.net.message.Message;
-import com.jfixby.cmns.api.sys.SystemInfoTags;
 import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.server.api.DB_STATE;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
+import com.jfixby.scarabei.api.collections.Collections;
+import com.jfixby.scarabei.api.collections.List;
+import com.jfixby.scarabei.api.collections.Map;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.api.math.IntegerMath;
+import com.jfixby.scarabei.api.net.message.Message;
+import com.jfixby.scarabei.api.sys.SystemInfoTags;
 
 public class MessageProcessor {
 

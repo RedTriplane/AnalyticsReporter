@@ -3,15 +3,15 @@ package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.api.collections.Collections;
-import com.jfixby.cmns.api.collections.Map;
-import com.jfixby.cmns.api.collections.Mapping;
-import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.java.ByteArray;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.util.JUtils;
 import com.jfixby.redreporter.api.report.Report;
+import com.jfixby.scarabei.api.collections.Collections;
+import com.jfixby.scarabei.api.collections.Map;
+import com.jfixby.scarabei.api.collections.Mapping;
+import com.jfixby.scarabei.api.debug.Debug;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.java.ByteArray;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.api.util.JUtils;
 
 public class RedReport implements Report {
 

@@ -3,7 +3,7 @@ package com.jfixby.redreporter.crash;
 
 import java.lang.Thread.UncaughtExceptionHandler;
 
-import com.jfixby.cmns.api.err.Err;
+import com.jfixby.scarabei.api.err.Err;
 
 public class RedReporterUncaughtExceptionHandler implements UncaughtExceptionHandler {
 

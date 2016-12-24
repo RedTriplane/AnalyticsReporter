@@ -1,11 +1,11 @@
 
 package com.jfixby.redreporter.crash;
 
-import com.jfixby.cmns.api.assets.ID;
-import com.jfixby.cmns.api.assets.Names;
-import com.jfixby.cmns.api.debug.Debug;
 import com.jfixby.redreporter.api.crash.CrashReporterComponent;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
+import com.jfixby.scarabei.api.assets.ID;
+import com.jfixby.scarabei.api.assets.Names;
+import com.jfixby.scarabei.api.debug.Debug;
 
 public class RedCrashReporter implements CrashReporterComponent {
 

@@ -1,8 +1,8 @@
 
 package com.jfixby.redreporter.server.api;
 
-import com.jfixby.cmns.api.assets.ID;
-import com.jfixby.cmns.api.collections.Map;
+import com.jfixby.scarabei.api.assets.ID;
+import com.jfixby.scarabei.api.collections.Map;
 
 public interface ReporterServerComponent {
 

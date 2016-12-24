@@ -1,10 +1,10 @@
 
 package com.jfixby.redreporter.crash;
 
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.log.LoggerComponent;
-import com.jfixby.cmns.api.log.MESSAGE_MARKER;
-import com.jfixby.red.log.SimpleLogger;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.api.log.LoggerComponent;
+import com.jfixby.scarabei.api.log.MESSAGE_MARKER;
+import com.jfixby.scarabei.red.log.SimpleLogger;
 
 public class RedReporterLoggerListener extends SimpleLogger implements LoggerComponent {
 

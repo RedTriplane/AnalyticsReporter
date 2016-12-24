@@ -3,8 +3,8 @@ package com.jfixby.redreporter.server.core;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.api.assets.ID;
-import com.jfixby.cmns.api.md5.MD5;
+import com.jfixby.scarabei.api.assets.ID;
+import com.jfixby.scarabei.api.md5.MD5;
 
 public class InstallationIDGenerator {
 

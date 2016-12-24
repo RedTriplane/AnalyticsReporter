@@ -1,8 +1,8 @@
 
 package com.jfixby.redreporter.glassfish;
 
-import com.jfixby.cmns.api.log.L;
 import com.jfixby.redreporter.server.api.HealthReportType;
+import com.jfixby.scarabei.api.log.L;
 
 public class TestClassLoader {
 

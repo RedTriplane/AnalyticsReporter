@@ -1,8 +1,8 @@
 
 package com.jfixby.redreporter.server;
 
-import com.jfixby.cmns.db.api.DataBase;
 import com.jfixby.redreporter.server.api.ServerCoreConfig;
+import com.jfixby.scarabei.db.api.DataBase;
 
 public class RedServerCoreConfig implements ServerCoreConfig {
 

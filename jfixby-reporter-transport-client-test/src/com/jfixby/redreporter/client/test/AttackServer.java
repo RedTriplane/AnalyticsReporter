@@ -5,18 +5,18 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.Date;
 
-import com.jfixby.cmns.api.desktop.DesktopSetup;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.file.LocalFileSystem;
-import com.jfixby.cmns.api.json.Json;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.net.http.Http;
-import com.jfixby.cmns.api.net.http.HttpURL;
-import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
+import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.file.LocalFileSystem;
+import com.jfixby.scarabei.api.json.Json;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.api.net.http.Http;
+import com.jfixby.scarabei.api.net.http.HttpURL;
+import com.jfixby.scarabei.api.sys.Sys;
 
 public class AttackServer {
 

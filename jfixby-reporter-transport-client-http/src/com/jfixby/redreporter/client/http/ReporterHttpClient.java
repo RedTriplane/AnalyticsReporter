@@ -1,25 +1,25 @@
 
 package com.jfixby.redreporter.client.http;
 
-import com.jfixby.cmns.api.collections.Collection;
-import com.jfixby.cmns.api.collections.Collections;
-import com.jfixby.cmns.api.collections.Mapping;
-import com.jfixby.cmns.api.collections.Pool;
-import com.jfixby.cmns.api.collections.PoolElementsSpawner;
-import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.java.ByteArray;
-import com.jfixby.cmns.api.net.http.HttpURL;
-import com.jfixby.cmns.api.net.message.Message;
-import com.jfixby.cmns.api.sys.Sys;
-import com.jfixby.cmns.api.sys.SystemInfo;
-import com.jfixby.cmns.api.taskman.TASK_TYPE;
 import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReportWriter;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
+import com.jfixby.scarabei.api.collections.Collection;
+import com.jfixby.scarabei.api.collections.Collections;
+import com.jfixby.scarabei.api.collections.Mapping;
+import com.jfixby.scarabei.api.collections.Pool;
+import com.jfixby.scarabei.api.collections.PoolElementsSpawner;
+import com.jfixby.scarabei.api.debug.Debug;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.java.ByteArray;
+import com.jfixby.scarabei.api.net.http.HttpURL;
+import com.jfixby.scarabei.api.net.message.Message;
+import com.jfixby.scarabei.api.sys.Sys;
+import com.jfixby.scarabei.api.sys.SystemInfo;
+import com.jfixby.scarabei.api.taskman.TASK_TYPE;
 
 public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawner<RedReportWriter> {
 

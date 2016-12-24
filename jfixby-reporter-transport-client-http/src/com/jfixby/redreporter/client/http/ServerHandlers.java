@@ -4,12 +4,12 @@ package com.jfixby.redreporter.client.http;
 import java.util.Iterator;
 import java.util.Vector;
 
-import com.jfixby.cmns.api.collections.Collections;
-import com.jfixby.cmns.api.collections.Set;
-import com.jfixby.cmns.api.java.Int;
-import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
+import com.jfixby.scarabei.api.collections.Collections;
+import com.jfixby.scarabei.api.collections.Set;
+import com.jfixby.scarabei.api.java.Int;
+import com.jfixby.scarabei.api.sys.Sys;
 
 public class ServerHandlers implements Iterable<ServerHandler> {
 

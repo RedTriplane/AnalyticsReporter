@@ -3,17 +3,17 @@ package com.jfixby.redreporter.client.test;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.adopted.gdx.json.RedJson;
-import com.jfixby.cmns.api.desktop.DesktopSetup;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.file.LocalFileSystem;
-import com.jfixby.cmns.api.json.Json;
-import com.jfixby.cmns.api.net.http.Http;
-import com.jfixby.cmns.api.net.http.HttpURL;
-import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
+import com.jfixby.scarabei.adopted.gdx.json.RedJson;
+import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.file.LocalFileSystem;
+import com.jfixby.scarabei.api.json.Json;
+import com.jfixby.scarabei.api.net.http.Http;
+import com.jfixby.scarabei.api.net.http.HttpURL;
+import com.jfixby.scarabei.api.sys.Sys;
 
 public class RegisterInstallationTest {
 

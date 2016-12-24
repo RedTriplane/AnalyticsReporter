@@ -2,24 +2,24 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.8"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-api"/>
 	<classpathentry kind="lib" path="/libs/glassfish/javax.servlet-api.jar"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-db-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-db-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-transport-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-aws-api"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-aws-red"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-api-desktop"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red-desktop"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-red-gdx"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-aws-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-aws-red"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-api-desktop"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red-desktop"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red-gdx"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-red"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/rana-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/rana-asset-red"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-jar"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-jar-loader"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-cmns-db-mysql"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-db-mysql"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -3,10 +3,10 @@ package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.err.Err;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.log.L;
+import com.jfixby.scarabei.api.debug.Debug;
+import com.jfixby.scarabei.api.err.Err;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.log.L;
 
 public class InstallationIDStorage {
 	public static final boolean CACHE_FOLDER_SUCCESSFULLY_CREATED = true;

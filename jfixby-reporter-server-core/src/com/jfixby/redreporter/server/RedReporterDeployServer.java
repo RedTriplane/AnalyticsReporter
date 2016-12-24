@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.server;
 
-import com.jfixby.cmns.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.desktop.DesktopSetup;
 
 public class RedReporterDeployServer {
 

@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.api.crash;
 
-import com.jfixby.cmns.api.log.LoggerComponent;
+import com.jfixby.scarabei.api.log.LoggerComponent;
 
 public interface ReporterLog extends LoggerComponent {
 

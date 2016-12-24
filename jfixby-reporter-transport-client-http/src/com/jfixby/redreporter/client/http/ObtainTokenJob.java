@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.client.http;
 
-import com.jfixby.cmns.api.taskman.Job;
+import com.jfixby.scarabei.api.taskman.Job;
 
 public class ObtainTokenJob implements Job {
 

@@ -1,13 +1,13 @@
 
 package com.jfixby.redreporter.analytics;
 
-import com.jfixby.cmns.api.collections.Mapping;
-import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.sys.settings.SystemSettings;
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterComponent;
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterEvents;
 import com.jfixby.redreporter.api.transport.ReportWriter;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
+import com.jfixby.scarabei.api.collections.Mapping;
+import com.jfixby.scarabei.api.debug.Debug;
+import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 
 public class RedAnalyticsReporter implements AnalyticsReporterComponent {
 	private final String authorID = ("com.red-triplane.reporter.analytics");

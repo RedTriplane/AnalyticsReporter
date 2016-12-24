@@ -1,12 +1,12 @@
 
 package com.jfixby.redreporter.client.http;
 
-import com.jfixby.cmns.api.collections.Collection;
-import com.jfixby.cmns.api.collections.Collections;
-import com.jfixby.cmns.api.collections.Set;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.net.http.HttpURL;
-import com.jfixby.cmns.api.taskman.TASK_TYPE;
+import com.jfixby.scarabei.api.collections.Collection;
+import com.jfixby.scarabei.api.collections.Collections;
+import com.jfixby.scarabei.api.collections.Set;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.net.http.HttpURL;
+import com.jfixby.scarabei.api.taskman.TASK_TYPE;
 
 public class ReporterHttpClientConfig {
 	final Set<HttpURL> servers = Collections.newSet();

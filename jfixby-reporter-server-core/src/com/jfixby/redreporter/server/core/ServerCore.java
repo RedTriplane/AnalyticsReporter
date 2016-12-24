@@ -1,11 +1,11 @@
 
 package com.jfixby.redreporter.server.core;
 
-import com.jfixby.cmns.api.assets.ID;
-import com.jfixby.cmns.api.collections.Map;
 import com.jfixby.redreporter.server.api.DB_STATE;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
+import com.jfixby.scarabei.api.assets.ID;
+import com.jfixby.scarabei.api.collections.Map;
 
 public interface ServerCore {
 

@@ -5,16 +5,16 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.aws.api.AWS;
-import com.jfixby.cmns.aws.api.S3;
-import com.jfixby.cmns.aws.api.S3FileSystem;
-import com.jfixby.cmns.aws.api.S3FileSystemConfig;
-import com.jfixby.cmns.aws.api.s3.S3CredentialsProvider;
 import com.jfixby.redreporter.server.api.ReportStoreArguments;
 import com.jfixby.redreporter.server.api.STORAGE_STATE;
+import com.jfixby.scarabei.api.debug.Debug;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.aws.api.AWS;
+import com.jfixby.scarabei.aws.api.S3;
+import com.jfixby.scarabei.aws.api.S3FileSystem;
+import com.jfixby.scarabei.aws.api.S3FileSystemConfig;
+import com.jfixby.scarabei.aws.api.s3.S3CredentialsProvider;
 
 public class FileStorage {
 

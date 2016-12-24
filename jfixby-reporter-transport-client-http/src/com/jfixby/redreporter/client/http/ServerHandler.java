@@ -3,21 +3,21 @@ package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.api.collections.Mapping;
-import com.jfixby.cmns.api.debug.Debug;
-import com.jfixby.cmns.api.io.IO;
-import com.jfixby.cmns.api.java.ByteArray;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.net.http.Http;
-import com.jfixby.cmns.api.net.http.HttpConnection;
-import com.jfixby.cmns.api.net.http.HttpConnectionInputStream;
-import com.jfixby.cmns.api.net.http.HttpConnectionOutputStream;
-import com.jfixby.cmns.api.net.http.HttpConnectionSpecs;
-import com.jfixby.cmns.api.net.http.HttpURL;
-import com.jfixby.cmns.api.net.http.METHOD;
-import com.jfixby.cmns.api.net.message.Message;
 import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
+import com.jfixby.scarabei.api.collections.Mapping;
+import com.jfixby.scarabei.api.debug.Debug;
+import com.jfixby.scarabei.api.io.IO;
+import com.jfixby.scarabei.api.java.ByteArray;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.api.net.http.Http;
+import com.jfixby.scarabei.api.net.http.HttpConnection;
+import com.jfixby.scarabei.api.net.http.HttpConnectionInputStream;
+import com.jfixby.scarabei.api.net.http.HttpConnectionOutputStream;
+import com.jfixby.scarabei.api.net.http.HttpConnectionSpecs;
+import com.jfixby.scarabei.api.net.http.HttpURL;
+import com.jfixby.scarabei.api.net.http.METHOD;
+import com.jfixby.scarabei.api.net.message.Message;
 
 public class ServerHandler {
 

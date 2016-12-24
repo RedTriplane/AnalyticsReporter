@@ -4,14 +4,14 @@ package com.jfixby.redreporter.server.core.run;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.jfixby.cmns.api.desktop.DesktopSetup;
-import com.jfixby.cmns.api.json.Json;
-import com.jfixby.cmns.api.sys.Sys;
-import com.jfixby.cmns.db.api.DB;
-import com.jfixby.cmns.db.api.DBConfig;
-import com.jfixby.cmns.db.api.DataBase;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
 import com.jfixby.redreporter.server.credentials.CONFIG;
+import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.json.Json;
+import com.jfixby.scarabei.api.sys.Sys;
+import com.jfixby.scarabei.db.api.DB;
+import com.jfixby.scarabei.db.api.DBConfig;
+import com.jfixby.scarabei.db.api.DataBase;
 
 public class ResetDatabase {
 

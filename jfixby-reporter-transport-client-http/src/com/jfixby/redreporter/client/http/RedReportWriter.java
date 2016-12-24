@@ -3,18 +3,18 @@ package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.api.collections.Collections;
-import com.jfixby.cmns.api.collections.Map;
-import com.jfixby.cmns.api.collections.Mapping;
-import com.jfixby.cmns.api.collections.Pool;
-import com.jfixby.cmns.api.err.Err;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.io.IO;
-import com.jfixby.cmns.api.java.ByteArray;
-import com.jfixby.cmns.api.sys.Sys;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReportData;
 import com.jfixby.redreporter.api.transport.ReportWriter;
+import com.jfixby.scarabei.api.collections.Collections;
+import com.jfixby.scarabei.api.collections.Map;
+import com.jfixby.scarabei.api.collections.Mapping;
+import com.jfixby.scarabei.api.collections.Pool;
+import com.jfixby.scarabei.api.err.Err;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.io.IO;
+import com.jfixby.scarabei.api.java.ByteArray;
+import com.jfixby.scarabei.api.sys.Sys;
 
 public class RedReportWriter implements ReportWriter {
 	private final ReporterHttpClient reporterHttpClient;

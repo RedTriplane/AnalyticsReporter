@@ -1,8 +1,8 @@
 
 package com.jfixby.redreporter.api.report;
 
-import com.jfixby.cmns.api.collections.Mapping;
-import com.jfixby.cmns.api.java.ByteArray;
+import com.jfixby.scarabei.api.collections.Mapping;
+import com.jfixby.scarabei.api.java.ByteArray;
 
 public interface Report {
 

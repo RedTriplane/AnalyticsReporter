@@ -1,8 +1,8 @@
 
 package com.jfixby.redreporter.client.http;
 
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.file.FileFilter;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.file.FileFilter;
 
 public class CachedFilesFilter implements FileFilter {
 	protected static final String FILE_NAME_SUFFIX = ".log";

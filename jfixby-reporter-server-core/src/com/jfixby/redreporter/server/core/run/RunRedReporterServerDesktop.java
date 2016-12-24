@@ -4,22 +4,22 @@ package com.jfixby.redreporter.server.core.run;
 import java.io.IOException;
 import java.sql.SQLException;
 
-import com.jfixby.cmns.api.assets.Names;
-import com.jfixby.cmns.api.collections.Collections;
-import com.jfixby.cmns.api.collections.Map;
-import com.jfixby.cmns.api.collections.Mapping;
-import com.jfixby.cmns.api.desktop.DesktopSetup;
-import com.jfixby.cmns.api.json.Json;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.sys.Sys;
-import com.jfixby.cmns.db.api.DB;
-import com.jfixby.cmns.db.api.DBConfig;
-import com.jfixby.cmns.db.api.DataBase;
 import com.jfixby.redreporter.server.core.BankSchema;
 import com.jfixby.redreporter.server.core.RedCoreConfig;
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
 import com.jfixby.redreporter.server.core.RedReporterServerCore;
 import com.jfixby.redreporter.server.credentials.CONFIG;
+import com.jfixby.scarabei.api.assets.Names;
+import com.jfixby.scarabei.api.collections.Collections;
+import com.jfixby.scarabei.api.collections.Map;
+import com.jfixby.scarabei.api.collections.Mapping;
+import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.json.Json;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.api.sys.Sys;
+import com.jfixby.scarabei.db.api.DB;
+import com.jfixby.scarabei.db.api.DBConfig;
+import com.jfixby.scarabei.db.api.DataBase;
 
 public class RunRedReporterServerDesktop {
 

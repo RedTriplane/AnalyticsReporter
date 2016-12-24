@@ -1,12 +1,12 @@
 
 package com.jfixby.redreporter.client.http;
 
-import com.jfixby.cmns.api.java.gc.GARBAGE_MODE;
-import com.jfixby.cmns.api.java.gc.GCFisher;
-import com.jfixby.cmns.api.math.IntegerMath;
-import com.jfixby.cmns.api.sys.Sys;
-import com.jfixby.cmns.api.taskman.Job;
-import com.jfixby.cmns.api.time.TimeStream;
+import com.jfixby.scarabei.api.java.gc.GARBAGE_MODE;
+import com.jfixby.scarabei.api.java.gc.GCFisher;
+import com.jfixby.scarabei.api.math.IntegerMath;
+import com.jfixby.scarabei.api.sys.Sys;
+import com.jfixby.scarabei.api.taskman.Job;
+import com.jfixby.scarabei.api.time.TimeStream;
 
 public class PushQueueJob implements Job {
 

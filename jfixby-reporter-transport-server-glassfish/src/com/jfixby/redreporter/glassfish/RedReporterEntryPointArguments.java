@@ -4,11 +4,11 @@ package com.jfixby.redreporter.glassfish;
 import javax.servlet.ServletInputStream;
 import javax.servlet.ServletOutputStream;
 
-import com.jfixby.cmns.api.assets.ID;
-import com.jfixby.cmns.api.collections.List;
-import com.jfixby.cmns.api.collections.Map;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.net.message.Message;
+import com.jfixby.scarabei.api.assets.ID;
+import com.jfixby.scarabei.api.collections.List;
+import com.jfixby.scarabei.api.collections.Map;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.api.net.message.Message;
 
 public class RedReporterEntryPointArguments {
 

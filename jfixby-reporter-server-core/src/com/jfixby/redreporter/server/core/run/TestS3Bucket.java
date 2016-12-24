@@ -3,12 +3,12 @@ package com.jfixby.redreporter.server.core.run;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.api.desktop.DesktopSetup;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.aws.api.AWS;
-import com.jfixby.cmns.aws.api.S3FileSystem;
-import com.jfixby.cmns.aws.api.S3FileSystemConfig;
 import com.jfixby.redreporter.server.credentials.CONFIG;
+import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.aws.api.AWS;
+import com.jfixby.scarabei.aws.api.S3FileSystem;
+import com.jfixby.scarabei.aws.api.S3FileSystemConfig;
 
 public class TestS3Bucket {
 

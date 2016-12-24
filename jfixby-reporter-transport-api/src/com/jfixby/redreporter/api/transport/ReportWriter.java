@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.api.transport;
 
-import com.jfixby.cmns.api.collections.Mapping;
+import com.jfixby.scarabei.api.collections.Mapping;
 
 public interface ReportWriter {
 

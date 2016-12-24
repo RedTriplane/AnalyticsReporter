@@ -1,10 +1,10 @@
 
 package com.jfixby.redreporter.client.http;
 
-import com.jfixby.cmns.api.file.ChildrenList;
-import com.jfixby.cmns.api.file.File;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.api.taskman.Job;
+import com.jfixby.scarabei.api.file.ChildrenList;
+import com.jfixby.scarabei.api.file.File;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.api.taskman.Job;
 
 public class LoadQueueJob implements Job {
 

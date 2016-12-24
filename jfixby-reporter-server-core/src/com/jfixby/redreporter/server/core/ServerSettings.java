@@ -1,8 +1,8 @@
 
 package com.jfixby.redreporter.server.core;
 
-import com.jfixby.cmns.api.collections.Collections;
-import com.jfixby.cmns.api.collections.Map;
+import com.jfixby.scarabei.api.collections.Collections;
+import com.jfixby.scarabei.api.collections.Map;
 
 public class ServerSettings {
 

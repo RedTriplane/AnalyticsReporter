@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.api.crash;
 
-import com.jfixby.cmns.api.err.ErrorComponent;
+import com.jfixby.scarabei.api.err.ErrorComponent;
 
 public interface ReporterErr extends ErrorComponent {
 

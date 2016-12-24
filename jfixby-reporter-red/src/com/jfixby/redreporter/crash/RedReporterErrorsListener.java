@@ -1,9 +1,9 @@
 
 package com.jfixby.redreporter.crash;
 
-import com.jfixby.cmns.api.err.Err;
-import com.jfixby.cmns.api.err.ErrorComponent;
-import com.jfixby.red.err.RedError;
+import com.jfixby.scarabei.api.err.Err;
+import com.jfixby.scarabei.api.err.ErrorComponent;
+import com.jfixby.scarabei.red.err.RedError;
 
 public class RedReporterErrorsListener implements ErrorComponent {
 

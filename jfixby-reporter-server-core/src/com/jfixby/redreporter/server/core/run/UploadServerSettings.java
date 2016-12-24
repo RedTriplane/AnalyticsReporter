@@ -3,18 +3,18 @@ package com.jfixby.redreporter.server.core.run;
 
 import java.io.IOException;
 
-import com.jfixby.cmns.api.collections.Collection;
-import com.jfixby.cmns.api.desktop.DesktopSetup;
-import com.jfixby.cmns.api.json.Json;
-import com.jfixby.cmns.api.log.L;
-import com.jfixby.cmns.db.api.DB;
-import com.jfixby.cmns.db.api.DBConfig;
-import com.jfixby.cmns.db.api.DataBase;
-import com.jfixby.cmns.db.api.Entry;
-import com.jfixby.cmns.db.api.Table;
-import com.jfixby.cmns.db.api.TableSchema;
 import com.jfixby.redreporter.server.core.ServerSettings;
 import com.jfixby.redreporter.server.credentials.CONFIG;
+import com.jfixby.scarabei.api.collections.Collection;
+import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.json.Json;
+import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.db.api.DB;
+import com.jfixby.scarabei.db.api.DBConfig;
+import com.jfixby.scarabei.db.api.DataBase;
+import com.jfixby.scarabei.db.api.Entry;
+import com.jfixby.scarabei.db.api.Table;
+import com.jfixby.scarabei.db.api.TableSchema;
 
 public class UploadServerSettings {
 

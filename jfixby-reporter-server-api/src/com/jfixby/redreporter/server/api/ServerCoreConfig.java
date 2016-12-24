@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.server.api;
 
-import com.jfixby.cmns.db.api.DataBase;
+import com.jfixby.scarabei.db.api.DataBase;
 
 public interface ServerCoreConfig {
 

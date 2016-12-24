@@ -1,8 +1,8 @@
 
 package com.jfixby.redreporter.client.http;
 
-import com.jfixby.cmns.api.net.http.HttpURL;
 import com.jfixby.redreporter.api.ServerStatus;
+import com.jfixby.scarabei.api.net.http.HttpURL;
 
 public class ServerPing {
 
