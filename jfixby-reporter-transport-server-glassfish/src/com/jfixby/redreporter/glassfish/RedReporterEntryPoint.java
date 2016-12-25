@@ -23,6 +23,8 @@ import com.jfixby.rana.api.pkg.ResourcesManagerComponent;
 import com.jfixby.redreporter.server.api.HealthReportType;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.api.ServerCoreConfig;
+import com.jfixby.scarabei.adopted.gdx.json.RedJson;
+import com.jfixby.scarabei.amazon.aws.RedAWS;
 import com.jfixby.scarabei.api.assets.ID;
 import com.jfixby.scarabei.api.assets.Names;
 import com.jfixby.scarabei.api.collections.Collection;
@@ -40,14 +42,15 @@ import com.jfixby.scarabei.aws.api.AWS;
 import com.jfixby.scarabei.db.api.DB;
 import com.jfixby.scarabei.db.api.DBConfig;
 import com.jfixby.scarabei.db.api.DataBase;
+import com.jfixby.scarabei.db.mysql.MySQLDB;
 
 public abstract class RedReporterEntryPoint extends HttpServlet {
 	static final RequestProcessor processor;
 	static {
 		DesktopSetup.deploy();
-		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
-		DB.installComponent("com.jfixby.cmns.db.mysql.MySQLDB");
-		AWS.installComponent("com.jfixby.amazon.aws.RedAWS");
+		Json.installComponent(new RedJson());
+		DB.installComponent(new MySQLDB());
+		AWS.installComponent(new RedAWS());
 
 		processor = new RequestProcessor();
 

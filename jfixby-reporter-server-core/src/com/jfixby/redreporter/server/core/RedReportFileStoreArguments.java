@@ -12,6 +12,7 @@ public class RedReportFileStoreArguments implements ReportFileStoreArguments {
 	private Long InstallID;
 	private String WrittenTimestamp;
 	private String VersionString;
+	private String sessionID;
 
 	@Override
 	public void setReceivedTimeStamp (final Long receivedTimestamp) {
@@ -81,6 +82,16 @@ public class RedReportFileStoreArguments implements ReportFileStoreArguments {
 	@Override
 	public String getFileID () {
 		return this.fileID;
+	}
+
+	@Override
+	public void setSessionID (final String sessionID) {
+		this.sessionID = sessionID;
+	}
+
+	@Override
+	public String getSessionID () {
+		return this.sessionID;
 	}
 
 }

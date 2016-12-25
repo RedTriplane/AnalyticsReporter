@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import com.jfixby.redreporter.server.api.ReportFileStoreArguments;
 import com.jfixby.redreporter.server.api.ReportRegistration;
+import com.jfixby.redreporter.server.api.ReportRegistrationEntry;
 import com.jfixby.redreporter.server.api.ReporterDataBank;
 import com.jfixby.scarabei.api.collections.Collection;
 import com.jfixby.scarabei.api.collections.Collections;
@@ -38,7 +39,7 @@ public class RedReporterDataBank implements ReporterDataBank {
 
 		settingsTable = this.mySQL.getTable(ServerSettings.TABLE_NAME);
 
-		final List<Entry> settingslist = settingsTable.listAll();
+		final Collection<Entry> settingslist = settingsTable.listAll();
 		final Map<String, String> settings = Collections.newMap();
 		for (final Entry entry : settingslist) {
 			final String parameter_name = entry.getValue(ServerSettings.PARAMETER_NAME);
@@ -72,7 +73,120 @@ public class RedReporterDataBank implements ReporterDataBank {
 	}
 
 	public boolean registerReport (final ReportRegistration reg) {
-		return false;
+		final Collection<ReportRegistrationEntry> params = reg.listParameters();
+		final Collection<ReportRegistrationEntry> exceptions = reg.listExceptions();
+
+		Entry reportEntry;
+		Table reportsInfoTable;
+		try {
+			reportsInfoTable = this.mySQL.getTable(BankSchema.REPORTS.TableName);
+			reportEntry = this.registerReportInfo(reg);
+		} catch (final IOException e) {
+			return false;
+		}
+
+		final Collection<Entry> paramEntries;
+		Table paramsTable;
+		try {
+			paramsTable = this.mySQL.getTable(BankSchema.REPORT_VALUES.TableName);
+			paramEntries = this.registerParams(params, paramsTable);
+		} catch (final IOException e) {
+			this.deleteEntry(reportsInfoTable, reportEntry);
+			return false;
+		}
+
+		final Collection<Entry> exceptionEntries;
+		Table errsTable;
+		try {
+			errsTable = this.mySQL.getTable(BankSchema.REPORT_EXCEPTIONS.TableName);
+			exceptionEntries = this.registerExceptions(exceptions, errsTable);
+		} catch (final IOException e) {
+			this.deleteEntry(reportsInfoTable, reportEntry);
+			this.deleteEntries(paramsTable, paramEntries);
+			return false;
+		}
+		return true;
+	}
+
+	private Collection<Entry> registerExceptions (final Collection<ReportRegistrationEntry> exceptions, final Table errsTable)
+		throws IOException {
+		final TableSchema schema = errsTable.getSchema();
+
+		final List<Entry> batch = Collections.newList();
+		for (final ReportRegistrationEntry param : exceptions) {
+			final Entry entry = errsTable.newEntry();
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_EXCEPTIONS.ex_name), param.getName());
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_EXCEPTIONS.ex_timestamp), param.getTimeStamp());
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_EXCEPTIONS.ex_stack_trace), param.getValue());
+			batch.add(entry);
+		}
+
+		errsTable.addEntries(batch);
+
+		return batch;
+	}
+
+	private Collection<Entry> registerParams (final Collection<ReportRegistrationEntry> params, final Table paramsTable)
+		throws IOException {
+		final TableSchema schema = paramsTable.getSchema();
+
+		final List<Entry> batch = Collections.newList();
+		for (final ReportRegistrationEntry param : params) {
+			final Entry entry = paramsTable.newEntry();
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.parameter_name), param.getName());
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.parameter_timestamp), param.getTimeStamp());
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.parameter_value), param.getValue());
+			batch.add(entry);
+		}
+
+		paramsTable.addEntries(batch);
+
+		return batch;
+	}
+
+	private void deleteEntry (final Table table, final Entry entry) {
+		if (entry != null && table != null) {
+			try {
+				table.deleteEntry(entry);
+			} catch (final IOException e) {
+				L.e(e);
+			}
+		}
+	}
+
+	private void deleteEntries (final Table table, final Collection<Entry> paramEntries) {
+		if (paramEntries != null && table != null) {
+			try {
+				table.deleteEntries(paramEntries);
+			} catch (final IOException e) {
+				L.e(e);
+			}
+		}
+	}
+
+	private Entry registerReportInfo (final ReportRegistration reg) throws IOException {
+		final Table table = this.mySQL.getTable(BankSchema.REPORTS.TableName);
+		final Entry entry = table.newEntry();
+		final TableSchema schema = table.getSchema();
+
+		final Long installID = reg.getInstallID();
+		final Long received = reg.getReceivedTimeStamp();
+		final String written = reg.getWrittenTimestamp();
+		final String sent = reg.getSentTimestamp();
+		final String version = reg.getVersionString();
+		final String sessionID = reg.getSessionID();
+
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.install_id), installID);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.received_timestamp), received);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.written_timestamp), written);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.sent_timestamp), sent);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.session_id), sessionID);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.report_version), version);
+
+		L.d("writing DB", entry);
+
+		table.addEntry(entry);
+		return entry;
 	}
 
 	public void updateSystemInfo (final String token, final Map<String, String> values) throws IOException {
@@ -100,8 +214,9 @@ public class RedReporterDataBank implements ReporterDataBank {
 
 	public Long findIDForToken (final String token) throws IOException {
 		final Table table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
-
-		final Collection<Entry> list = table.findEntries(BankSchema.INSTALLS.token, token);
+		final TableSchema schema = table.getSchema();
+		final int indexOf = schema.indexOf(BankSchema.INSTALLS.token);
+		final Collection<Entry> list = table.findEntries(schema, indexOf, token);
 		if (list.size() == 0) {
 			L.e("Token not found");
 			return null;
@@ -142,6 +257,7 @@ public class RedReporterDataBank implements ReporterDataBank {
 		final String written = store_args.getWrittenTimestamp();
 		final String sent = store_args.getSentTimestamp();
 		final String version = store_args.getVersionString();
+		final String sessionID = store_args.getSessionID();
 		final RelativePath file_path = logFile.getAbsoluteFilePath().getRelativePath();
 
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.install_id), installID);
@@ -151,6 +267,7 @@ public class RedReporterDataBank implements ReporterDataBank {
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.report_version), version);
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.file_id), fileID);
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.file_path), file_path);
+		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.session_id), sessionID);
 
 		L.d("writing DB", entry);
 

@@ -27,6 +27,7 @@ public class RedReporterEntryPointArguments {
 	public String token;
 	public Long installID;
 	public byte[] resializedBody;
+	public String sessionID;
 
 	public void print () {
 		L.d("---[" + this.request_number + "]-----------------------------------");

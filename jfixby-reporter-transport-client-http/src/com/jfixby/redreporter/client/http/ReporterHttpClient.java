@@ -25,6 +25,7 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 
 	final ServerHandlers servers = new ServerHandlers();
 	private final InstallationIDStorage iidStorage;
+	private final Session session = new Session();
 
 	final ReportsQueue queue;
 
@@ -124,6 +125,7 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 			message.values.putAll(params.toJavaMap());
 		}
 		message.values.put(REPORTER_PROTOCOL.REPORT_SENT, "" + Sys.SystemTime().currentTimeMillis());
+		message.values.put(REPORTER_PROTOCOL.SESSION_ID, this.session.getID());
 		message.values.put(REPORTER_PROTOCOL.INSTALLATION_TOKEN, this.iidStorage.getID());
 	}
 

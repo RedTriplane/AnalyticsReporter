@@ -3,11 +3,11 @@ package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReportData;
-import com.jfixby.redreporter.api.transport.ReportData.Stat;
 import com.jfixby.redreporter.api.transport.ReportWriter;
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
@@ -105,7 +105,7 @@ public class RedReportWriter implements ReportWriter {
 
 	@Override
 	public void addStringValue (final String key, final Object value) {
-		final LinkedHashMap<String, ArrayList<Stat>> collection = this.data.strings;
+		final LinkedHashMap<String, ArrayList<HashMap<String, String>>> collection = this.data.strings;
 		String strValue = "";
 		if (value != null) {
 			strValue = value.toString();
@@ -115,7 +115,7 @@ public class RedReportWriter implements ReportWriter {
 
 	@Override
 	public void addException (final String key, final Throwable value) {
-		final LinkedHashMap<String, ArrayList<Stat>> collection = this.data.exceptions;
+		final LinkedHashMap<String, ArrayList<HashMap<String, String>>> collection = this.data.exceptions;
 		String strValue = "";
 		if (value != null) {
 			strValue = L.stackTraceToString(value);
@@ -124,15 +124,15 @@ public class RedReportWriter implements ReportWriter {
 	}
 
 	static public void addToCollection (final String key, final String strValue,
-		final LinkedHashMap<String, ArrayList<Stat>> collection) {
-		ArrayList<Stat> list = collection.get(key);
+		final LinkedHashMap<String, ArrayList<HashMap<String, String>>> collection) {
+		ArrayList<HashMap<String, String>> list = collection.get(key);
 		if (list == null) {
-			list = new ArrayList<Stat>(2);
+			list = new ArrayList<HashMap<String, String>>(2);
 			collection.put(key, list);
 		}
-		final Stat stat = new Stat();
-		stat.value = strValue;
-		stat.timestamp = System.currentTimeMillis();
+		final HashMap<String, String> stat = new HashMap<String, String>();
+		stat.put(ReportData.PARAMETER_VALUE, strValue);
+		stat.put(ReportData.PARAMETER_TIMESTAMP, System.currentTimeMillis() + "");
 		list.add(stat);
 
 	}

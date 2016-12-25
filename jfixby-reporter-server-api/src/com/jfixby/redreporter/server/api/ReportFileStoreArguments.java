@@ -15,6 +15,8 @@ public interface ReportFileStoreArguments {
 
 	void setFileID (String fileID);
 
+	void setSessionID (String sessionID);
+
 	void setReportData (byte[] resializedBody);
 
 	Long getReceivedTimeStamp ();
@@ -30,5 +32,7 @@ public interface ReportFileStoreArguments {
 	byte[] getReportData ();
 
 	String getFileID ();
+
+	String getSessionID ();
 
 }

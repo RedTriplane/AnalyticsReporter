@@ -2,7 +2,10 @@
 package com.jfixby.redreporter.glassfish;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
+import java.util.Set;
 
 import com.jfixby.redreporter.api.ServerStatus;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
@@ -51,6 +54,7 @@ public class MessageProcessor {
 	private static Message registerReport (final RedReporterEntryPointArguments arg) {
 		arg.receivedTimestamp = arg.timestamp;
 		arg.sentTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_SENT);
+		arg.sessionID = arg.message.values.get(REPORTER_PROTOCOL.SESSION_ID);
 		arg.writtenTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_WRITTEN);
 		arg.versionString = arg.message.values.get(REPORTER_PROTOCOL.REPORT_VERSION);
 		arg.token = arg.message.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
@@ -98,12 +102,63 @@ public class MessageProcessor {
 		}
 
 		final ReportRegistration reg = ReporterServer.newReportRegistration();
-		packReport(report, reg);
+		packReport(report, reg, arg);
 		final boolean success = ReporterServer.registerReport(reg);
 		return success;
 	}
 
-	private static void packReport (final ReportData report, final ReportRegistration reg) {
+	private static void packReport (final ReportData report, final ReportRegistration reg,
+		final RedReporterEntryPointArguments arg) {
+
+		{
+			reg.setReceivedTimeStamp(arg.receivedTimestamp);
+			reg.setInstallID(arg.installID);
+			reg.setWrittenTimestamp(arg.writtenTimestamp);
+			reg.setSentTimestamp(arg.sentTimestamp);
+			reg.setSessionID(arg.sessionID);
+			reg.setVersionString(arg.versionString);
+		}
+
+		{
+			final LinkedHashMap<String, ArrayList<HashMap<String, String>>> collection = report.strings;
+			final Set<String> stringKeys = collection.keySet();
+
+			for (final String key : stringKeys) {
+				final ArrayList<HashMap<String, String>> values = collection.get(key);
+				packValues(key, values, reg);
+			}
+		}
+
+		{
+			final LinkedHashMap<String, ArrayList<HashMap<String, String>>> collection = report.exceptions;
+			final Set<String> stringKeys = collection.keySet();
+
+			for (final String key : stringKeys) {
+				final ArrayList<HashMap<String, String>> values = collection.get(key);
+				packExceptions(key, values, reg);
+			}
+		}
+
+	}
+
+	private static void packValues (final String key, final ArrayList<HashMap<String, String>> values,
+		final ReportRegistration reg) {
+		for (final HashMap<String, String> stat : values) {
+			final String name = key;
+			final String value = stat.get(ReportData.PARAMETER_VALUE);
+			final String timeStamp = stat.get(ReportData.PARAMETER_TIMESTAMP);
+			reg.addParameter(name, value, timeStamp);
+		}
+	}
+
+	private static void packExceptions (final String key, final ArrayList<HashMap<String, String>> values,
+		final ReportRegistration reg) {
+		for (final HashMap<String, String> stat : values) {
+			final String name = key;
+			final String value = stat.get(ReportData.PARAMETER_VALUE);
+			final String timeStamp = stat.get(ReportData.PARAMETER_TIMESTAMP);
+			reg.addException(name, value, timeStamp);
+		}
 	}
 
 	private static boolean saveBadReport (final RedReporterEntryPointArguments arg) {
@@ -112,7 +167,9 @@ public class MessageProcessor {
 		store_args.setInstallID(arg.installID);
 		store_args.setWrittenTimestamp(arg.writtenTimestamp);
 		store_args.setSentTimestamp(arg.sentTimestamp);
+		store_args.setSessionID(arg.sessionID);
 		store_args.setVersionString(arg.versionString);
+
 		final String fileName = arg.requestID.child("log") + "";
 		store_args.setFileID(fileName);
 		store_args.setReportData(arg.resializedBody);

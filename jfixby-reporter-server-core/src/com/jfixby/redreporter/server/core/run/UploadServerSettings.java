@@ -33,12 +33,12 @@ public class UploadServerSettings {
 		final DataBase mySQL = DB.newDB(config);
 
 		final Table settingsTable = mySQL.getTable(ServerSettings.TABLE_NAME);
-
-		final Collection<Entry> salt0 = settingsTable.findEntries(ServerSettings.PARAMETER_NAME, ServerSettings.SALT_0);
+		final TableSchema schema = settingsTable.getSchema();
+		final int indexOf = schema.indexOf(ServerSettings.PARAMETER_NAME);
+		final Collection<Entry> salt0 = settingsTable.findEntries(schema, indexOf, ServerSettings.SALT_0);
 		salt0.print("salt0");
 		if (salt0.size() == 0) {
 
-			final TableSchema schema = settingsTable.getSchema();
 			final int indexOfParamaterName = schema.getColumns().indexOf(ServerSettings.PARAMETER_NAME);
 			final int indexOfParamaterValue = schema.getColumns().indexOf(ServerSettings.PARAMETER_VALUE);
 			final Entry salt = settingsTable.newEntry();
