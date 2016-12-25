@@ -9,5 +9,10 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-aws-api"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red-desktop"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-aws-red"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red-gdx"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-db-mysql"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

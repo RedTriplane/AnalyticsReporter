@@ -237,7 +237,6 @@ public class RedReporterDataBank implements ReporterDataBank {
 	public void resetTables () throws IOException {
 		{
 			final Table table = this.mySQL.getTable(BankSchema.SYSTEM_INFO.TableName);
-
 			table.clear();
 		}
 		{

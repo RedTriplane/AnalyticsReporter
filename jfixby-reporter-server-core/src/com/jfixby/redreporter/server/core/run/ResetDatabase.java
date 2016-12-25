@@ -6,19 +6,21 @@ import java.sql.SQLException;
 
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
 import com.jfixby.redreporter.server.credentials.CONFIG;
+import com.jfixby.scarabei.adopted.gdx.json.RedJson;
 import com.jfixby.scarabei.api.desktop.DesktopSetup;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.sys.Sys;
 import com.jfixby.scarabei.db.api.DB;
 import com.jfixby.scarabei.db.api.DBConfig;
 import com.jfixby.scarabei.db.api.DataBase;
+import com.jfixby.scarabei.db.mysql.MySQLDB;
 
 public class ResetDatabase {
 
 	public static void main (final String[] args) throws IOException, SQLException {
 		DesktopSetup.deploy();
-		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
-		DB.installComponent("com.jfixby.cmns.db.mysql.MySQLDB");
+		Json.installComponent(new RedJson());
+		DB.installComponent(new MySQLDB());
 		Sys.exit();
 		final DBConfig config = DB.newDBConfig();
 
