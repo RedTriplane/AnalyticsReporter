@@ -2,9 +2,12 @@
 package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.LinkedHashMap;
 
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReportData;
+import com.jfixby.redreporter.api.transport.ReportData.Stat;
 import com.jfixby.redreporter.api.transport.ReportWriter;
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
@@ -14,6 +17,7 @@ import com.jfixby.scarabei.api.err.Err;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.io.IO;
 import com.jfixby.scarabei.api.java.ByteArray;
+import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.sys.Sys;
 
 public class RedReportWriter implements ReportWriter {
@@ -101,11 +105,35 @@ public class RedReportWriter implements ReportWriter {
 
 	@Override
 	public void addStringValue (final String key, final Object value) {
+		final LinkedHashMap<String, ArrayList<Stat>> collection = this.data.strings;
+		String strValue = "";
 		if (value != null) {
-			this.data.strings.put(key, value.toString());
-		} else {
-			this.data.strings.put(key, "");
+			strValue = value.toString();
 		}
+		addToCollection(key, strValue, collection);
 	}
 
+	@Override
+	public void addException (final String key, final Throwable value) {
+		final LinkedHashMap<String, ArrayList<Stat>> collection = this.data.exceptions;
+		String strValue = "";
+		if (value != null) {
+			strValue = L.stackTraceToString(value);
+		}
+		addToCollection(key, strValue, collection);
+	}
+
+	static public void addToCollection (final String key, final String strValue,
+		final LinkedHashMap<String, ArrayList<Stat>> collection) {
+		ArrayList<Stat> list = collection.get(key);
+		if (list == null) {
+			list = new ArrayList<Stat>(2);
+			collection.put(key, list);
+		}
+		final Stat stat = new Stat();
+		stat.value = strValue;
+		stat.timestamp = System.currentTimeMillis();
+		list.add(stat);
+
+	}
 }

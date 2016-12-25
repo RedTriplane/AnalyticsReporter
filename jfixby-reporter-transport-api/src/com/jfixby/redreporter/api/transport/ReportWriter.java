@@ -17,4 +17,6 @@ public interface ReportWriter {
 
 	public void addStringValue (String key, Object value);
 
+	void addException (String key, Throwable value);
+
 }
