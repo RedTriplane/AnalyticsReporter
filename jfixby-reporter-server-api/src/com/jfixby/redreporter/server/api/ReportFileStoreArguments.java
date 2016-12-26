@@ -35,4 +35,16 @@ public interface ReportFileStoreArguments {
 
 	String getSessionID ();
 
+	void setReportUID (String reportID);
+
+	void setAuthor (String author);
+
+	void setSubject (String subject);
+
+	String getAuthor ();
+
+	String getSubject ();
+
+	String getReportID ();
+
 }

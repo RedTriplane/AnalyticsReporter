@@ -14,6 +14,8 @@ public interface ReportWriter {
 
 	public void submitReport ();
 
+	public void submitReport (OnReportProcessedListener listener);
+
 	public void addStringValues (Mapping<String, ?> stringValues);
 
 	public void addStringValue (String key, Object value);

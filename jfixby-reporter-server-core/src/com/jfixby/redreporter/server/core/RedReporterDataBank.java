@@ -13,6 +13,7 @@ import com.jfixby.scarabei.api.collections.List;
 import com.jfixby.scarabei.api.collections.Map;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.log.L;
+import com.jfixby.scarabei.api.util.JUtils;
 import com.jfixby.scarabei.api.util.path.RelativePath;
 import com.jfixby.scarabei.db.api.DataBase;
 import com.jfixby.scarabei.db.api.Entry;
@@ -196,16 +197,20 @@ public class RedReporterDataBank implements ReporterDataBank {
 		final String written = reg.getWrittenTimestamp();
 		final String sent = reg.getSentTimestamp();
 		final String version = reg.getVersionString();
-		final String sessionID = reg.getSessionID();
+		final String sessionID = JUtils.truncated(reg.getSessionID(), 0, BankSchema.REPORTS.SESSION_LENGTH);
 		final String uid = reg.getReportUID();
+		final String author = JUtils.truncated(reg.getAuthor(), 0, BankSchema.REPORTS.AUTHOR_LENGTH);
+		final String subject = JUtils.truncated(reg.getSubject(), 0, BankSchema.REPORTS.SUBJECT_LENGTH);
 
 		entry.set(schema, schema.indexOf(BankSchema.REPORTS.install_id), installID);
-		entry.set(schema, schema.indexOf(BankSchema.REPORTS.report_uid), uid);
 		entry.set(schema, schema.indexOf(BankSchema.REPORTS.received_timestamp), received);
 		entry.set(schema, schema.indexOf(BankSchema.REPORTS.written_timestamp), written);
 		entry.set(schema, schema.indexOf(BankSchema.REPORTS.sent_timestamp), sent);
-		entry.set(schema, schema.indexOf(BankSchema.REPORTS.session_id), sessionID);
 		entry.set(schema, schema.indexOf(BankSchema.REPORTS.report_version), version);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.session_id), sessionID);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.report_uid), uid);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.author), author);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.subject), subject);
 
 		L.d("writing DB", entry);
 
@@ -303,7 +308,11 @@ public class RedReporterDataBank implements ReporterDataBank {
 		final String written = store_args.getWrittenTimestamp();
 		final String sent = store_args.getSentTimestamp();
 		final String version = store_args.getVersionString();
-		final String sessionID = store_args.getSessionID();
+		final String sessionID = JUtils.truncated(store_args.getSessionID(), 0, BankSchema.REPORTS.SESSION_LENGTH);
+		final String uid = store_args.getReportID();
+		final String author = JUtils.truncated(store_args.getAuthor(), 0, BankSchema.REPORTS.AUTHOR_LENGTH);
+		final String subject = JUtils.truncated(store_args.getSubject(), 0, BankSchema.REPORTS.SUBJECT_LENGTH);
+
 		final RelativePath file_path = logFile.getAbsoluteFilePath().getRelativePath();
 
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.install_id), installID);
@@ -314,6 +323,9 @@ public class RedReporterDataBank implements ReporterDataBank {
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.file_id), fileID);
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.file_path), file_path);
 		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.session_id), sessionID);
+		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.report_uid), uid);
+		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.author), author);
+		entry.set(schema, schema.indexOf(BankSchema.SERIALIZED_REPORTS.subject), subject);
 
 		L.d("writing DB", entry);
 

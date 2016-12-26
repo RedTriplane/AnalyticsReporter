@@ -41,4 +41,12 @@ public interface ReportRegistration {
 
 	String getSessionID ();
 
+	void setAuthor (String author);
+
+	void setSubject (String subject);
+
+	String getAuthor ();
+
+	String getSubject ();
+
 }

@@ -60,6 +60,9 @@ public class MessageProcessor {
 		arg.token = arg.message.values.get(REPORTER_PROTOCOL.INSTALLATION_TOKEN);
 		arg.installID = ReporterServer.findInstallationID(arg.token);
 		arg.resializedBody = (byte[])arg.message.attachments.get(REPORTER_PROTOCOL.REPORT);
+		arg.subject = arg.message.values.get(REPORTER_PROTOCOL.SUBJECT);
+		arg.author = arg.message.values.get(REPORTER_PROTOCOL.AUTHOR_ID);
+		arg.writtenTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_WRITTEN);
 
 		if (arg.installID == null) {
 			return new Message(REPORTER_PROTOCOL.INVALID_TOKEN);
@@ -67,6 +70,13 @@ public class MessageProcessor {
 		if (arg.writtenTimestamp == null) {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
+		if (arg.subject == null) {
+			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+		}
+		if (arg.author == null) {
+			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+		}
+
 		if (arg.sentTimestamp == null) {
 			return new Message(REPORTER_PROTOCOL.IO_FAILED);
 		}
@@ -119,6 +129,9 @@ public class MessageProcessor {
 			reg.setSentTimestamp(arg.sentTimestamp);
 			reg.setSessionID(arg.sessionID);
 			reg.setVersionString(arg.versionString);
+			reg.setAuthor(arg.author);
+			reg.setSubject(arg.subject);
+
 		}
 
 		{
@@ -165,6 +178,11 @@ public class MessageProcessor {
 
 	private static boolean saveBadReport (final RedReporterEntryPointArguments arg) {
 		final ReportFileStoreArguments store_args = ReporterServer.newReportFileStoreArguments();
+		final String reportID = arg.requestID.toString();
+		store_args.setReportUID(reportID);
+		store_args.setAuthor(arg.author);
+		store_args.setSubject(arg.subject);
+		store_args.setReceivedTimeStamp(arg.receivedTimestamp);
 		store_args.setReceivedTimeStamp(arg.receivedTimestamp);
 		store_args.setInstallID(arg.installID);
 		store_args.setWrittenTimestamp(arg.writtenTimestamp);

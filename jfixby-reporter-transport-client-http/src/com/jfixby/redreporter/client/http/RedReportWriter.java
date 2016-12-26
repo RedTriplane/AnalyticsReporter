@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.jfixby.redreporter.api.analytics.OnReportProcessedListener;
 import com.jfixby.redreporter.api.analytics.ReportWriter;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReportData;
@@ -58,6 +59,9 @@ public class RedReportWriter implements ReportWriter {
 		this.file = Q.getCache().child(this.id + CachedFilesFilter.FILE_NAME_SUFFIX);
 		this.parameters.put(REPORTER_PROTOCOL.REPORT_VERSION, ReportData.REPORT_VERSION);
 		this.parameters.put(REPORTER_PROTOCOL.REPORT_WRITTEN, Sys.SystemTime().currentTimeMillis() + "");
+		this.parameters.put(REPORTER_PROTOCOL.AUTHOR_ID, this.authorID);
+		this.parameters.put(REPORTER_PROTOCOL.SUBJECT, this.subject);
+
 		this.data = new ReportData();
 		return this;
 	}
@@ -87,6 +91,14 @@ public class RedReportWriter implements ReportWriter {
 	public void submitReport () {
 		final RedReport report = new RedReport(this);
 		this.reporterHttpClient.queue.submit(report);
+	}
+
+	@Override
+	public void submitReport (final OnReportProcessedListener listener) {
+		final RedReport report = new RedReport(this);
+		report.setListener(listener);
+		this.reporterHttpClient.queue.submit(report);
+
 	}
 
 	public File getFile () {
@@ -144,4 +156,5 @@ public class RedReportWriter implements ReportWriter {
 			this.addStringValue(key, msg);
 		}
 	}
+
 }

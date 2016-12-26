@@ -13,6 +13,9 @@ public class RedReportFileStoreArguments implements ReportFileStoreArguments {
 	private String WrittenTimestamp;
 	private String VersionString;
 	private String sessionID;
+	private String subject;
+	private String author;
+	private String reportID;
 
 	@Override
 	public void setReceivedTimeStamp (final Long receivedTimestamp) {
@@ -92,6 +95,36 @@ public class RedReportFileStoreArguments implements ReportFileStoreArguments {
 	@Override
 	public String getSessionID () {
 		return this.sessionID;
+	}
+
+	@Override
+	public void setReportUID (final String reportID) {
+		this.reportID = reportID;
+	}
+
+	@Override
+	public void setAuthor (final String author) {
+		this.author = author;
+	}
+
+	@Override
+	public void setSubject (final String subject) {
+		this.subject = subject;
+	}
+
+	@Override
+	public String getAuthor () {
+		return this.author;
+	}
+
+	@Override
+	public String getSubject () {
+		return this.subject;
+	}
+
+	@Override
+	public String getReportID () {
+		return this.reportID;
 	}
 
 }

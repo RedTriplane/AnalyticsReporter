@@ -22,5 +22,6 @@ public class REPORTER_PROTOCOL {
 	public static final String INVALID_TOKEN = "RedReporter.INVALID_TOKEN";
 	public static final String FAILED_TO_STORE_REPORT = "RedReporter.FAILED_TO_STORE_REPORT";
 	public static final String SERVER_STATUS = "RedReporter.SERVER_STATUS";
-
+	public static final String AUTHOR_ID = "RedReporter.AUTHOR_ID";
+	public static final String SUBJECT = "RedReporter.SUBJECT";
 }

@@ -28,6 +28,8 @@ public class RedReporterEntryPointArguments {
 	public Long installID;
 	public byte[] resializedBody;
 	public String sessionID;
+	public String subject;
+	public String author;
 
 	public void print () {
 		L.d("---[" + this.request_number + "]-----------------------------------");

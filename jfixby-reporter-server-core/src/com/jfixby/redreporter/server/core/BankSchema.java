@@ -24,6 +24,7 @@ public class BankSchema {
 
 		public static final String install_id = "install_id";
 		public static final String report_id = "report_id";
+		public static final String report_uid = "report_uid";
 		public static final String received_timestamp = "received_timestamp";
 		public static final String written_timestamp = "written_timestamp";
 		public static final String sent_timestamp = "sent_timestamp";
@@ -32,6 +33,13 @@ public class BankSchema {
 		public static final String file_id = "file_id";
 		public static final String file_path = "file_path";
 
+		public static final int UID_LENGTH = 256;
+
+		public static final String author = "author";
+		public static final String subject = "subject";
+		public static final int AUTHOR_LENGTH = 128;
+		public static final int SUBJECT_LENGTH = 128;
+		public static final int SESSION_LENGTH = 24;
 	}
 
 	public static class REPORTS {
@@ -47,6 +55,12 @@ public class BankSchema {
 		public static final String report_version = "report_version";
 
 		public static final int UID_LENGTH = 256;
+
+		public static final String author = "author";
+		public static final String subject = "subject";
+		public static final int AUTHOR_LENGTH = 128;
+		public static final int SUBJECT_LENGTH = 128;
+		public static final int SESSION_LENGTH = 24;
 
 	}
 

@@ -3,6 +3,7 @@ package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 
+import com.jfixby.redreporter.api.analytics.OnReportProcessedListener;
 import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
@@ -20,6 +21,7 @@ public class RedReport implements Report {
 	private final Map<String, String> parameters = Collections.newMap();
 	private final RedReportWriter writer;
 	boolean isCached = false;
+	private OnReportProcessedListener listener;
 
 	private RedReport (final File file, final Map<String, String> parameters, final ByteArray data) {
 		this.writer = null;
@@ -117,7 +119,17 @@ public class RedReport implements Report {
 			return true;
 		}
 		final boolean success = writeToFile(this);
+
 		return success;
+	}
+
+	public void setListener (final OnReportProcessedListener listener) {
+		this.listener = listener;
+	}
+
+	@Override
+	public OnReportProcessedListener getListener () {
+		return this.listener;
 	}
 
 }

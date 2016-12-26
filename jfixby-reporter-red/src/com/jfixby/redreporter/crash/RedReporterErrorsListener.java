@@ -6,6 +6,7 @@ import com.jfixby.redreporter.api.analytics.ReportWriter;
 import com.jfixby.scarabei.api.err.Err;
 import com.jfixby.scarabei.api.err.ErrorComponent;
 import com.jfixby.scarabei.api.err.NotImplementedYetException;
+import com.jfixby.scarabei.api.lambda.VoidAction;
 import com.jfixby.scarabei.red.err.RedError;
 
 public class RedReporterErrorsListener implements ErrorComponent {
@@ -35,12 +36,18 @@ public class RedReporterErrorsListener implements ErrorComponent {
 
 	@Override
 	public void reportError (final String message) {
-		this.defaultErrorListener.reportError(message);
 		final ReportWriter writer = AnalyticsReporter.newReportWriter();
 		writer.setAuthor(this.authorID);
 		writer.setSubject("SEVERE CRASH");
 		writer.addStringValue("message", message);
-		writer.submitReport();
+		final ReportObserver reportObserver = new ReportObserver(new VoidAction() {
+			@Override
+			public void act () {
+				RedReporterErrorsListener.this.defaultErrorListener.reportError(message);
+			}
+		});
+		writer.submitReport(reportObserver);
+
 	}
 
 	@Override
@@ -49,8 +56,13 @@ public class RedReporterErrorsListener implements ErrorComponent {
 		writer.setAuthor(this.authorID);
 		writer.setSubject("SEVERE CRASH");
 		writer.addException("error", e);
-		writer.submitReport();
-		this.defaultErrorListener.reportError(e);
+		final ReportObserver reportObserver = new ReportObserver(new VoidAction() {
+			@Override
+			public void act () {
+				RedReporterErrorsListener.this.defaultErrorListener.reportError(e);
+			}
+		});
+		writer.submitReport(reportObserver);
 	}
 
 	@Override
@@ -60,8 +72,13 @@ public class RedReporterErrorsListener implements ErrorComponent {
 		writer.setSubject("SEVERE CRASH");
 		writer.addStringValue("message", message);
 		writer.addException("error", e);
-		writer.submitReport();
-		this.defaultErrorListener.reportError(message, e);
+		final ReportObserver reportObserver = new ReportObserver(new VoidAction() {
+			@Override
+			public void act () {
+				RedReporterErrorsListener.this.defaultErrorListener.reportError(message, e);
+			}
+		});
+		writer.submitReport(reportObserver);
 	}
 
 	@Override
@@ -70,8 +87,14 @@ public class RedReporterErrorsListener implements ErrorComponent {
 		writer.setAuthor(this.authorID);
 		writer.setSubject("NotImplementedYet");
 		writer.addException("error", new NotImplementedYetException());
-		writer.submitReport();
-		this.defaultErrorListener.reportNotImplementedYet();
+		final ReportObserver reportObserver = new ReportObserver(new VoidAction() {
+			@Override
+			public void act () {
+				RedReporterErrorsListener.this.defaultErrorListener.reportNotImplementedYet();
+			}
+		});
+
+		writer.submitReport(reportObserver);
 	}
 
 	@Override
@@ -81,8 +104,13 @@ public class RedReporterErrorsListener implements ErrorComponent {
 		writer.setSubject("GC LEAK");
 		writer.addStringValue("message", msg);
 		writer.addStringValue("leakingObject", leakingObject);
-		writer.submitReport();
-		this.defaultErrorListener.reportGCLeak(msg, leakingObject);
+		final ReportObserver reportObserver = new ReportObserver(new VoidAction() {
+			@Override
+			public void act () {
+				RedReporterErrorsListener.this.defaultErrorListener.reportGCLeak(msg, leakingObject);
+			}
+		});
+		writer.submitReport(reportObserver);
 	}
 
 	@Override
@@ -92,8 +120,13 @@ public class RedReporterErrorsListener implements ErrorComponent {
 		writer.setSubject("SEVERE CRASH");
 		writer.addException("error", e);
 		writer.addStringValue("thread", t);
-		writer.submitReport();
-		this.defaultErrorListener.reportError(t, e);
+		final ReportObserver reportObserver = new ReportObserver(new VoidAction() {
+			@Override
+			public void act () {
+				RedReporterErrorsListener.this.defaultErrorListener.reportError(t, e);
+			}
+		});
+		writer.submitReport(reportObserver);
 	}
 
 	private final String authorID = ("com.red-triplane.reporter.err");

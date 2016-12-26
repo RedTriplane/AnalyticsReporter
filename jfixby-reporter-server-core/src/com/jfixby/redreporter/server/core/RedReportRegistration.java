@@ -18,6 +18,8 @@ public class RedReportRegistration implements ReportRegistration {
 	final List<ReportRegistrationEntry> params = Collections.newList();
 	final List<ReportRegistrationEntry> exceptions = Collections.newList();
 	private String uid;
+	private String author;
+	private String subject;
 
 	@Override
 	public void addParameter (final String name, final String value, final String timeStamp) {
@@ -119,6 +121,26 @@ public class RedReportRegistration implements ReportRegistration {
 	@Override
 	public String getReportUID () {
 		return this.uid;
+	}
+
+	@Override
+	public void setAuthor (final String author) {
+		this.author = author;
+	}
+
+	@Override
+	public void setSubject (final String subject) {
+		this.subject = subject;
+	}
+
+	@Override
+	public String getAuthor () {
+		return this.author;
+	}
+
+	@Override
+	public String getSubject () {
+		return this.subject;
 	}
 
 }
