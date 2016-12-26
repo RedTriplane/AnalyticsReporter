@@ -274,6 +274,22 @@ public class RedReporterDataBank implements ReporterDataBank {
 			final Table table = this.mySQL.getTable(BankSchema.INSTALLS.TableName);
 			table.clear();
 		}
+		{
+			final Table table = this.mySQL.getTable(BankSchema.REPORTS.TableName);
+			table.clear();
+		}
+		{
+			final Table table = this.mySQL.getTable(BankSchema.REPORT_EXCEPTIONS.TableName);
+			table.clear();
+		}
+		{
+			final Table table = this.mySQL.getTable(BankSchema.REPORT_VALUES.TableName);
+			table.clear();
+		}
+		{
+			final Table table = this.mySQL.getTable(BankSchema.SERIALIZED_REPORTS.TableName);
+			table.clear();
+		}
 	}
 
 	public void storeReport (final ReportFileStoreArguments store_args, final File logFile) throws IOException {
