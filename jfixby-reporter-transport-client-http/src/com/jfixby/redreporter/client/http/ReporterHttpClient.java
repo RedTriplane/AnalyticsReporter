@@ -1,9 +1,9 @@
 
 package com.jfixby.redreporter.client.http;
 
+import com.jfixby.redreporter.api.analytics.ReportWriter;
 import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
-import com.jfixby.redreporter.api.transport.ReportWriter;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;

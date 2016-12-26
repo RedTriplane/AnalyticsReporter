@@ -1,8 +1,11 @@
 
 package com.jfixby.redreporter.crash;
 
+import com.jfixby.redreporter.api.analytics.AnalyticsReporter;
+import com.jfixby.redreporter.api.analytics.ReportWriter;
 import com.jfixby.scarabei.api.err.Err;
 import com.jfixby.scarabei.api.err.ErrorComponent;
+import com.jfixby.scarabei.api.err.NotImplementedYetException;
 import com.jfixby.scarabei.red.err.RedError;
 
 public class RedReporterErrorsListener implements ErrorComponent {
@@ -33,35 +36,67 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	@Override
 	public void reportError (final String message) {
 		this.defaultErrorListener.reportError(message);
-
+		final ReportWriter writer = AnalyticsReporter.newReportWriter();
+		writer.setAuthor(this.authorID);
+		writer.setSubject("SEVERE CRASH");
+		writer.addStringValue("message", message);
+		writer.submitReport();
 	}
 
 	@Override
 	public void reportError (final Throwable e) {
+		final ReportWriter writer = AnalyticsReporter.newReportWriter();
+		writer.setAuthor(this.authorID);
+		writer.setSubject("SEVERE CRASH");
+		writer.addException("error", e);
+		writer.submitReport();
 		this.defaultErrorListener.reportError(e);
-
 	}
 
 	@Override
 	public void reportError (final String message, final Throwable e) {
+		final ReportWriter writer = AnalyticsReporter.newReportWriter();
+		writer.setAuthor(this.authorID);
+		writer.setSubject("SEVERE CRASH");
+		writer.addStringValue("message", message);
+		writer.addException("error", e);
+		writer.submitReport();
 		this.defaultErrorListener.reportError(message, e);
-
 	}
 
 	@Override
 	public void reportNotImplementedYet () {
+		final ReportWriter writer = AnalyticsReporter.newReportWriter();
+		writer.setAuthor(this.authorID);
+		writer.setSubject("NotImplementedYet");
+		writer.addException("error", new NotImplementedYetException());
+		writer.submitReport();
 		this.defaultErrorListener.reportNotImplementedYet();
 	}
 
 	@Override
 	public void reportGCLeak (final String msg, final Object leakingObject) {
+		final ReportWriter writer = AnalyticsReporter.newReportWriter();
+		writer.setAuthor(this.authorID);
+		writer.setSubject("GC LEAK");
+		writer.addStringValue("message", msg);
+		writer.addStringValue("leakingObject", leakingObject);
+		writer.submitReport();
 		this.defaultErrorListener.reportGCLeak(msg, leakingObject);
 	}
 
 	@Override
 	public void reportError (final Thread t, final Throwable e) {
+		final ReportWriter writer = AnalyticsReporter.newReportWriter();
+		writer.setAuthor(this.authorID);
+		writer.setSubject("SEVERE CRASH");
+		writer.addException("error", e);
+		writer.addStringValue("thread", t);
+		writer.submitReport();
 		this.defaultErrorListener.reportError(t, e);
 	}
+
+	private final String authorID = ("com.red-triplane.reporter.err");
 
 	boolean enabled = false;
 

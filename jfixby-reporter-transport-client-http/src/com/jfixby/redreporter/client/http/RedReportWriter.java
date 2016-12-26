@@ -6,9 +6,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
+import com.jfixby.redreporter.api.analytics.ReportWriter;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReportData;
-import com.jfixby.redreporter.api.transport.ReportWriter;
+import com.jfixby.scarabei.api.collections.Collection;
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
 import com.jfixby.scarabei.api.collections.Mapping;
@@ -135,5 +136,12 @@ public class RedReportWriter implements ReportWriter {
 		stat.put(ReportData.PARAMETER_TIMESTAMP, System.currentTimeMillis() + "");
 		list.add(stat);
 
+	}
+
+	@Override
+	public void addStringValues (final String key, final Collection<String> msgs) {
+		for (final String msg : msgs) {
+			this.addStringValue(key, msg);
+		}
 	}
 }

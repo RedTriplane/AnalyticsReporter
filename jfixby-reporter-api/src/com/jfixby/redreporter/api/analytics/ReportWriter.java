@@ -1,6 +1,7 @@
 
-package com.jfixby.redreporter.api.transport;
+package com.jfixby.redreporter.api.analytics;
 
+import com.jfixby.scarabei.api.collections.Collection;
 import com.jfixby.scarabei.api.collections.Mapping;
 
 public interface ReportWriter {
@@ -18,5 +19,7 @@ public interface ReportWriter {
 	public void addStringValue (String key, Object value);
 
 	void addException (String key, Throwable value);
+
+	public void addStringValues (String string, Collection<String> msgs);
 
 }

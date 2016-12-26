@@ -3,7 +3,7 @@ package com.jfixby.redreporter.analytics;
 
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterComponent;
 import com.jfixby.redreporter.api.analytics.AnalyticsReporterEvents;
-import com.jfixby.redreporter.api.transport.ReportWriter;
+import com.jfixby.redreporter.api.analytics.ReportWriter;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.scarabei.api.collections.Mapping;
 import com.jfixby.scarabei.api.debug.Debug;
@@ -36,6 +36,11 @@ public class RedAnalyticsReporter implements AnalyticsReporterComponent {
 		writer.addStringValues(print);
 
 		writer.submitReport();
+	}
+
+	@Override
+	public ReportWriter newReportWriter () {
+		return this.transport.newReportWriter();
 	}
 
 }

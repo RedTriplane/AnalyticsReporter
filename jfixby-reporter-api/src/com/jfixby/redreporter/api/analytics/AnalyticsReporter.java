@@ -24,4 +24,8 @@ public class AnalyticsReporter {
 		invoke().reportStart();
 	}
 
+	public static ReportWriter newReportWriter () {
+		return invoke().newReportWriter();
+	}
+
 }
