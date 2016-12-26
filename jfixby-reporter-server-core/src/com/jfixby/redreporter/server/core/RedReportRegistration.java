@@ -17,6 +17,7 @@ public class RedReportRegistration implements ReportRegistration {
 
 	final List<ReportRegistrationEntry> params = Collections.newList();
 	final List<ReportRegistrationEntry> exceptions = Collections.newList();
+	private String uid;
 
 	@Override
 	public void addParameter (final String name, final String value, final String timeStamp) {
@@ -108,6 +109,16 @@ public class RedReportRegistration implements ReportRegistration {
 	@Override
 	public String getSessionID () {
 		return this.sessionID;
+	}
+
+	@Override
+	public void setReportUID (final String reportUID) {
+		this.uid = reportUID;
+	}
+
+	@Override
+	public String getReportUID () {
+		return this.uid;
 	}
 
 }

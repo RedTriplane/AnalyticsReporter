@@ -76,12 +76,26 @@ public class RedReporterDataBank implements ReporterDataBank {
 		final Collection<ReportRegistrationEntry> params = reg.listParameters();
 		final Collection<ReportRegistrationEntry> exceptions = reg.listExceptions();
 
+		final Long insrtallID = reg.getInstallID();
+		final String reportUID = reg.getReportUID();
+		if (reportUID == null || reportUID.length() > BankSchema.REPORTS.UID_LENGTH) {
+			L.e("Invalid report UID", reportUID);
+			return false;
+		}
+		String reportID = null;
+
 		Entry reportEntry;
 		Table reportsInfoTable;
 		try {
 			reportsInfoTable = this.mySQL.getTable(BankSchema.REPORTS.TableName);
 			reportEntry = this.registerReportInfo(reg);
+			reportID = reportEntry.getValue(BankSchema.REPORTS.report_id);
+			if (reportID == null) {
+				this.deleteEntry(reportsInfoTable, reportEntry);
+				throw new IOException("report id is null");
+			}
 		} catch (final IOException e) {
+			L.e(e);
 			return false;
 		}
 
@@ -89,8 +103,9 @@ public class RedReporterDataBank implements ReporterDataBank {
 		Table paramsTable;
 		try {
 			paramsTable = this.mySQL.getTable(BankSchema.REPORT_VALUES.TableName);
-			paramEntries = this.registerParams(params, paramsTable);
+			paramEntries = this.registerParams(params, paramsTable, insrtallID, reportID);
 		} catch (final IOException e) {
+			L.e(e);
 			this.deleteEntry(reportsInfoTable, reportEntry);
 			return false;
 		}
@@ -99,8 +114,9 @@ public class RedReporterDataBank implements ReporterDataBank {
 		Table errsTable;
 		try {
 			errsTable = this.mySQL.getTable(BankSchema.REPORT_EXCEPTIONS.TableName);
-			exceptionEntries = this.registerExceptions(exceptions, errsTable);
+			exceptionEntries = this.registerExceptions(exceptions, errsTable, insrtallID, reportID);
 		} catch (final IOException e) {
+			L.e(e);
 			this.deleteEntry(reportsInfoTable, reportEntry);
 			this.deleteEntries(paramsTable, paramEntries);
 			return false;
@@ -108,8 +124,8 @@ public class RedReporterDataBank implements ReporterDataBank {
 		return true;
 	}
 
-	private Collection<Entry> registerExceptions (final Collection<ReportRegistrationEntry> exceptions, final Table errsTable)
-		throws IOException {
+	private Collection<Entry> registerExceptions (final Collection<ReportRegistrationEntry> exceptions, final Table errsTable,
+		final Long installID, final String reportID) throws IOException {
 		final TableSchema schema = errsTable.getSchema();
 
 		final List<Entry> batch = Collections.newList();
@@ -118,6 +134,9 @@ public class RedReporterDataBank implements ReporterDataBank {
 			entry.set(schema, schema.indexOf(BankSchema.REPORT_EXCEPTIONS.ex_name), param.getName());
 			entry.set(schema, schema.indexOf(BankSchema.REPORT_EXCEPTIONS.ex_timestamp), param.getTimeStamp());
 			entry.set(schema, schema.indexOf(BankSchema.REPORT_EXCEPTIONS.ex_stack_trace), param.getValue());
+
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.install_id), installID);
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.report_id), reportID);
 			batch.add(entry);
 		}
 
@@ -126,8 +145,8 @@ public class RedReporterDataBank implements ReporterDataBank {
 		return batch;
 	}
 
-	private Collection<Entry> registerParams (final Collection<ReportRegistrationEntry> params, final Table paramsTable)
-		throws IOException {
+	private Collection<Entry> registerParams (final Collection<ReportRegistrationEntry> params, final Table paramsTable,
+		final Long installID, final String reportID) throws IOException {
 		final TableSchema schema = paramsTable.getSchema();
 
 		final List<Entry> batch = Collections.newList();
@@ -136,6 +155,9 @@ public class RedReporterDataBank implements ReporterDataBank {
 			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.parameter_name), param.getName());
 			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.parameter_timestamp), param.getTimeStamp());
 			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.parameter_value), param.getValue());
+
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.install_id), installID);
+			entry.set(schema, schema.indexOf(BankSchema.REPORT_VALUES.report_id), reportID);
 			batch.add(entry);
 		}
 
@@ -175,8 +197,10 @@ public class RedReporterDataBank implements ReporterDataBank {
 		final String sent = reg.getSentTimestamp();
 		final String version = reg.getVersionString();
 		final String sessionID = reg.getSessionID();
+		final String uid = reg.getReportUID();
 
 		entry.set(schema, schema.indexOf(BankSchema.REPORTS.install_id), installID);
+		entry.set(schema, schema.indexOf(BankSchema.REPORTS.report_uid), uid);
 		entry.set(schema, schema.indexOf(BankSchema.REPORTS.received_timestamp), received);
 		entry.set(schema, schema.indexOf(BankSchema.REPORTS.written_timestamp), written);
 		entry.set(schema, schema.indexOf(BankSchema.REPORTS.sent_timestamp), sent);
@@ -186,7 +210,14 @@ public class RedReporterDataBank implements ReporterDataBank {
 		L.d("writing DB", entry);
 
 		table.addEntry(entry);
-		return entry;
+
+		final Collection<Entry> entries = table.findEntries(schema, schema.indexOf(BankSchema.REPORTS.report_uid), uid);
+		if (entries.size() != 1) {
+			L.e("db corrupted");
+			entries.print("entries");
+			throw new IOException("db corrupted " + uid);
+		}
+		return entries.getLast();
 	}
 
 	public void updateSystemInfo (final String token, final Map<String, String> values) throws IOException {

@@ -51,7 +51,7 @@ public class RequestProcessor {
 		version.minor = "7";
 		version.build = "1";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 816;
+		version.versionCode = 819;
 
 		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
 		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");

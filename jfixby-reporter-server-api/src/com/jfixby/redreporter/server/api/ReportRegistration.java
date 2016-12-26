@@ -25,6 +25,10 @@ public interface ReportRegistration {
 
 	void setSessionID (String sessionID);
 
+	void setReportUID (String reportUID);
+
+	String getReportUID ();
+
 	Long getReceivedTimeStamp ();
 
 	String getSentTimestamp ();

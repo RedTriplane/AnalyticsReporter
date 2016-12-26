@@ -111,6 +111,8 @@ public class MessageProcessor {
 		final RedReporterEntryPointArguments arg) {
 
 		{
+			final String reportID = arg.requestID.toString();
+			reg.setReportUID(reportID);
 			reg.setReceivedTimeStamp(arg.receivedTimestamp);
 			reg.setInstallID(arg.installID);
 			reg.setWrittenTimestamp(arg.writtenTimestamp);
