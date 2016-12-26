@@ -43,6 +43,15 @@ public class RedReporterServerCore implements ServerCore {
 			}
 			return key;
 		}
+
+		@Override
+		public String getRegionName () {
+			final String key = System.getenv("S3_REGION_NAME");
+			if (key == null) {
+				return CONFIG.S3_REGION_NAME;
+			}
+			return key;
+		}
 	};
 
 	public RedReporterServerCore (final ServerCoreConfig cfg) {

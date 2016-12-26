@@ -91,6 +91,16 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	private static final long serialVersionUID = -1649148797847741708L;
 
 	private static void loadMissingJars () {
+
+		try {
+			final Class klass = com.fasterxml.jackson.databind.ObjectMapper.class;
+			final java.net.URL location = klass.getResource('/' + klass.getName().replace('.', '/') + ".class");
+			L.d("XXX klass: " + klass, "loaded from " + location + " by " + klass.getClassLoader());
+		} catch (final Throwable e) {
+			e.printStackTrace();
+			L.d("klass: ", "not found");
+		}
+
 		final List<ID> dependencies = Collections.newList();
 		dependencies.add(Names.newID("com.mysql.jdbc.jdbc2.optional.MysqlDataSource"));
 		dependencies.add(Names.newID("com.amazonaws.services.s3.AmazonS3Client"));

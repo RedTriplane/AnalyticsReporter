@@ -30,6 +30,7 @@ public class FileStorage {
 	void deploy () throws IOException {
 		final String accessKeyID = this.credentialsProvider.getAccessKeyID();
 		final String secretKeyID = this.credentialsProvider.getSecretKeyID();
+		final String regionName = this.credentialsProvider.getRegionName();
 		if (accessKeyID == null || secretKeyID == null) {
 			throw new IOException("Missing accessKeyID.secretKeyID for S3 Bucket");
 		}
@@ -38,6 +39,7 @@ public class FileStorage {
 		final S3FileSystemConfig aws_specs = S3.newFileSystemConfig();
 		aws_specs.setAccessKeyID(accessKeyID);
 		aws_specs.setSecretKeyID(secretKeyID);
+		aws_specs.setRegionName(regionName);
 		aws_specs.setBucketName(this.bucketName);//
 		final S3FileSystem fileSystem = AWS.getS3().newFileSystem(aws_specs);
 		try {

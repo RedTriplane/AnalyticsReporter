@@ -48,10 +48,10 @@ public class RequestProcessor {
 	static {
 		version = new Version();
 		version.major = "1";
-		version.minor = "6";
+		version.minor = "7";
 		version.build = "1";
 		version.packageName = "com.jfixby.redreporter.glassfish";
-		version.versionCode = 813;
+		version.versionCode = 816;
 
 		SystemSettings.setStringParameter(Version.Tags.PackageName, version.packageName);
 		SystemSettings.setStringParameter(Version.Tags.VersionCode, version.versionCode + "");
