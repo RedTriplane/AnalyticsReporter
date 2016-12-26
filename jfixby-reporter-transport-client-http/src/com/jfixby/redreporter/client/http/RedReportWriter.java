@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 
-import com.jfixby.redreporter.api.analytics.OnReportProcessedListener;
 import com.jfixby.redreporter.api.analytics.ReportWriter;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReportData;
@@ -91,14 +90,6 @@ public class RedReportWriter implements ReportWriter {
 	public void submitReport () {
 		final RedReport report = new RedReport(this);
 		this.reporterHttpClient.queue.submit(report);
-	}
-
-	@Override
-	public void submitReport (final OnReportProcessedListener listener) {
-		final RedReport report = new RedReport(this);
-		report.setListener(listener);
-		this.reporterHttpClient.queue.submit(report);
-
 	}
 
 	public File getFile () {

@@ -62,29 +62,31 @@ public class MessageProcessor {
 		arg.resializedBody = (byte[])arg.message.attachments.get(REPORTER_PROTOCOL.REPORT);
 		arg.subject = arg.message.values.get(REPORTER_PROTOCOL.SUBJECT);
 		arg.author = arg.message.values.get(REPORTER_PROTOCOL.AUTHOR_ID);
-		arg.writtenTimestamp = arg.message.values.get(REPORTER_PROTOCOL.REPORT_WRITTEN);
 
 		if (arg.installID == null) {
 			return new Message(REPORTER_PROTOCOL.INVALID_TOKEN);
 		}
 		if (arg.writtenTimestamp == null) {
-			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+			return new Message(REPORTER_PROTOCOL.IO_FAILED).putValue(REPORTER_PROTOCOL.ERR, REPORTER_PROTOCOL.REPORT_WRITTEN);
 		}
 		if (arg.subject == null) {
-			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+			return new Message(REPORTER_PROTOCOL.IO_FAILED).putValue(REPORTER_PROTOCOL.ERR, REPORTER_PROTOCOL.SUBJECT);
 		}
 		if (arg.author == null) {
-			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+			return new Message(REPORTER_PROTOCOL.IO_FAILED).putValue(REPORTER_PROTOCOL.ERR, REPORTER_PROTOCOL.AUTHOR_ID);
 		}
 
 		if (arg.sentTimestamp == null) {
-			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+			return new Message(REPORTER_PROTOCOL.IO_FAILED).putValue(REPORTER_PROTOCOL.ERR, REPORTER_PROTOCOL.REPORT_SENT);
 		}
 		if (arg.versionString == null) {
-			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+			return new Message(REPORTER_PROTOCOL.IO_FAILED).putValue(REPORTER_PROTOCOL.ERR, REPORTER_PROTOCOL.REPORT_VERSION);
 		}
 		if (arg.resializedBody == null) {
-			return new Message(REPORTER_PROTOCOL.IO_FAILED);
+			return new Message(REPORTER_PROTOCOL.IO_FAILED).putValue(REPORTER_PROTOCOL.ERR, REPORTER_PROTOCOL.REPORT);
+		}
+		if (arg.sessionID == null) {
+			return new Message(REPORTER_PROTOCOL.IO_FAILED).putValue(REPORTER_PROTOCOL.ERR, REPORTER_PROTOCOL.SESSION_ID);
 		}
 
 		final boolean success = saveReport(arg);

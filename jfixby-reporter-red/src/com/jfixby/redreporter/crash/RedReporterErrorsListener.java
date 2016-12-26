@@ -46,7 +46,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 				RedReporterErrorsListener.this.defaultErrorListener.reportError(message);
 			}
 		});
-		writer.submitReport(reportObserver);
+		writer.submitReport();
 
 	}
 
@@ -62,7 +62,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 				RedReporterErrorsListener.this.defaultErrorListener.reportError(e);
 			}
 		});
-		writer.submitReport(reportObserver);
+		writer.submitReport();
 	}
 
 	@Override
@@ -78,7 +78,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 				RedReporterErrorsListener.this.defaultErrorListener.reportError(message, e);
 			}
 		});
-		writer.submitReport(reportObserver);
+		writer.submitReport();
 	}
 
 	@Override
@@ -94,7 +94,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 			}
 		});
 
-		writer.submitReport(reportObserver);
+		writer.submitReport();
 	}
 
 	@Override
@@ -110,7 +110,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 				RedReporterErrorsListener.this.defaultErrorListener.reportGCLeak(msg, leakingObject);
 			}
 		});
-		writer.submitReport(reportObserver);
+		writer.submitReport();
 	}
 
 	@Override
@@ -126,7 +126,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 				RedReporterErrorsListener.this.defaultErrorListener.reportError(t, e);
 			}
 		});
-		writer.submitReport(reportObserver);
+		writer.submitReport();
 	}
 
 	private final String authorID = ("com.red-triplane.reporter.err");

@@ -1,7 +1,6 @@
 
 package com.jfixby.redreporter.api.report;
 
-import com.jfixby.redreporter.api.analytics.OnReportProcessedListener;
 import com.jfixby.scarabei.api.collections.Mapping;
 import com.jfixby.scarabei.api.java.ByteArray;
 
@@ -14,7 +13,5 @@ public interface Report {
 	public void dispose ();
 
 	public boolean ensureCached ();
-
-	public OnReportProcessedListener getListener ();
 
 }

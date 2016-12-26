@@ -7,7 +7,6 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
-import com.jfixby.redreporter.api.analytics.OnReportProcessedListener;
 import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.scarabei.api.debug.Debug;
 import com.jfixby.scarabei.api.err.Err;
@@ -171,20 +170,20 @@ public class ReportsQueue {
 		while (this.size() > 0) {
 			final Report report = this.all.peek();
 			final boolean success = this.master.tryToSend(report);
-			final OnReportProcessedListener listener = report.getListener();
+// final OnReportProcessedListener listener = report.getListener();
 
 			if (success) {
 				this.all.removeFirst();
 				this.nonCached.remove(report);
-				if (listener != null) {
-					listener.onReportSent();
-				}
+// if (listener != null) {
+// listener.onReportSent();
+// }
 				report.dispose();
 			} else {
 				this.ensureCached();
-				if (listener != null) {
-					listener.onReportFailedToSend();
-				}
+// if (listener != null) {
+// listener.onReportFailedToSend();
+// }
 				return false;
 			}
 		}

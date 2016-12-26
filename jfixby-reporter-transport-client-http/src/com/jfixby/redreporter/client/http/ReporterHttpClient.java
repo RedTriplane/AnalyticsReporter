@@ -112,6 +112,7 @@ public class ReporterHttpClient implements ReporterTransport, PoolElementsSpawne
 			return false;
 		}
 		if (!REPORTER_PROTOCOL.REPORT_RECEIVED_OK.equals(response.header)) {
+			response.print();
 			return false;
 		}
 

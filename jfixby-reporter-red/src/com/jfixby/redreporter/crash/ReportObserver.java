@@ -22,7 +22,6 @@ public class ReportObserver implements OnReportProcessedListener {
 
 	@Override
 	public void onReportFailedToSend () {
-
 		if (this.action != null) {
 			this.action.act();
 		}
