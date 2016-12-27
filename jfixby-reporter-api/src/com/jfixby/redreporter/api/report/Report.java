@@ -14,4 +14,6 @@ public interface Report {
 
 	public boolean ensureCached ();
 
+	public REPORT_URGENCY getUrgency ();
+
 }

@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 
 import com.jfixby.redreporter.api.analytics.ReportWriter;
+import com.jfixby.redreporter.api.report.REPORT_URGENCY;
 import com.jfixby.redreporter.api.transport.REPORTER_PROTOCOL;
 import com.jfixby.redreporter.api.transport.ReportData;
 import com.jfixby.scarabei.api.collections.Collection;
@@ -24,8 +25,6 @@ import com.jfixby.scarabei.api.sys.Sys;
 public class RedReportWriter implements ReportWriter {
 	private final ReporterHttpClient reporterHttpClient;
 	private final Pool<RedReportWriter> pool;
-	private String authorID;
-	private String subject;
 	static long newID = 0;
 	final Map<String, String> parameters = Collections.newMap();
 	private String id;
@@ -58,17 +57,12 @@ public class RedReportWriter implements ReportWriter {
 		this.file = Q.getCache().child(this.id + CachedFilesFilter.FILE_NAME_SUFFIX);
 		this.parameters.put(REPORTER_PROTOCOL.REPORT_VERSION, ReportData.REPORT_VERSION);
 		this.parameters.put(REPORTER_PROTOCOL.REPORT_WRITTEN, Sys.SystemTime().currentTimeMillis() + "");
-		this.parameters.put(REPORTER_PROTOCOL.AUTHOR_ID, this.authorID);
-		this.parameters.put(REPORTER_PROTOCOL.SUBJECT, this.subject);
-
 		this.data = new ReportData();
 		return this;
 	}
 
 	@Override
 	public void dispose () {
-		this.authorID = null;
-		this.subject = null;
 		this.id = null;
 		this.file = null;
 		this.parameters.clear();
@@ -78,18 +72,12 @@ public class RedReportWriter implements ReportWriter {
 
 	@Override
 	public void setAuthor (final String authorID) {
-		this.authorID = authorID;
+		this.parameters.put(REPORTER_PROTOCOL.AUTHOR_ID, authorID);
 	}
 
 	@Override
 	public void setSubject (final String subject) {
-		this.subject = subject;
-	}
-
-	@Override
-	public void submitReport () {
-		final RedReport report = new RedReport(this);
-		this.reporterHttpClient.queue.submit(report);
+		this.parameters.put(REPORTER_PROTOCOL.SUBJECT, subject);
 	}
 
 	public File getFile () {
@@ -146,6 +134,21 @@ public class RedReportWriter implements ReportWriter {
 		for (final String msg : msgs) {
 			this.addStringValue(key, msg);
 		}
+	}
+
+	@Override
+	public void submitReport (REPORT_URGENCY urgency) {
+		if (urgency == null) {
+			urgency = REPORT_URGENCY.NORMALL;
+		}
+		final RedReport report = new RedReport(this);
+		report.setUrgency(urgency);
+		this.reporterHttpClient.queue.submit(report);
+	}
+
+	@Override
+	public void submitReport () {
+		this.submitReport(REPORT_URGENCY.NORMALL);
 	}
 
 }

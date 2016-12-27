@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 
+import com.jfixby.redreporter.api.report.REPORT_URGENCY;
 import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.scarabei.api.debug.Debug;
 import com.jfixby.scarabei.api.err.Err;
@@ -20,7 +21,6 @@ import com.jfixby.scarabei.api.taskman.TaskManager;
 import com.jfixby.scarabei.api.taskman.TaskSpecs;
 
 public class ReportsQueue {
-
 	private final LinkedList<Report> all = new LinkedList<Report>();
 	private final LinkedHashSet<Report> nonCached = new LinkedHashSet<Report>();
 	private final HashSet<Report> toRemove = new HashSet<Report>();
@@ -137,6 +137,12 @@ public class ReportsQueue {
 		Debug.checkNull("report", report);
 		this.all.add(report);
 		this.nonCached.add(report);
+
+		final REPORT_URGENCY urgency = report.getUrgency();
+
+		if (urgency == REPORT_URGENCY.URGENT) {
+			this.pushQueue();
+		}
 		if (this.task != null) {
 			return;
 		}
@@ -167,6 +173,10 @@ public class ReportsQueue {
 	}
 
 	public synchronized boolean tryToProcess () {
+		return this.pushQueue();
+	}
+
+	private boolean pushQueue () {
 		while (this.size() > 0) {
 			final Report report = this.all.peek();
 			final boolean success = this.master.tryToSend(report);
@@ -175,19 +185,13 @@ public class ReportsQueue {
 			if (success) {
 				this.all.removeFirst();
 				this.nonCached.remove(report);
-// if (listener != null) {
-// listener.onReportSent();
-// }
+				L.d("sent", report);
 				report.dispose();
 			} else {
 				this.ensureCached();
-// if (listener != null) {
-// listener.onReportFailedToSend();
-// }
 				return false;
 			}
 		}
-
 		this.task = null;
 		return true;
 	}

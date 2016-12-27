@@ -3,6 +3,7 @@ package com.jfixby.redreporter.client.http;
 
 import java.io.IOException;
 
+import com.jfixby.redreporter.api.report.REPORT_URGENCY;
 import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
@@ -15,11 +16,17 @@ import com.jfixby.scarabei.api.util.JUtils;
 
 public class RedReport implements Report {
 
+	@Override
+	public String toString () {
+		return "RedReport[" + this.parameters + "]";
+	}
+
 	private final File file;
 	private ByteArray packedData;
 	private final Map<String, String> parameters = Collections.newMap();
 	private final RedReportWriter writer;
 	boolean isCached = false;
+	private REPORT_URGENCY urgency;
 
 	private RedReport (final File file, final Map<String, String> parameters, final ByteArray data) {
 		this.writer = null;
@@ -119,6 +126,18 @@ public class RedReport implements Report {
 		final boolean success = writeToFile(this);
 
 		return success;
+	}
+
+	public void setUrgency (final REPORT_URGENCY urgency) {
+		this.urgency = urgency;
+		if (urgency == null) {
+			this.urgency = REPORT_URGENCY.NORMALL;
+		}
+	}
+
+	@Override
+	public REPORT_URGENCY getUrgency () {
+		return this.urgency;
 	}
 
 }
