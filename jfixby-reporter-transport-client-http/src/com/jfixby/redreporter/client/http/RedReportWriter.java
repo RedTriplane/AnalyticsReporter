@@ -21,6 +21,8 @@ import com.jfixby.scarabei.api.io.IO;
 import com.jfixby.scarabei.api.java.ByteArray;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.sys.Sys;
+import com.jfixby.scarabei.api.sys.SystemInfo;
+import com.jfixby.scarabei.api.sys.settings.SystemSettings;
 
 public class RedReportWriter implements ReportWriter {
 	private final ReporterHttpClient reporterHttpClient;
@@ -149,6 +151,18 @@ public class RedReportWriter implements ReportWriter {
 	@Override
 	public void submitReport () {
 		this.submitReport(REPORT_URGENCY.NORMALL);
+	}
+
+	@Override
+	public void includeSystemSettings () {
+		final Mapping<String, String> print = SystemSettings.listAllSettings();
+		this.addStringValues(print);
+	}
+
+	@Override
+	public void includeSystemInfo () {
+		final SystemInfo info = Sys.getSystemInfo();
+		this.addStringValues(info.listParameters());
 	}
 
 }

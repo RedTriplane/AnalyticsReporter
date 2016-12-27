@@ -3,6 +3,7 @@ package com.jfixby.redreporter.crash;
 
 import com.jfixby.redreporter.api.analytics.AnalyticsReporter;
 import com.jfixby.redreporter.api.analytics.ReportWriter;
+import com.jfixby.redreporter.api.crash.CrashReporterEvents;
 import com.jfixby.redreporter.api.report.REPORT_URGENCY;
 import com.jfixby.scarabei.api.err.Err;
 import com.jfixby.scarabei.api.err.ErrorComponent;
@@ -38,8 +39,9 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	public void reportError (final String message) {
 		final ReportWriter writer = AnalyticsReporter.newReportWriter();
 		writer.setAuthor(this.authorID);
-		writer.setSubject("SEVERE CRASH");
+		writer.setSubject(CrashReporterEvents.SEVERE_CRASH);
 		writer.addStringValue("message", message);
+		this.addSystemSettings(writer);
 		writer.submitReport(REPORT_URGENCY.URGENT);
 		RedReporterErrorsListener.this.defaultErrorListener.reportError(message);
 	}
@@ -48,8 +50,9 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	public void reportError (final Throwable e) {
 		final ReportWriter writer = AnalyticsReporter.newReportWriter();
 		writer.setAuthor(this.authorID);
-		writer.setSubject("SEVERE CRASH");
+		writer.setSubject(CrashReporterEvents.SEVERE_CRASH);
 		writer.addException("error", e);
+		this.addSystemSettings(writer);
 		writer.submitReport(REPORT_URGENCY.URGENT);
 		RedReporterErrorsListener.this.defaultErrorListener.reportError(e);
 	}
@@ -58,10 +61,12 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	public void reportError (final String message, final Throwable e) {
 		final ReportWriter writer = AnalyticsReporter.newReportWriter();
 		writer.setAuthor(this.authorID);
-		writer.setSubject("SEVERE CRASH");
+		writer.setSubject(CrashReporterEvents.SEVERE_CRASH);
 		writer.addStringValue("message", message);
 		writer.addException("error", e);
+		this.addSystemSettings(writer);
 		writer.submitReport(REPORT_URGENCY.URGENT);
+
 		RedReporterErrorsListener.this.defaultErrorListener.reportError(message, e);
 	}
 
@@ -71,6 +76,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 		writer.setAuthor(this.authorID);
 		writer.setSubject("NotImplementedYet");
 		writer.addException("error", new NotImplementedYetException());
+		this.addSystemSettings(writer);
 		writer.submitReport(REPORT_URGENCY.URGENT);
 		RedReporterErrorsListener.this.defaultErrorListener.reportNotImplementedYet();
 	}
@@ -82,6 +88,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 		writer.setSubject("GC LEAK");
 		writer.addStringValue("message", msg);
 		writer.addStringValue("leakingObject", leakingObject);
+		this.addSystemSettings(writer);
 		writer.submitReport(REPORT_URGENCY.URGENT);
 		RedReporterErrorsListener.this.defaultErrorListener.reportGCLeak(msg, leakingObject);
 	}
@@ -90,11 +97,17 @@ public class RedReporterErrorsListener implements ErrorComponent {
 	public void reportError (final Thread t, final Throwable e) {
 		final ReportWriter writer = AnalyticsReporter.newReportWriter();
 		writer.setAuthor(this.authorID);
-		writer.setSubject("SEVERE CRASH");
+		writer.setSubject(CrashReporterEvents.SEVERE_CRASH);
 		writer.addException("error", e);
 		writer.addStringValue("thread", t);
+		this.addSystemSettings(writer);
 		writer.submitReport(REPORT_URGENCY.URGENT);
 		RedReporterErrorsListener.this.defaultErrorListener.reportError(t, e);
+	}
+
+	private void addSystemSettings (final ReportWriter writer) {
+		writer.includeSystemSettings();
+		writer.includeSystemInfo();
 	}
 
 	private final String authorID = ("com.red-triplane.reporter.err");

@@ -25,4 +25,8 @@ public interface ReportWriter {
 
 	public void addStringValues (String string, Collection<String> msgs);
 
+	public void includeSystemSettings ();
+
+	public void includeSystemInfo ();
+
 }
