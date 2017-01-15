@@ -1,7 +1,7 @@
 
 package com.jfixby.redreporter.client.http;
 
-import com.jfixby.scarabei.api.file.ChildrenList;
+import com.jfixby.scarabei.api.file.FilesList;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.taskman.Job;
@@ -20,7 +20,7 @@ public class LoadQueueJob implements Job {
 
 	@Override
 	public void doStart () throws Throwable {
-		final ChildrenList logs = this.cache.listDirectChildren(this.fileFilter);
+		final FilesList logs = this.cache.listDirectChildren(this.fileFilter);
 		for (final File file : logs) {
 			final RedReport report = RedReport.readFromFile(file);
 			if (report != null) {

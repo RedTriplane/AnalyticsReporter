@@ -94,29 +94,32 @@ public class ServerHandler {
 
 	static private int updatePeek (final ServerPing ping, final RequestArgs args) {
 		ping.code = -1;
-		try {
-			final HttpConnectionSpecs spec = Http.newConnectionSpecs();
-			spec.setURL(ping.url);
-			spec.setDoInput(true);
+
+		final HttpConnectionSpecs spec = Http.newConnectionSpecs();
+		spec.setURL(ping.url);
+		spec.setDoInput(true);
+		spec.setConnectTimeout(args.timeout);
+		spec.setReadTimeout(args.timeout);
+		if (args == null || args.timeout <= 0) {
+			spec.setConnectTimeout(SERVER_DEFAULT_TIMEOUT);
+			spec.setReadTimeout(SERVER_DEFAULT_TIMEOUT);
+		} else {
 			spec.setConnectTimeout(args.timeout);
 			spec.setReadTimeout(args.timeout);
-			if (args == null || args.timeout <= 0) {
-				spec.setConnectTimeout(SERVER_DEFAULT_TIMEOUT);
-				spec.setReadTimeout(SERVER_DEFAULT_TIMEOUT);
-			} else {
-				spec.setConnectTimeout(args.timeout);
-				spec.setReadTimeout(args.timeout);
-			}
+		}
 
-			final HttpConnection connect = Http.newConnection(spec);
-			connect.open();
+		final HttpConnection connect = Http.newConnection(spec);
+		connect.open();
+		try {
 
 			ping.code = connect.getResponseCode();
-			connect.close();
+
 		} catch (final IOException e) {
+			L.e(e.getMessage());
 			ping.code = -1;
 			ping.error = L.stackTraceToString(e);
 		}
+		connect.close();
 		return ping.code;
 	}
 
@@ -125,11 +128,9 @@ public class ServerHandler {
 	}
 
 	private Message exchange (final Message message, final RequestArgs args) {
-		try {
-			return exchange(message, null, this.url, args);
-		} catch (final IOException e) {
-		}
-		return null;
+
+		return exchange(message, null, this.url, args);
+
 	}
 
 	Message exchange (final Message message) {
@@ -137,7 +138,7 @@ public class ServerHandler {
 	}
 
 	static private Message exchange (final Message message, final Mapping<String, String> headers, final HttpURL url,
-		final RequestArgs args) throws IOException {
+		final RequestArgs args) {
 		Debug.checkNull("message", message);
 		final HttpConnectionSpecs conSpec = Http.newConnectionSpecs();
 		conSpec.setURL(url);
@@ -168,12 +169,20 @@ public class ServerHandler {
 		final HttpConnectionOutputStream os = connection.getOutputStream();
 		os.open();
 // message.print();
+		try {
+			final ByteArray data = IO.serialize(message);
 
-		final ByteArray data = IO.serialize(message);
+			final ByteArray compressed = IO.compress(data);
+			os.write(compressed.toArray());
+			os.flush();
+		} catch (final IOException e) {
+			e.printStackTrace();
+			os.close();
+			connection.close();
+			return null;
+		} finally {
 
-		final ByteArray compressed = IO.compress(data);
-		os.write(compressed.toArray());
-		os.flush();
+		}
 		os.close();
 
 		final HttpConnectionInputStream is = connection.getInputStream();
@@ -197,7 +206,12 @@ public class ServerHandler {
 			return null;
 		}
 
-		final Message response = IO.deserialize(Message.class, responceBytes);
+		Message response = null;
+		try {
+			response = IO.deserialize(Message.class, responceBytes);
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
 		return response;
 
 	}

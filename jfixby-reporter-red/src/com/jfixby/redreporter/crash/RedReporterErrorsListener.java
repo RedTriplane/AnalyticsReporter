@@ -8,6 +8,7 @@ import com.jfixby.redreporter.api.report.REPORT_URGENCY;
 import com.jfixby.scarabei.api.err.Err;
 import com.jfixby.scarabei.api.err.ErrorComponent;
 import com.jfixby.scarabei.api.err.NotImplementedYetException;
+import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.red.err.RedError;
 
 public class RedReporterErrorsListener implements ErrorComponent {
@@ -37,6 +38,7 @@ public class RedReporterErrorsListener implements ErrorComponent {
 
 	@Override
 	public void reportError (final String message) {
+		L.e(new Error(message));
 		final ReportWriter writer = AnalyticsReporter.newReportWriter();
 		writer.setAuthor(this.authorID);
 		writer.setSubject(CrashReporterEvents.SEVERE_CRASH);

@@ -11,7 +11,7 @@ import com.jfixby.redreporter.api.report.REPORT_URGENCY;
 import com.jfixby.redreporter.api.report.Report;
 import com.jfixby.scarabei.api.debug.Debug;
 import com.jfixby.scarabei.api.err.Err;
-import com.jfixby.scarabei.api.file.ChildrenList;
+import com.jfixby.scarabei.api.file.FilesList;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.file.FileFilter;
 import com.jfixby.scarabei.api.log.L;
@@ -84,7 +84,7 @@ public class ReportsQueue {
 		if (cache == null) {
 			return;
 		}
-		ChildrenList list = null;
+		FilesList list = null;
 		try {
 			list = cache.listDirectChildren(filter);
 		} catch (final IOException e) {
