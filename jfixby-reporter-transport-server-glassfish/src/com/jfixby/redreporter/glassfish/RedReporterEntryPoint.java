@@ -23,7 +23,7 @@ import com.jfixby.rana.api.pkg.ResourcesManagerComponent;
 import com.jfixby.redreporter.server.api.HealthReportType;
 import com.jfixby.redreporter.server.api.ReporterServer;
 import com.jfixby.redreporter.server.api.ServerCoreConfig;
-import com.jfixby.scarabei.adopted.gdx.json.RedJson;
+import com.jfixby.scarabei.adopted.gdx.json.GoogleGson;
 import com.jfixby.scarabei.amazon.aws.RedAWS;
 import com.jfixby.scarabei.api.assets.ID;
 import com.jfixby.scarabei.api.assets.Names;
@@ -48,7 +48,7 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 	static final RequestProcessor processor;
 	static {
 		DesktopSetup.deploy();
-		Json.installComponent(new RedJson());
+		Json.installComponent(new GoogleGson());
 		DB.installComponent(new MySQLDB());
 		AWS.installComponent(new RedAWS());
 

@@ -6,7 +6,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-api-desktop"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red-desktop"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red-gdx"/>
+		<classpathentry combineaccessrules="false" kind="src" path="/scarabei-gson"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-transport-api"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-transport-client-http"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-api"/>

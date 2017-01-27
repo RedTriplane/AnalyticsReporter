@@ -5,7 +5,7 @@ import java.io.IOException;
 
 import com.jfixby.redreporter.server.core.BankSchema;
 import com.jfixby.redreporter.server.credentials.CONFIG;
-import com.jfixby.scarabei.adopted.gdx.json.RedJson;
+import com.jfixby.scarabei.adopted.gdx.json.GoogleGson;
 import com.jfixby.scarabei.api.collections.Collection;
 import com.jfixby.scarabei.api.desktop.DesktopSetup;
 import com.jfixby.scarabei.api.json.Json;
@@ -21,7 +21,7 @@ public class ListTest {
 	public static void main (final String[] args) throws IOException {
 
 		DesktopSetup.deploy();
-		Json.installComponent(new RedJson());
+		Json.installComponent(new GoogleGson());
 		DB.installComponent(new MySQLDB());
 
 		final DBConfig config = DB.newDBConfig();

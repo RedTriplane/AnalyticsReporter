@@ -13,7 +13,7 @@
 	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-api-desktop"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red-desktop"/>
-	<classpathentry combineaccessrules="false" kind="src" path="/scarabei-red-gdx"/>
+		<classpathentry combineaccessrules="false" kind="src" path="/scarabei-gson"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-red"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/jfixby-reporter-server-core"/>
 	<classpathentry combineaccessrules="false" kind="src" path="/rana-api"/>

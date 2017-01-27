@@ -6,7 +6,7 @@ import java.sql.SQLException;
 
 import com.jfixby.redreporter.server.core.RedReporterDataBank;
 import com.jfixby.redreporter.server.credentials.CONFIG;
-import com.jfixby.scarabei.adopted.gdx.json.RedJson;
+import com.jfixby.scarabei.adopted.gdx.json.GoogleGson;
 import com.jfixby.scarabei.api.desktop.DesktopSetup;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.sys.Sys;
@@ -19,7 +19,7 @@ public class ResetDatabase {
 
 	public static void main (final String[] args) throws IOException, SQLException {
 		DesktopSetup.deploy();
-		Json.installComponent(new RedJson());
+		Json.installComponent(new GoogleGson());
 		DB.installComponent(new MySQLDB());
 		Sys.exit();
 		final DBConfig config = DB.newDBConfig();
