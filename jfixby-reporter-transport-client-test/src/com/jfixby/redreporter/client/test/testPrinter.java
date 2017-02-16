@@ -1,14 +1,14 @@
 
 package com.jfixby.redreporter.client.test;
 
-import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.desktop.ScarabeiDesktop;
 import com.jfixby.scarabei.api.err.Err;
 import com.jfixby.scarabei.api.log.L;
 
 public class testPrinter {
 
 	public static final void main (final String[] arg) {
-		DesktopSetup.deploy();
+		ScarabeiDesktop.deploy();
 		try {
 			call(0);
 		} catch (final Throwable e) {

@@ -13,7 +13,7 @@ import com.jfixby.scarabei.api.assets.Names;
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.Map;
 import com.jfixby.scarabei.api.collections.Mapping;
-import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.desktop.ScarabeiDesktop;
 import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.api.sys.Sys;
@@ -24,7 +24,7 @@ import com.jfixby.scarabei.db.api.DataBase;
 public class RunRedReporterServerDesktop {
 
 	public static void main (final String[] args) throws IOException, SQLException {
-		DesktopSetup.deploy();
+		ScarabeiDesktop.deploy();
 		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
 
 		final DBConfig config = DB.newDBConfig();

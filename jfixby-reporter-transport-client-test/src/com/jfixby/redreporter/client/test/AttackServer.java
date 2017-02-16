@@ -9,7 +9,7 @@ import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
-import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.desktop.ScarabeiDesktop;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.file.LocalFileSystem;
 import com.jfixby.scarabei.api.json.Json;
@@ -21,7 +21,7 @@ import com.jfixby.scarabei.api.sys.Sys;
 public class AttackServer {
 
 	public static void main (final String[] args) throws MalformedURLException, IOException {
-		DesktopSetup.deploy();
+		ScarabeiDesktop.deploy();
 		Json.installComponent("com.jfixby.cmns.adopted.gdx.json.RedJson");
 
 		final ReporterHttpClientConfig transport_config = new ReporterHttpClientConfig();

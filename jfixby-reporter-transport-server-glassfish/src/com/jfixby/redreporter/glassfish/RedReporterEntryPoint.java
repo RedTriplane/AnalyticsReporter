@@ -30,7 +30,7 @@ import com.jfixby.scarabei.api.assets.Names;
 import com.jfixby.scarabei.api.collections.Collection;
 import com.jfixby.scarabei.api.collections.Collections;
 import com.jfixby.scarabei.api.collections.List;
-import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.desktop.ScarabeiDesktop;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.file.LocalFileSystem;
 import com.jfixby.scarabei.api.json.Json;
@@ -47,7 +47,7 @@ import com.jfixby.scarabei.db.mysql.MySQLDB;
 public abstract class RedReporterEntryPoint extends HttpServlet {
 	static final RequestProcessor processor;
 	static {
-		DesktopSetup.deploy();
+		ScarabeiDesktop.deploy();
 		Json.installComponent(new GoogleGson());
 		DB.installComponent(new MySQLDB());
 		AWS.installComponent(new RedAWS());

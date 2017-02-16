@@ -4,7 +4,7 @@ package com.jfixby.redreporter.server.core.run;
 import java.io.IOException;
 
 import com.jfixby.redreporter.server.credentials.CONFIG;
-import com.jfixby.scarabei.api.desktop.DesktopSetup;
+import com.jfixby.scarabei.api.desktop.ScarabeiDesktop;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.aws.api.AWS;
 import com.jfixby.scarabei.aws.api.S3FileSystem;
@@ -13,7 +13,7 @@ import com.jfixby.scarabei.aws.api.S3FileSystemConfig;
 public class TestS3Bucket {
 
 	public static void main (final String[] args) throws IOException {
-		DesktopSetup.deploy();
+		ScarabeiDesktop.deploy();
 
 		final S3FileSystemConfig aws_specs = AWS.getS3().newFileSystemConfig();
 		aws_specs.setAccessKeyID(CONFIG.S3_RR1_ACCESS_KEY);
