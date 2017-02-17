@@ -46,6 +46,8 @@ import com.jfixby.scarabei.db.mysql.MySQLDB;
 
 public abstract class RedReporterEntryPoint extends HttpServlet {
 	static final RequestProcessor processor;
+	private static final long serialVersionUID = -1649148797847741708L;
+
 	static {
 		ScarabeiDesktop.deploy();
 		Json.installComponent(new GoogleGson());
@@ -60,8 +62,8 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 		final File root = LocalFileSystem.ApplicationHome();
 		L.d("lapp-root", root);
-		deployResources(root);
-		loadMissingJars();
+		RedReporterEntryPoint.deployResources(root);
+		RedReporterEntryPoint.loadMissingJars();
 
 		final DBConfig config = DB.newDBConfig();
 
@@ -88,7 +90,47 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 
 	}
 
-	private static final long serialVersionUID = -1649148797847741708L;
+	private static void deployResources (final File root) {
+		final File cache = root.child("cache");
+		try {
+
+			ResourcesManager.installComponent("com.jfixby.red.triplane.resources.fsbased.RedResourcesManager");
+			AssetsManager.installComponent("com.jfixby.red.engine.core.resources.RedAssetsManager");
+
+			final ClassLoader classLoader = RedReporterEntryPoint.class.getClassLoader();
+			ResourcesManager.registerPackageReader(new RanaJarLoader(classLoader));
+
+			final ResourcesManagerComponent res_manager = ResourcesManager.invoke();
+
+			final File home = LocalFileSystem.ApplicationHome();
+			final File assets_folder = home.child("assets");
+
+			if (assets_folder.exists() && assets_folder.isFolder()) {
+				final Collection<ResourcesGroup> locals = res_manager.findAndInstallResources(assets_folder);
+// locals.print("locals");
+				for (final ResourcesGroup local : locals) {
+					local.rebuildAllIndexes(null);
+				}
+
+			}
+
+			final File assets_cache_folder = home.child("assets-cache");
+			{
+				final List<String> tanks = Collections.newList("tank-0");
+				final HttpURL bankURL = Http.newURL("https://s3.eu-central-1.amazonaws.com/com.red-triplane.assets/bank-lib");
+				final ResourcesGroup bank = res_manager.installRemoteBank(bankURL, assets_cache_folder, tanks);
+				bank.rebuildAllIndexes(null);
+			}
+
+		} catch (final IOException e) {
+			e.printStackTrace();
+		}
+
+	}
+
+	public static String getHealthReport (final HealthReportType latest, final RedReporterEntryPointArguments arg) {
+		return RedReporterEntryPoint.processor.getHealthReport(latest, arg);
+	}
 
 	private static void loadMissingJars () {
 
@@ -113,62 +155,20 @@ public abstract class RedReporterEntryPoint extends HttpServlet {
 		AssetsManager.autoResolveAssets(dependencies, PackageReaderListener.DEFAULT);
 	}
 
-	private static void deployResources (final File root) {
-		final File cache = root.child("cache");
-		try {
-
-			ResourcesManager.installComponent("com.jfixby.red.triplane.resources.fsbased.RedResourcesManager");
-			AssetsManager.installComponent("com.jfixby.red.engine.core.resources.RedAssetsManager");
-
-			final ClassLoader classLoader = RedReporterEntryPoint.class.getClassLoader();
-			ResourcesManager.registerPackageReader(new RanaJarLoader(classLoader));
-
-			final ResourcesManagerComponent res_manager = ResourcesManager.invoke();
-
-			final File home = LocalFileSystem.ApplicationHome();
-			final File assets_folder = home.child("assets");
-
-			if (assets_folder.exists() && assets_folder.isFolder()) {
-				final Collection<ResourcesGroup> locals = res_manager.findAndInstallResources(assets_folder);
-				locals.print("locals");
-				for (final ResourcesGroup local : locals) {
-					local.rebuildAllIndexes(null);
-				}
-
-			}
-
-			final File assets_cache_folder = home.child("assets-cache");
-			{
-				final List<String> tanks = Collections.newList("tank-0");
-				final HttpURL bankURL = Http.newURL("https://s3.eu-central-1.amazonaws.com/com.red-triplane.assets/bank-lib");
-				final ResourcesGroup bank = res_manager.installRemoteBank(bankURL, assets_cache_folder, tanks);
-				bank.rebuildAllIndexes(null);
-			}
-
-		} catch (final IOException e) {
-			e.printStackTrace();
-		}
+	public static final void main (final String[] arg) {
 
 	}
 
 	@Override
 	protected void doGet (final HttpServletRequest request, final HttpServletResponse response)
 		throws ServletException, IOException {
-		processor.processRequest(request, response);
+		RedReporterEntryPoint.processor.processRequest(request, response);
 	}
 
 	@Override
 	protected void doPost (final HttpServletRequest request, final HttpServletResponse response)
 		throws ServletException, IOException {
-		processor.processRequest(request, response);
-	}
-
-	public static final void main (final String[] arg) {
-
-	}
-
-	public static String getHealthReport (final HealthReportType latest, final RedReporterEntryPointArguments arg) {
-		return processor.getHealthReport(latest, arg);
+		RedReporterEntryPoint.processor.processRequest(request, response);
 	}
 
 }
