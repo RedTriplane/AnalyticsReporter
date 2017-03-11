@@ -1,0 +1,25 @@
+apply plugin: "java"
+apply plugin: "maven"
+
+sourceCompatibility = 1.8
+[compileJava, compileTestJava]*.options*.encoding = 'UTF-8'
+
+
+dependencies {
+      compile project(":jfixby-reporter-api")
+      compile project(":jfixby-reporter-red")
+      compile project(":jfixby-reporter-transport-client-http")
+      compile project(":scarabei-api")
+      compile project(":scarabei-api-ios")
+}
+
+sourceSets {
+    main {
+        java {
+            srcDirs = ['src/']
+        }
+        resources {
+            
+        }
+    }
+}

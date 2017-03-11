@@ -5,7 +5,6 @@ import java.io.IOException;
 
 import com.jfixby.redreporter.server.core.BankSchema;
 import com.jfixby.redreporter.server.credentials.CONFIG;
-import com.jfixby.scarabei.adopted.gdx.json.GoogleGson;
 import com.jfixby.scarabei.api.collections.Collection;
 import com.jfixby.scarabei.api.desktop.ScarabeiDesktop;
 import com.jfixby.scarabei.api.json.Json;
@@ -16,6 +15,7 @@ import com.jfixby.scarabei.db.api.Entry;
 import com.jfixby.scarabei.db.api.Table;
 import com.jfixby.scarabei.db.api.TableSchema;
 import com.jfixby.scarabei.db.mysql.MySQLDB;
+import com.jfixby.scarabei.gson.GoogleGson;
 
 public class ListTest {
 	public static void main (final String[] args) throws IOException {

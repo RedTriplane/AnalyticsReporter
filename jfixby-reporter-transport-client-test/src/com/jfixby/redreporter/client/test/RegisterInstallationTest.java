@@ -6,7 +6,6 @@ import java.io.IOException;
 import com.jfixby.redreporter.api.transport.ReporterTransport;
 import com.jfixby.redreporter.client.http.ReporterHttpClient;
 import com.jfixby.redreporter.client.http.ReporterHttpClientConfig;
-import com.jfixby.scarabei.adopted.gdx.json.GoogleGson;
 import com.jfixby.scarabei.api.desktop.ScarabeiDesktop;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.file.LocalFileSystem;
@@ -14,6 +13,7 @@ import com.jfixby.scarabei.api.json.Json;
 import com.jfixby.scarabei.api.net.http.Http;
 import com.jfixby.scarabei.api.net.http.HttpURL;
 import com.jfixby.scarabei.api.sys.Sys;
+import com.jfixby.scarabei.gson.GoogleGson;
 
 public class RegisterInstallationTest {
 
