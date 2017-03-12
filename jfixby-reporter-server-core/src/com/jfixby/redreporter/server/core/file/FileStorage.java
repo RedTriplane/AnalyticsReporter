@@ -11,19 +11,19 @@ import com.jfixby.scarabei.api.debug.Debug;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.log.L;
 import com.jfixby.scarabei.aws.api.AWS;
-import com.jfixby.scarabei.aws.api.S3;
-import com.jfixby.scarabei.aws.api.S3FileSystem;
-import com.jfixby.scarabei.aws.api.S3FileSystemConfig;
-import com.jfixby.scarabei.aws.api.s3.S3CredentialsProvider;
+import com.jfixby.scarabei.aws.api.AWSCredentialsProvider;
+import com.jfixby.scarabei.aws.api.s3.S3;
+import com.jfixby.scarabei.aws.api.s3.S3FileSystem;
+import com.jfixby.scarabei.aws.api.s3.S3FileSystemConfig;
 
 public class FileStorage {
 
-	private final S3CredentialsProvider credentialsProvider;
+	private final AWSCredentialsProvider credentialsProvider;
 	private final String bucketName;
 	private File root;
 
 	public FileStorage (final FileStorageConfig fsConfig) {
-		this.credentialsProvider = fsConfig.getS3CredentialsProvider();
+		this.credentialsProvider = fsConfig.getAWSCredentialsProvider();
 		this.bucketName = Debug.checkNull("getBucketName()", fsConfig.getBucketName());
 	}
 

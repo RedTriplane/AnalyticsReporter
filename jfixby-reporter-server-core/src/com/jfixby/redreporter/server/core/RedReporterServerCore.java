@@ -16,7 +16,7 @@ import com.jfixby.scarabei.api.collections.Map;
 import com.jfixby.scarabei.api.debug.Debug;
 import com.jfixby.scarabei.api.file.File;
 import com.jfixby.scarabei.api.log.L;
-import com.jfixby.scarabei.aws.api.s3.S3CredentialsProvider;
+import com.jfixby.scarabei.aws.api.AWSCredentialsProvider;
 import com.jfixby.scarabei.db.api.DataBase;
 
 public class RedReporterServerCore implements ServerCore {
@@ -25,7 +25,7 @@ public class RedReporterServerCore implements ServerCore {
 	private final InstallationIDGenerator idgen;
 	private final FileStorage fileStorage;
 
-	final S3CredentialsProvider s3CredentialsProvider = new S3CredentialsProvider() {
+	final AWSCredentialsProvider AWSCredentialsProvider = new AWSCredentialsProvider() {
 		@Override
 		public String getAccessKeyID () {
 			final String key = System.getenv("S3_ACCESS_KEY_ID");
@@ -61,7 +61,7 @@ public class RedReporterServerCore implements ServerCore {
 
 		final String buckeName = Debug.checkNull("getBucketName()", cfg.getBucketName());
 		fsConfig.setBucketName(buckeName);
-		fsConfig.setS3CredentialsProvider(this.s3CredentialsProvider);
+		fsConfig.setAWSCredentialsProvider(this.AWSCredentialsProvider);
 		this.fileStorage = new FileStorage(fsConfig);
 		Debug.checkNull("bank", this.bank);
 		Debug.checkNull("fileStorage", this.fileStorage);

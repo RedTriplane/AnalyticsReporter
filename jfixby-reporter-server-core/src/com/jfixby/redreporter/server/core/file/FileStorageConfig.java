@@ -1,18 +1,18 @@
 
 package com.jfixby.redreporter.server.core.file;
 
-import com.jfixby.scarabei.aws.api.s3.S3CredentialsProvider;
+import com.jfixby.scarabei.aws.api.AWSCredentialsProvider;
 
 public class FileStorageConfig {
-	S3CredentialsProvider s3CredentialsProvider;
+	AWSCredentialsProvider AWSCredentialsProvider;
 	private String bucketName;
 
-	public void setS3CredentialsProvider (final S3CredentialsProvider s3CredentialsProvider) {
-		this.s3CredentialsProvider = s3CredentialsProvider;
+	public void setAWSCredentialsProvider (final AWSCredentialsProvider AWSCredentialsProvider) {
+		this.AWSCredentialsProvider = AWSCredentialsProvider;
 	}
 
-	public S3CredentialsProvider getS3CredentialsProvider () {
-		return this.s3CredentialsProvider;
+	public AWSCredentialsProvider getAWSCredentialsProvider () {
+		return this.AWSCredentialsProvider;
 	}
 
 	public String getBucketName () {
