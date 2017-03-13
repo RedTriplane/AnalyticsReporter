@@ -34,7 +34,7 @@ public class InstallationIDGenerator {
 	}
 
 	public static String applySalt (final String input, final String salt) {
-		return MD5.md5String(salt + input + salt);
+		return MD5.md5String(salt + input + salt).toString();
 	}
 
 }
