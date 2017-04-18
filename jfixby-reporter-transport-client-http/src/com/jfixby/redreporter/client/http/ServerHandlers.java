@@ -1,8 +1,8 @@
 
 package com.jfixby.redreporter.client.http;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
 
 import com.jfixby.redreporter.api.transport.ServersCheck;
 import com.jfixby.redreporter.api.transport.ServersCheckParams;
@@ -23,8 +23,8 @@ public class ServerHandlers implements Iterable<ServerHandler> {
 
 	public ServerPing getBestServerPing (final long timeLimit) {
 
-		final Vector<ServerPing> failed = new Vector<ServerPing>();
-		final Vector<ServerPing> succeed = new Vector<ServerPing>();
+		final ArrayList<ServerPing> failed = new ArrayList<ServerPing>();
+		final ArrayList<ServerPing> succeed = new ArrayList<ServerPing>();
 
 		final Int totalNumberOfparticipants = new Int(this.servers.size());
 		final long startTime = Sys.SystemTime().currentTimeMillis();
